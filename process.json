@@ -1,0 +1,8 @@
+{
+  "script": "server.js",
+  "watch": true,
+  "ignore_watch": ["node_modules", "source/library", "control"],
+  "watch_options": {
+    "followSymlinks": false
+  }
+}
