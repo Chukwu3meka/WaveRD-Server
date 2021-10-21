@@ -77,7 +77,7 @@ exports.signup = async (req, res, next) => {
         $set: { manager: handle },
         $push: {
           "history.events": { event },
-          "history.manager": { manager: handle },
+          "history.managers": { manager: handle, departure: null },
           reports: { $each: [report], $slice: -10 },
         },
       }
@@ -118,32 +118,6 @@ exports.signup = async (req, res, next) => {
     return catchError({ res, next, err, message: "signup failed" });
   }
 };
-
-// exports.resendVerification = async (req, res, next) => {
-//   try {
-//     const { email } = validateRequestBody(req.body, ["email"]);
-
-//     const {
-//         stat: { verified: signupReference, registered },
-//         handle,
-//       } = await Profiles.findOne({ email }),
-//       serverStamp = new Date(registered).getTime();
-
-//     if (!signupReference && !handle && !registered) throw "User not registered";
-
-//     // await pushMail({
-//     //   emailAddress: email,
-//     //   emailSubject: "SoccerMASS Account Verification",
-//     //   emailBody: emailTemplates("accountVerification", { handle, signupReference, serverStamp }),
-//     // });
-
-//     console.log(`${process.env.CLIENT}auth/verify?signupReference=${signupReference}&serverStamp=${serverStamp}&handle=${handle}`);
-
-//     return res.status(201).json("eMail verification sent successfuly.");
-//   } catch (err) {
-//     return catchError({ res, next, err, message: "unable to resend verification mail" });
-//   }
-// };
 
 exports.verifyAccount = async (req, res, next) => {
   try {

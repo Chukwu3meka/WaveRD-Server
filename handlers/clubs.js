@@ -131,11 +131,46 @@ exports.fetchHistory = async (req, res, next) => {
     history.budget = clubData.budget;
     history.manager = clubData.manager;
     history.won = clubData.history.match.won;
-    history.lost = clubData.history.match.lost;
+    history.tie = clubData.history.match.tie;
     history.draw = clubData.history.match.draw;
+    history.goalAgainst = clubData.history.match.goalAgainst;
+    history.goalFor = clubData.history.match.goalFor;
     history.events = clubData.history.events;
-
-    console.log(clubData.history.events);
+    history.bestMatch = clubData.history.match.bestMatch;
+    history.worstMatch = clubData.history.match.worstMatch;
+    history.squad = clubData.tactics.squad;
+    history.transfers = [
+      {
+        desc: "Priciest arrival",
+        club: clubData.history.transfer.priciestArrival.club,
+        player: clubData.history.transfer.priciestArrival.player,
+        fee: clubData.history.transfer.priciestArrival.fee,
+        date: new Date(clubData.history.transfer.priciestArrival.date).toDateString(),
+      },
+      {
+        desc: "Cheapest arrival",
+        club: clubData.history.transfer.cheapestArrival.club,
+        player: clubData.history.transfer.cheapestArrival.player,
+        fee: clubData.history.transfer.cheapestArrival.fee,
+        date: new Date(clubData.history.transfer.cheapestArrival.date).toDateString(),
+      },
+      {
+        desc: "Priciest departure",
+        club: clubData.history.transfer.priciestDeparture.club,
+        player: clubData.history.transfer.priciestDeparture.player,
+        fee: clubData.history.transfer.priciestDeparture.fee,
+        date: new Date(clubData.history.transfer.priciestDeparture.date).toDateString(),
+      },
+      {
+        desc: "Cheapest departure",
+        club: clubData.history.transfer.cheapestDeparture.club,
+        player: clubData.history.transfer.cheapestDeparture.player,
+        fee: clubData.history.transfer.cheapestDeparture.fee,
+        date: new Date(clubData.history.transfer.cheapestDeparture.date).toDateString(),
+      },
+    ];
+    history.managers = clubData.history.managers;
+    // console.log(clubData.history.events);
 
     res.status(200).json(history);
   } catch (err) {
