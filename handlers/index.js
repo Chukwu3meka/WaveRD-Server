@@ -1,10 +1,10 @@
 module.exports = {
-  ...require("./profiles"),
-  ...require("./clubs"),
-  ...require("./players"),
-  ...require("./masses"),
+  ...require("./profile"),
+  ...require("./club"),
+  ...require("./player"),
+  ...require("./mass"),
   ...require("./admin"),
-  ...require("./trends"),
+  ...require("./trend"),
   ...require("./oAuth"),
 };
 

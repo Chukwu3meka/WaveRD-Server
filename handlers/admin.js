@@ -1,9 +1,11 @@
-const { playLeagueMatch } = require("../source/playMatch/league");
-const { clubs, clubModel, playerModel, players, Masses, Trends } = require("../models/handler");
-const { range, numToText, catchError, shuffleArray, validateRequestBody, getRef, arrayToChunks } = require("../utils/serverFunctions");
-const { formations } = require("../source/serverVariables.js");
-const { clubStore, totalClubs } = require("../source/database/clubStore.js");
 const { playerStore, totalPlayers } = require("../source/database/playerStore.js");
+const { clubStore, totalClubs } = require("../source/database/clubStore.js");
+const { range, numToText, catchError, shuffleArray, validateRequestBody, getRef, arrayToChunks } = require("../utils/serverFunctions");
+const {  clubModel, playerModel, Mass } = require("../models/handler");
+
+// const { clubs, clubModel, playerModel, players, Mass, Trends } = require("../models/handler");
+const { playLeagueMatch } = require("../source/playMatch/league");
+const { formations } = require("../source/serverVariables.js");
 
 // to create/refresh new mass ::::::: add tables, calendar and topPlayers, players and clubs for new season
 exports.initializeMass = async (req, res) => {
@@ -11,7 +13,7 @@ exports.initializeMass = async (req, res) => {
     const { mass, password } = validateRequestBody(req.body, ["mass", "password"]);
     if (password !== process.env.OTP) throw "Auth server unable to validate admin";
 
-    const dbMassData = await Masses.findOne({ mass });
+    const dbMassData = await Mass.findOne({ mass });
 
     let clubs = [],
       divisions = {};
@@ -311,7 +313,7 @@ exports.initializeMass = async (req, res) => {
 
         massClubs.push({
           club: ref,
-          formation: formations[range(0, formations.length - 1)],
+          formation: "433A",
           "history.lastFiveMatches": ["win", "win", "win", "win", "win"],
           budget: Math.round(((200000 - capacity) * 1.5 - capacity) / 1000),
           "tactics.squad": playersData.filter(({ loanClub }) => loanClub === ref).map(({ player }) => player),
@@ -351,7 +353,7 @@ exports.initializeMass = async (req, res) => {
     const Players = playerModel(mass);
 
     if (dbMassData) {
-      await Masses.updateOne({ mass }, { divisions, ...massData });
+      await Mass.updateOne({ mass }, { divisions, ...massData });
       // await Clubs.collection.drop();
       await Players.collection.drop();
       // create mass players collection
@@ -373,7 +375,7 @@ exports.initializeMass = async (req, res) => {
       return res.json(clubsData);
     } else {
       // add mass to masses collection
-      await Masses.create({ mass, divisions, ...massData });
+      await Mass.create({ mass, divisions, ...massData });
       // create mass clubs collection
       await Clubs.insertMany(clubsData);
       // create mass players collection
@@ -386,260 +388,260 @@ exports.initializeMass = async (req, res) => {
   }
 };
 
-// await Players.insertMany(playersData);
-exports.removeManager = async (req, res, next) => {
-  try {
-    let { email, club, soccermass, division } = req.body;
-    email = validate("email", email);
-    club = validate("text", club);
-    division = validate("text", division);
-    soccermass = validate("text", soccermass);
-    let status = false,
-      conditionMet = [soccermass, club, email, division].every((x) => x);
-    if (conditionMet) {
-      let isProfileValid = await Profiles.findOne({ email, soccermass });
-      isProfileValid = !!isProfileValid;
-      if (isProfileValid) {
-        status = true;
-      }
-    }
-    if (status) {
-      const Clubs = clubs(soccermass);
-      const news = {
-        detail: `${club} has dismissed their Manager.`,
-        content: `${club} has dismissed their manager as a result of breach in terms agreed with the club, and have started search for a new manager`,
-      };
-      const events = {
-        date: new Date().toDateString(),
-        event: `${club} head-coach and general manager have been dismissed. After a well cordinated investigation into his activities and profile, the tactical coach was released for a breach in terms`,
-      };
-      await Clubs.updateOne({ club }, { events, "stat.manager": null });
-      await Profiles.deleteOne({ soccermass, club, email, division });
+// // await Players.insertMany(playersData);
+// exports.removeManager = async (req, res, next) => {
+//   try {
+//     let { email, club, soccermass, division } = req.body;
+//     email = validate("email", email);
+//     club = validate("text", club);
+//     division = validate("text", division);
+//     soccermass = validate("text", soccermass);
+//     let status = false,
+//       conditionMet = [soccermass, club, email, division].every((x) => x);
+//     if (conditionMet) {
+//       let isProfileValid = await Profiles.findOne({ email, soccermass });
+//       isProfileValid = !!isProfileValid;
+//       if (isProfileValid) {
+//         status = true;
+//       }
+//     }
+//     if (status) {
+//       const Clubs = clubs(soccermass);
+//       const news = {
+//         detail: `${club} has dismissed their Manager.`,
+//         content: `${club} has dismissed their manager as a result of breach in terms agreed with the club, and have started search for a new manager`,
+//       };
+//       const events = {
+//         date: new Date().toDateString(),
+//         event: `${club} head-coach and general manager have been dismissed. After a well cordinated investigation into his activities and profile, the tactical coach was released for a breach in terms`,
+//       };
+//       await Clubs.updateOne({ club }, { events, "stat.manager": null });
+//       await Profiles.deleteOne({ soccermass, club, email, division });
 
-      //get divisions array from SoccerMASS
-      const listOfDivisions = SoccerMASSResult.divisions;
-      const noOfAvailClubsInMass = SoccerMASSResult.clubs;
-      const noOfAvailClubsInDivision = listOfDivisions.filter((x) => x[0] === division)[0][1];
-      const updatedListOfDivisions = listOfDivisions.filter((x) => x[0] !== division);
-      updatedListOfDivisions.push([division, noOfAvailClubsInDivision + 1]);
-      await Masses.updateOne(
-        { soccermass },
-        { divisions: updatedListOfDivisions, clubs: noOfAvailClubsInMass + 1, $addToSet: { news } }
-      );
+//       //get divisions array from SoccerMASS
+//       const listOfDivisions = SoccerMASSResult.divisions;
+//       const noOfAvailClubsInMass = SoccerMASSResult.clubs;
+//       const noOfAvailClubsInDivision = listOfDivisions.filter((x) => x[0] === division)[0][1];
+//       const updatedListOfDivisions = listOfDivisions.filter((x) => x[0] !== division);
+//       updatedListOfDivisions.push([division, noOfAvailClubsInDivision + 1]);
+//       await Mass.updateOne(
+//         { soccermass },
+//         { divisions: updatedListOfDivisions, clubs: noOfAvailClubsInMass + 1, $addToSet: { news } }
+//       );
 
-      return res.status(200).send(`${email} has been removed succesfully`);
-    }
-    res.status(404).json("Can't delete this account");
-  } catch (err) {
-    return next({ status: 404, message: "Unable to delete account" });
-  }
-};
-exports.playMatch = async (req, res, next) => {
-  try {
-    const { matchType = "League", matchDate = "Sun Oct 18 2020" } = req.body;
-    let result = [];
-    switch (matchType) {
-      case "League": {
-        result = await playLeagueMatch({ clubs, players, matchType, matchDate, Masses });
-        break;
-      }
-      case "Champions League": {
-        result = "sdsd";
-        break;
-      }
-      default:
-        break;
-    }
-    res.json(result);
-  } catch (err) {
-    return next({
-      status: 400,
-      message: err.message,
-    });
-  }
-};
-exports.addNews = async (req, res, next) => {
-  try {
-    const { soccermass } = req.body;
-    const news = [];
-    req.body.news.forEach((i) => {
-      news.push({ detail: i.detail, content: i.content, pic: i.pic });
-    });
-    const result = await Masses.updateOne({ soccermass }, { news });
-    res.send(result);
-  } catch (err) {
-    return next({
-      status: 400,
-      message: err.message,
-    });
-  }
-};
-exports.addMassTable = async (req, res, next) => {
-  try {
-    const { soccermass, division } = req.body;
-    const div = division.toLowerCase().replace(/ /g, "");
-    const table = [];
-    req.body.table.forEach((i) => {
-      const { club, pld, w, d, l, pts, gf, ga, gd } = i;
-      table.push({ club, pld, w, d, l, pts, gf, ga, gd });
-    });
-    const key = `${div}.table`;
-    const result = await Masses.updateOne({ soccermass }, { $set: { [key]: table } });
-    res.send(result);
-  } catch (err) {
-    return next({
-      status: 400,
-      message: err.message,
-    });
-  }
-};
-exports.addGoalAssist = async (req, res, next) => {
-  try {
-    const { soccermass, division } = req.body;
-    const div = division.toLowerCase().replace(/ /g, "");
-    const goalAssist = [];
-    req.body.goalAssist.forEach((i) => {
-      const { name, club, mp, goal, assist } = i;
-      goalAssist.push({ name, club, mp, goal, assist });
-    });
-    const key = `${div}.goalAssist`;
-    const result = await Masses.updateOne({ soccermass }, { $set: { [key]: goalAssist } });
-    res.send(result);
-  } catch (err) {
-    return next({
-      status: 400,
-      message: err.message,
-    });
-  }
-};
-exports.addReport = async (req, res, next) => {
-  try {
-    const Clubs = detail(req);
-    const { club } = req.body;
-    const report = [];
-    req.body.report.forEach((i) => {
-      const { detail, content, pic } = i;
-      report.push({ detail, content, pic });
-    });
-    const result = await Clubs.updateOne({ club }, { $set: { report } });
-    res.status(200).send(result);
-  } catch (err) {
-    return next({
-      status: 400,
-      message: err,
-    });
-  }
-};
-exports.addCalendar = async (req, res, next) => {
-  try {
-    const { soccermass, key } = req.body;
-    const calendar = [];
-    req.body.calendar.forEach((i) => {
-      const { date, home, hg, ag, away, data } = i;
-      calendar.push({ date, home, hg, ag, away, data });
-    });
-    const category = `${key}.calendar`;
-    const result = await Masses.updateOne({ soccermass }, { $set: { [category]: calendar } }, { upsert: true });
-    res.status(200).send(result);
-  } catch (err) {
-    return next({
-      status: 400,
-      message: err,
-    });
-  }
-};
-exports.updateStat = async (req, res, next) => {
-  try {
-    const Clubs = detail(req);
-    req.body.stat.forEach(async (i) => {
-      const { rating, stadium, location, capacity, fanbase, teamMoral, fearFactor, value, sponsorship, mall, club } = i;
-      await Clubs.updateOne(
-        { club },
-        {
-          $set: {
-            stat: {
-              rating,
-              stadium,
-              location,
-              capacity,
-              fanbase,
-              teamMoral,
-              fearFactor,
-              value,
-              sponsorship,
-              mall,
-              club,
-            },
-          },
-        },
-        { upsert: true }
-      );
-    });
-    res.status(200).send("success");
-  } catch (err) {
-    return next({
-      status: 400,
-      message: err,
-    });
-  }
-};
-exports.addBlogPost = async (req, res, next) => {
-  try {
-    const soccermass = "SoccerMASS";
-    const division = "SoccerMASS";
-    const club = "SoccerMASS";
-    const handle = "SoccerMASS";
-    const category = "blog";
-    await Trends.remove({ category });
-    const date = new Date(Date.now()).toDateString();
-    const blogs = [];
-    await req.body.blogs.forEach((i) => {
-      const { title, body } = i;
-      blogs.push({
-        soccermass,
-        division,
-        club,
-        handle,
-        category,
-        title,
-        body,
-        date,
-      });
-    });
-    const result = await Trends.create(blogs);
-    res.send(result);
-  } catch (err) {
-    return next({
-      status: 400,
-      message: err.message,
-    });
-  }
-};
-exports.changeEnergy = async (req, res, next) => {
-  try {
-    const Players = player(req);
-    const team = await Players.find({});
-    const result = await team.forEach(
-      async (i) => await Players.updateOne({ name: i.name }, { $set: { "slot.energy": Math.floor(Math.random() * 99) } })
-    );
-    res.send("successful");
-  } catch (err) {
-    return next({
-      status: 400,
-      message: err.message,
-    });
-  }
-};
-//add random transfers to transfer table in trade/transaction
-exports.randomTransfers = async (req, res, next) => {
-  try {
-    const { transfers, soccermass } = req.body;
-    await Masses.updateOne({ soccermass }, { $addToSet: { transfers } }, { upsert: true });
-    res.send("successful");
-  } catch (err) {
-    return next({
-      status: 400,
-      message: err.message,
-    });
-  }
-};
+//       return res.status(200).send(`${email} has been removed succesfully`);
+//     }
+//     res.status(404).json("Can't delete this account");
+//   } catch (err) {
+//     return next({ status: 404, message: "Unable to delete account" });
+//   }
+// };
+// exports.playMatch = async (req, res, next) => {
+//   try {
+//     const { matchType = "League", matchDate = "Sun Oct 18 2020" } = req.body;
+//     let result = [];
+//     switch (matchType) {
+//       case "League": {
+//         result = await playLeagueMatch({ clubs, players, matchType, matchDate, Masses });
+//         break;
+//       }
+//       case "Champions League": {
+//         result = "sdsd";
+//         break;
+//       }
+//       default:
+//         break;
+//     }
+//     res.json(result);
+//   } catch (err) {
+//     return next({
+//       status: 400,
+//       message: err.message,
+//     });
+//   }
+// };
+// exports.addNews = async (req, res, next) => {
+//   try {
+//     const { soccermass } = req.body;
+//     const news = [];
+//     req.body.news.forEach((i) => {
+//       news.push({ detail: i.detail, content: i.content, pic: i.pic });
+//     });
+//     const result = await Masses.updateOne({ soccermass }, { news });
+//     res.send(result);
+//   } catch (err) {
+//     return next({
+//       status: 400,
+//       message: err.message,
+//     });
+//   }
+// };
+// exports.addMassTable = async (req, res, next) => {
+//   try {
+//     const { soccermass, division } = req.body;
+//     const div = division.toLowerCase().replace(/ /g, "");
+//     const table = [];
+//     req.body.table.forEach((i) => {
+//       const { club, pld, w, d, l, pts, gf, ga, gd } = i;
+//       table.push({ club, pld, w, d, l, pts, gf, ga, gd });
+//     });
+//     const key = `${div}.table`;
+//     const result = await Masses.updateOne({ soccermass }, { $set: { [key]: table } });
+//     res.send(result);
+//   } catch (err) {
+//     return next({
+//       status: 400,
+//       message: err.message,
+//     });
+//   }
+// };
+// exports.addGoalAssist = async (req, res, next) => {
+//   try {
+//     const { soccermass, division } = req.body;
+//     const div = division.toLowerCase().replace(/ /g, "");
+//     const goalAssist = [];
+//     req.body.goalAssist.forEach((i) => {
+//       const { name, club, mp, goal, assist } = i;
+//       goalAssist.push({ name, club, mp, goal, assist });
+//     });
+//     const key = `${div}.goalAssist`;
+//     const result = await Masses.updateOne({ soccermass }, { $set: { [key]: goalAssist } });
+//     res.send(result);
+//   } catch (err) {
+//     return next({
+//       status: 400,
+//       message: err.message,
+//     });
+//   }
+// };
+// exports.addReport = async (req, res, next) => {
+//   try {
+//     const Clubs = detail(req);
+//     const { club } = req.body;
+//     const report = [];
+//     req.body.report.forEach((i) => {
+//       const { detail, content, pic } = i;
+//       report.push({ detail, content, pic });
+//     });
+//     const result = await Clubs.updateOne({ club }, { $set: { report } });
+//     res.status(200).send(result);
+//   } catch (err) {
+//     return next({
+//       status: 400,
+//       message: err,
+//     });
+//   }
+// };
+// exports.addCalendar = async (req, res, next) => {
+//   try {
+//     const { soccermass, key } = req.body;
+//     const calendar = [];
+//     req.body.calendar.forEach((i) => {
+//       const { date, home, hg, ag, away, data } = i;
+//       calendar.push({ date, home, hg, ag, away, data });
+//     });
+//     const category = `${key}.calendar`;
+//     const result = await Masses.updateOne({ soccermass }, { $set: { [category]: calendar } }, { upsert: true });
+//     res.status(200).send(result);
+//   } catch (err) {
+//     return next({
+//       status: 400,
+//       message: err,
+//     });
+//   }
+// };
+// exports.updateStat = async (req, res, next) => {
+//   try {
+//     const Clubs = detail(req);
+//     req.body.stat.forEach(async (i) => {
+//       const { rating, stadium, location, capacity, fanbase, teamMoral, fearFactor, value, sponsorship, mall, club } = i;
+//       await Clubs.updateOne(
+//         { club },
+//         {
+//           $set: {
+//             stat: {
+//               rating,
+//               stadium,
+//               location,
+//               capacity,
+//               fanbase,
+//               teamMoral,
+//               fearFactor,
+//               value,
+//               sponsorship,
+//               mall,
+//               club,
+//             },
+//           },
+//         },
+//         { upsert: true }
+//       );
+//     });
+//     res.status(200).send("success");
+//   } catch (err) {
+//     return next({
+//       status: 400,
+//       message: err,
+//     });
+//   }
+// };
+// exports.addBlogPost = async (req, res, next) => {
+//   try {
+//     const soccermass = "SoccerMASS";
+//     const division = "SoccerMASS";
+//     const club = "SoccerMASS";
+//     const handle = "SoccerMASS";
+//     const category = "blog";
+//     await Trends.remove({ category });
+//     const date = new Date(Date.now()).toDateString();
+//     const blogs = [];
+//     await req.body.blogs.forEach((i) => {
+//       const { title, body } = i;
+//       blogs.push({
+//         soccermass,
+//         division,
+//         club,
+//         handle,
+//         category,
+//         title,
+//         body,
+//         date,
+//       });
+//     });
+//     const result = await Trends.create(blogs);
+//     res.send(result);
+//   } catch (err) {
+//     return next({
+//       status: 400,
+//       message: err.message,
+//     });
+//   }
+// };
+// exports.changeEnergy = async (req, res, next) => {
+//   try {
+//     const Players = player(req);
+//     const team = await Players.find({});
+//     const result = await team.forEach(
+//       async (i) => await Players.updateOne({ name: i.name }, { $set: { "slot.energy": Math.floor(Math.random() * 99) } })
+//     );
+//     res.send("successful");
+//   } catch (err) {
+//     return next({
+//       status: 400,
+//       message: err.message,
+//     });
+//   }
+// };
+// //add random transfers to transfer table in trade/transaction
+// exports.randomTransfers = async (req, res, next) => {
+//   try {
+//     const { transfers, soccermass } = req.body;
+//     await Masses.updateOne({ soccermass }, { $addToSet: { transfers } }, { upsert: true });
+//     res.send("successful");
+//   } catch (err) {
+//     return next({
+//       status: 400,
+//       message: err.message,
+//     });
+//   }
+// };

@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const Profiles = require("../models/profiles");
+const Profile = require("../models/profile");
 const bcrypt = require("bcryptjs");
 const express = require("express");
 const app = express();
@@ -11,7 +11,7 @@ const pushMail = require("../utils/pushMail").pushMail;
 const { sessionGenerator, catchError, validateRequestBody, obfuscate } = require("../utils/serverFunctions");
 
 const { v4 } = require("uuid");
-const { clubs, clubModel, playerModel, players, athletes, Masses, Trends } = require("../models/handler");
+const { clubs, clubModel, playerModel, players, athletes, Mass, Trends } = require("../models/handler");
 const { clubStore } = require("../source/database/clubStore");
 const emailTemplates = require("../utils/emailTemplates").emailTemplates;
 
@@ -40,7 +40,7 @@ exports.signup = async (req, res, next) => {
     if (clubData.manager) throw "club is already managed";
 
     // check if email is taken alread
-    const emailTaken = await Profiles.findOne({ email });
+    const emailTaken = await Profile.findOne({ email });
     if (emailTaken) throw "email taken";
 
     // @(club,${club},title) where title is get method of club
@@ -60,10 +60,10 @@ exports.signup = async (req, res, next) => {
       image: `club/${club}.webp`,
     };
 
-    const massData = await Masses.findOne({ mass });
+    const massData = await Mass.findOne({ mass });
     if (!massData) throw "invalid mass";
 
-    await Masses.updateOne(
+    await Mass.updateOne(
       { mass },
       {
         $set: { [`unmanaged.${division}`]: massData.unmanaged[division] - 1, "unmanages.total": massData.unmanaged.total - 1 },
@@ -85,7 +85,7 @@ exports.signup = async (req, res, next) => {
 
     const session = sessionGenerator();
 
-    await Profiles.create({
+    await Profile.create({
       mass,
       division,
       club,
@@ -100,7 +100,7 @@ exports.signup = async (req, res, next) => {
         const signupReference = sessionGenerator(_id),
           serverStamp = new Date(registered).getTime();
 
-        await Profiles.updateOne({ email }, { session, "stat.verified": signupReference });
+        await Profile.updateOne({ email }, { session, "stat.verified": signupReference });
 
         await pushMail({
           emailAddress: email,
@@ -123,12 +123,12 @@ exports.verifyAccount = async (req, res, next) => {
   try {
     const { handle, signupReference, serverStamp } = validateRequestBody(req.body, ["handle", "signupReference", "serverStamp"]);
 
-    const profile = await Profiles.findOne({ handle, "stat.verified": signupReference });
+    const profile = await Profile.findOne({ handle, "stat.verified": signupReference });
     if (!profile) throw "Profile does not exist";
 
     if (new Date(profile.stat.registered).getTime() !== serverStamp) throw "Link has been modified";
 
-    await Profiles.updateOne({ handle, "stat.verified": signupReference }, { "stat.verified": "verified" });
+    await Profile.updateOne({ handle, "stat.verified": signupReference }, { "stat.verified": "verified" });
 
     return res.status(200).send("verified");
   } catch (err) {
@@ -140,7 +140,7 @@ exports.signin = async (req, res, next) => {
   try {
     const { email, password } = validateRequestBody(req.body, ["email", "password"]);
 
-    const profile = await Profiles.findOne({ email });
+    const profile = await Profile.findOne({ email });
 
     const validCredentials = await profile.comparePassword(password);
     if (!validCredentials) throw "invalid credentials";
@@ -182,7 +182,7 @@ exports.resetPasswordOTPSender = async (req, res, next) => {
   try {
     const { handle, email, password } = validateRequestBody(req.body, ["handle", "email", "password"]);
 
-    const profile = await Profiles.findOne({ email, handle });
+    const profile = await Profile.findOne({ email, handle });
     if (!profile) throw "profile does not exist";
 
     const otp = Math.floor(1000000 + Math.random() * 9000000);
@@ -192,7 +192,7 @@ exports.resetPasswordOTPSender = async (req, res, next) => {
     const exp = new Date();
     exp.setHours(exp.getHours() + 3);
 
-    await Profiles.updateOne(
+    await Profile.updateOne(
       { email, handle },
       {
         "stat.otp": {
@@ -220,7 +220,7 @@ exports.resetPassword = async (req, res, next) => {
   try {
     const { email, handle, otp } = validateRequestBody(req.body, ["handle", "email", "otp"]);
 
-    const profile = await Profiles.findOne({ email, handle });
+    const profile = await Profile.findOne({ email, handle });
 
     if (!profile) throw "profile does not exist";
     if (profile.stat.otp.code !== Number(otp)) throw "wrong otp provided";
@@ -229,7 +229,7 @@ exports.resetPassword = async (req, res, next) => {
     if (new Date().getTime() > profile.stat.otp.exp) throw "otp has expired";
 
     const session = sessionGenerator(profile._id);
-    await Profiles.updateOne(
+    await Profile.updateOne(
       { email },
       {
         session,

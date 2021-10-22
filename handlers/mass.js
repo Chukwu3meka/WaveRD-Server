@@ -1,4 +1,4 @@
-const { clubModel, Masses } = require("../models/handler");
+const { clubModel, Mass } = require("../models/handler");
 const { clubStore, totalClubs } = require("../source/database/clubStore");
 const { sortArray } = require("../source/library/commonFunc");
 const { catchError, validateRequestBody, shuffleArray, validInputs, getRef } = require("../utils/serverFunctions");
@@ -6,7 +6,7 @@ const { catchError, validateRequestBody, shuffleArray, validInputs, getRef } = r
 exports.fetchMasses = async (req, res, next) => {
   try {
     const masses = [];
-    const response = await Masses.find({});
+    const response = await Mass.find({});
     for (const { mass, created, unmanaged, season } of Object.values(response)) {
       masses.push({ mass, unmanaged, created, season });
     }
@@ -22,7 +22,7 @@ exports.fetchMassData = async (req, res, next) => {
 
     const clubs = [];
     const Clubs = clubModel(mass);
-    const { divisions } = await Masses.findOne({ mass });
+    const { divisions } = await Mass.findOne({ mass });
 
     for (let clubRef = 1; clubRef <= totalClubs; clubRef++) {
       const club = getRef("club", clubRef);
@@ -46,7 +46,7 @@ exports.fetchHomeTables = async (req, res, next) => {
   try {
     const { mass, division } = validateRequestBody(req.body, ["mass", "division"]);
 
-    const massData = await Masses.findOne({ mass });
+    const massData = await Mass.findOne({ mass });
     if (!massData) throw "Mass not found";
 
     const { table, goal } = massData[division];
@@ -56,11 +56,34 @@ exports.fetchHomeTables = async (req, res, next) => {
     return catchError({ res, err, message: "unable to locate masses" });
   }
 };
+
+exports.fetchCalendar = async (req, res, next) => {
+  try {
+    const { mass } = validateRequestBody(req.body, ["mass"]);
+
+    const massData = await Mass.findOne({ mass });
+    if (!massData) throw "Mass not found";
+
+    const calendar = {
+      cup: massData.cup,
+      champLeag: massData.champLeag,
+      divisionOne: massData.divisionOne,
+      divisionTwo: massData.divisionTwo,
+      divisionFour: massData.divisionFour,
+      divisionThree: massData.divisionThree,
+    };
+
+    res.status(200).json(calendar);
+  } catch (err) {
+    return catchError({ res, err, message: "unable to locate masses" });
+  }
+};
+
 exports.starter = async (req, res, next) => {
   try {
     const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
 
-    const massData = await Masses.findOne({ mass });
+    const massData = await Mass.findOne({ mass });
     const Clubs = clubModel(mass);
     const clubData = await Clubs.findOne({ club });
     if (!clubData) throw "Club not found";
@@ -78,7 +101,7 @@ exports.starter = async (req, res, next) => {
 //     const { club, soccermass, division } = req.body;
 //     const Clubs = clubs(soccermass);
 //     const involvements = await Clubs.findOne({ club }).then((res) => res.involvement);
-//     const result = await Masses.findOne({ soccermass });
+//     const result = await Mass.findOne({ soccermass });
 //     //each division has its own object
 //     const allCalendars = [];
 //     involvements.forEach((x) => {
@@ -153,7 +176,7 @@ exports.starter = async (req, res, next) => {
 // exports.getHomeTables = async (req, res, next) => {
 //   try {
 //     const { soccermass, division } = req.body;
-//     const response = await Masses.findOne({ soccermass });
+//     const response = await Mass.findOne({ soccermass });
 //     const result = {};
 //     result.table = sortArray(response[`${division}_League`]["table"], "table");
 //     result.goal = response[`${division}_League`]["goal"];
@@ -166,7 +189,7 @@ exports.starter = async (req, res, next) => {
 // exports.getnews = async (req, res, next) => {
 //   try {
 //     const { soccermass } = req.body;
-//     const result = await Masses.findOne({ soccermass });
+//     const result = await Mass.findOne({ soccermass });
 //     res.status(200).send(result.news);
 //   } catch (err) {
 //     return next({
@@ -180,7 +203,7 @@ exports.starter = async (req, res, next) => {
 //   try {
 //     const { soccermass, division } = req.body;
 //     const div = division.toLowerCase().replace(/ /g, "");
-//     const result = await Masses.findOne({ soccermass });
+//     const result = await Mass.findOne({ soccermass });
 //     res.status(200).send(result[div]);
 //   } catch (err) {
 //     return next({
@@ -194,7 +217,7 @@ exports.starter = async (req, res, next) => {
 //     const { soccermass, division, key = "calendar", domain = "League" } = req.body;
 //     // key::::: goalAssist, calendar, table
 //     // domain:::::::League, Supercup cup
-//     const result = await Masses.findOne({ soccermass });
+//     const result = await Mass.findOne({ soccermass });
 //     const calendar = result[`${division}_${domain}`][key];
 //     // return res.status(200).send({ dfd: calendar.length });
 //     return res.status(200).send(calendar);
@@ -208,7 +231,7 @@ exports.starter = async (req, res, next) => {
 // exports.competition = async (req, res, next) => {
 //   try {
 //     const { soccermass, category } = req.body;
-//     const result = await Masses.findOne({ soccermass });
+//     const result = await Mass.findOne({ soccermass });
 //     return res.status(200).send(result[category]);
 //   } catch (err) {
 //     return next({

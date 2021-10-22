@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const Profiles = require("../models/profiles");
+const Profile = require("../models/profile");
 
 module.exports = (req, res, next) => {
   if (req.headers["authorization"] && req.headers["authorization"].split(" ")[0] === "Bearer") {
@@ -10,7 +10,7 @@ module.exports = (req, res, next) => {
       } else {
         req.decoded = decoded;
         const { session } = req.body;
-        const profile = await Profiles.findOne({ session });
+        const profile = await Profile.findOne({ session });
         if (profile) return next();
         res.json("Failed to authenticate token");
       }

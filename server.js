@@ -20,11 +20,11 @@ app.use(require("express-session")({ secret, resave: true, saveUninitialized: tr
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use("/clubs/", routes.Clubs);
-app.use("/players/", routes.Players);
-app.use("/masses/", routes.Masses);
-app.use("/profiles/", routes.Profiles);
-app.use("/trends/", routes.Trends);
+app.use("/club/", routes.Club);
+app.use("/player/", routes.Player);
+app.use("/mass/", routes.Mass);
+app.use("/profile/", routes.Profile);
+app.use("/trend/", routes.Trend);
 app.use("/auth/", routes.oAuth);
 app.use("/admin/", routes.Admin);
 

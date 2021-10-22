@@ -1,14 +1,14 @@
-const { playerModel, clubModel, Masses } = require("../models/handler");
+const { catchError, validateRequestBody, sortArr } = require("../utils/serverFunctions");
+const { playerModel, clubModel, Mass } = require("../models/handler");
 const { clubStore, totalClubs } = require("../source/database/clubStore");
 const { sortArray } = require("../source/library/commonFunc");
-const { catchError, validateRequestBody, shuffleArray, validInputs, getRef, sortArr } = require("../utils/serverFunctions");
 
 exports.fetchHomeCalendar = async (req, res) => {
   try {
     const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
 
     // get home calendar
-    const massData = await Masses.findOne({ mass });
+    const massData = await Mass.findOne({ mass });
     if (!massData) throw "Mass not found";
 
     const leagueCal = massData[division].calendar
@@ -64,7 +64,7 @@ exports.fetchTactics = async (req, res) => {
   try {
     const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
 
-    // const massData = await Masses.findOne({ mass });
+    // const massData = await Mass.findOne({ mass });
     const Clubs = clubModel(mass);
     const Players = playerModel(mass);
 
@@ -73,7 +73,7 @@ exports.fetchTactics = async (req, res) => {
     if (!clubData) throw "Club not found";
 
     // get next match
-    const massData = await Masses.findOne({ mass });
+    const massData = await Mass.findOne({ mass });
     if (!massData) throw "Mass not found";
 
     const leagueCal = massData[division].calendar
@@ -182,7 +182,7 @@ exports.starter = async (req, res, next) => {
   try {
     const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
 
-    const massData = await Masses.findOne({ mass });
+    const massData = await Mass.findOne({ mass });
     const Clubs = clubModel(mass);
     const clubData = await Clubs.findOne({ club });
     if (!clubData) throw "Club not found";
@@ -458,7 +458,7 @@ exports.starter = async (req, res, next) => {
 //               detail: "Transfer NEWS",
 //               content: `${player} has completed his ${transferType} move to ${team}. The Media has been watching this for a while but now they don't have to. ${player} said it's a move that has been on his mind.`,
 //             };
-//             await Masses.updateOne({ soccermass }, { $addToSet: { transfers, news } }, { upsert: true });
+//             await Mass.updateOne({ soccermass }, { $addToSet: { transfers, news } }, { upsert: true });
 
 //             // update player new club in athlete collection
 //             await Athletes.updateOne({ name: player, club }, { $set: { club: team } });

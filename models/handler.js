@@ -1,27 +1,31 @@
 const mongoose = require("mongoose");
 
-const ClubsSchema = require("./clubs");
-const PlayersSchema = require("./players");
+const ClubSchema = require("./club");
+const PlayerSchema = require("./player");
 
 exports.clubModel = (mass) => {
   mongoose.models = {};
-  return mongoose.model(`${mass}clubs`.replace(/ /g, "_").toLowerCase(), ClubsSchema);
+  return mongoose.model(`${mass}club`.replace(/ /g, "_").toLowerCase(), ClubSchema, `${mass}club`.replace(/ /g, "_").toLowerCase());
 };
 
 exports.playerModel = (mass) => {
   mongoose.models = {};
-  return mongoose.model(`${mass}players`.replace(/ /g, "_").toLowerCase(), PlayersSchema);
+  return mongoose.model(
+    `${mass}player`.replace(/ /g, "_").toLowerCase(),
+    PlayerSchema,
+    `${mass}player`.replace(/ /g, "_").toLowerCase()
+  );
 };
 
-exports.athletes = (mass) => {
-  // mongoose.models = {};
-  // mass = mass.replace(/ /g, "_").toLowerCase();
-  // const athlete = `${mass}@athlete`;
-  // const Athletes = mongoose.model(athlete, AthletesSchema, athlete);
-  // return Athletes;
-};
+// exports.athletes = (mass) => {
+//   // mongoose.models = {};
+//   // mass = mass.replace(/ /g, "_").toLowerCase();
+//   // const athlete = `${mass}@athlete`;
+//   // const Athletes = mongoose.model(athlete, AthletesSchema, athlete);
+//   // return Athletes;
+// };
 
-exports.Masses = require("./masses");
-exports.Players = require("./players");
-exports.Trends = require("./trends");
-exports.Profiles = require("./profiles");
+exports.Mass = require("./mass");
+exports.Profile = require("./profile");
+// exports.Player = require("./player");
+// exports.Trend = require("./trends");

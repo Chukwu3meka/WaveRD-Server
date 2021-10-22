@@ -5,6 +5,7 @@ const auth = require("../middleware/authentication");
 router.route("/fetchMasses").post(handle.fetchMasses);
 router.route("/fetchMassData").post(handle.fetchMassData);
 router.route("/fetchHomeTables").post(handle.fetchHomeTables);
+router.route("/fetchCalendar").post(handle.fetchCalendar);
 
 // rebuilding
 // router.route("/getAvailableTeam").post(handle.getAvailableTeam);

@@ -1,7 +1,7 @@
-module.exports.Profiles = require("./profiles");
-module.exports.Players = require("./players");
-module.exports.Clubs = require("./clubs");
-module.exports.Masses = require("./masses");
+module.exports.Profile = require("./profile");
+module.exports.Player = require("./player");
+module.exports.Club = require("./club");
+module.exports.Mass = require("./mass");
 module.exports.Admin = require("./admin");
-module.exports.Trends = require("./trends");
+module.exports.Trend = require("./trend");
 module.exports.oAuth = require("./oAuth");

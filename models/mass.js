@@ -77,4 +77,4 @@ const MassesSchema = new mongoose.Schema({
   ],
 });
 
-module.exports = mongoose.model("mass", MassesSchema);
+module.exports = mongoose.model("mass", MassesSchema,"mass");

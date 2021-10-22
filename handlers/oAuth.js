@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const Profiles = require("../models/profiles");
+const Profile = require("../models/profile");
 const { validate } = require("../source/library/validator");
 const { obfuscate, asterickMail } = require("../utils/serverFunctions");
 
@@ -13,7 +13,7 @@ const catchErr = ({ res, req, err }) => {
 const oAuthFunc = async (req, res) => {
   const email = validate("email", req.user);
   if (email) {
-    const profile = await Profiles.findOne({ email });
+    const profile = await Profile.findOne({ email });
     const { handle, session, club, soccermass, division, stat } = profile;
     const { verified, reputation } = stat;
 

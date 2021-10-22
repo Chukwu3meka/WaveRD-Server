@@ -1,4 +1,4 @@
-const Trends = require("../models/trends");
+const Trends = require("../models/trend");
 exports.insertTrend = async (req, res, next) => {
   try {
     const { soccermass, division, club, handle, category, title, body } = req.body;

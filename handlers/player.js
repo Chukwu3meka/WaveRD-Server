@@ -1,4 +1,4 @@
-const { clubModel, Masses, playerModel } = require("../models/handler");
+const { clubModel, Mass, playerModel } = require("../models/handler");
 const { clubStore, totalClubs } = require("../source/database/clubStore");
 const { sortArray } = require("../source/library/commonFunc");
 const { catchError, validateRequestBody, shuffleArray, validInputs, getRef, sortArr } = require("../utils/serverFunctions");
@@ -34,7 +34,7 @@ exports.starter = async (req, res, next) => {
   try {
     const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
 
-    const massData = await Masses.findOne({ mass });
+    const massData = await Mass.findOne({ mass });
     const Clubs = clubModel(mass);
     const clubData = await Clubs.findOne({ club });
     if (!clubData) throw "Club not found";
@@ -45,7 +45,7 @@ exports.starter = async (req, res, next) => {
     return catchError({ res, err, message: "unable to locate masses" });
   }
 };
-// const { Masses, clubs, athletes, players } = require("../models/handler");
+// const { Mass, clubs, athletes, players } = require("../models/handler");
 
 //
 
