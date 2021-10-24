@@ -11,7 +11,7 @@ const pushMail = require("../utils/pushMail").pushMail;
 const { sessionGenerator, catchError, validateRequestBody, obfuscate } = require("../utils/serverFunctions");
 
 const { v4 } = require("uuid");
-const { clubs, clubModel, playerModel, players, athletes, Mass, Trends } = require("../models/handler");
+const { clubModel, Mass } = require("../models/handler");
 const { clubStore } = require("../source/database/clubStore");
 const emailTemplates = require("../utils/emailTemplates").emailTemplates;
 
@@ -254,7 +254,7 @@ exports.emailTaken = async (req, res, next) => {
   try {
     let { email } = req.body;
     email = validate("email", email);
-    let result = await Profiles.findOne({ email });
+    let result = await Profile.findOne({ email });
     result = result ? "email taken" : "email is available";
     res.status(200).send(result);
   } catch (err) {
@@ -262,62 +262,62 @@ exports.emailTaken = async (req, res, next) => {
   }
 };
 
-exports.portfolio = async (req, res, next) => {
-  try {
-    const { handle, club, soccermass } = req.body;
-    const profile = await Profiles.findOne({ handle, club, soccermass });
-    const { mom, moy } = profile.award;
-    const { reputation, season } = profile.stat;
-    return res.status(200).send({ reputation, season, mom, moy });
-  } catch (err) {
-    return catchError({ res, next, err, message: "" });
-  }
-};
-exports.managers = async (req, res, next) => {
-  try {
-    const { soccermass } = req.body;
-    const result = await Profiles.find({ soccermass });
-    const smManagers = [];
-    result.forEach((i) => {
-      smManagers.push({
-        handle: i.handle,
-        reputation: i.stat.reputation,
-        club: i.club,
-        registered: i.stat.registered,
-        division: i.division,
-      });
-    });
-    res.status(200).send(smManagers);
-  } catch (err) {
-    return catchError({ res, next, err, message: "" });
-  }
-};
-exports.updateSettings = async (req, res, next) => {
-  try {
-    const { handle } = req.body;
-    const key = Object.keys(req.body)[1];
-    if (key === "password") {
-      const value = req.body[key];
-      const hashed = await bcrypt.hash(value, 10);
-      await Manager.updateOne({ handle }, { [key]: hashed });
-      return res.status(200).send(`${key} update was succesfull`);
-    } else if (key === "email") {
-      const value = req.body[key];
-      await Manager.updateOne({ handle }, { [key]: value });
-      return res.status(200).send(`${key} update was succesfull`);
-    } else {
-      const value = req.body[key];
-      await Manager.updateOne({ handle }, { handle: value });
-      fs.rename(
-        `C:/wamp64/www/soccermass/client/src/images/Handle/${handle}.jpg`,
-        `C:/wamp64/www/soccermass/client/src/images/Handle/${value}.jpg`,
-        (err) => {
-          if (err) throw err;
-        }
-      );
-      return res.status(200).send(`handle update was succesfull`);
-    }
-  } catch (err) {
-    return catchError({ res, next, err, message: "" });
-  }
-};
+// exports.portfolio = async (req, res, next) => {
+//   try {
+//     const { handle, club, soccermass } = req.body;
+//     const profile = await Profile.findOne({ handle, club, soccermass });
+//     const { mom, moy } = profile.award;
+//     const { reputation, season } = profile.stat;
+//     return res.status(200).send({ reputation, season, mom, moy });
+//   } catch (err) {
+//     return catchError({ res, next, err, message: "" });
+//   }
+// };
+// exports.managers = async (req, res, next) => {
+//   try {
+//     const { soccermass } = req.body;
+//     const result = await Profile.find({ soccermass });
+//     const smManagers = [];
+//     result.forEach((i) => {
+//       smManagers.push({
+//         handle: i.handle,
+//         reputation: i.stat.reputation,
+//         club: i.club,
+//         registered: i.stat.registered,
+//         division: i.division,
+//       });
+//     });
+//     res.status(200).send(smManagers);
+//   } catch (err) {
+//     return catchError({ res, next, err, message: "" });
+//   }
+// };
+// exports.updateSettings = async (req, res, next) => {
+//   try {
+//     const { handle } = req.body;
+//     const key = Object.keys(req.body)[1];
+//     if (key === "password") {
+//       const value = req.body[key];
+//       const hashed = await bcrypt.hash(value, 10);
+//       await Manager.updateOne({ handle }, { [key]: hashed });
+//       return res.status(200).send(`${key} update was succesfull`);
+//     } else if (key === "email") {
+//       const value = req.body[key];
+//       await Manager.updateOne({ handle }, { [key]: value });
+//       return res.status(200).send(`${key} update was succesfull`);
+//     } else {
+//       const value = req.body[key];
+//       await Manager.updateOne({ handle }, { handle: value });
+//       fs.rename(
+//         `C:/wamp64/www/soccermass/client/src/images/Handle/${handle}.jpg`,
+//         `C:/wamp64/www/soccermass/client/src/images/Handle/${value}.jpg`,
+//         (err) => {
+//           if (err) throw err;
+//         }
+//       );
+//       return res.status(200).send(`handle update was succesfull`);
+//     }
+//   } catch (err) {
+//     return catchError({ res, next, err, message: "" });
+//   }
+// };

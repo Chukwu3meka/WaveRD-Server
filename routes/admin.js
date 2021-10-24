@@ -1,6 +1,5 @@
-const router = require("express").Router();
-const handler = require("../handlers");
-const auth = require("../middleware/authentication");
+const handler = require("../handlers"),
+  router = require("express").Router();
 
 router.route("/initializeMass").post(handler.initializeMass);
 // router.route("/refreshPlayers").post(handler.refreshPlayers);

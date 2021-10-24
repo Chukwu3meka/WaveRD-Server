@@ -1,11 +1,11 @@
-const router = require("express").Router();
-const handler = require("../handlers");
-const auth = require("../middleware/authentication");
+const handler = require("../handlers"),
+  router = require("express").Router(),
+  auth = require("../middleware/authentication");
 
-router.route("/fetchHomeCalendar").post(handler.fetchHomeCalendar);
-router.route("/fetchSquad").post(handler.fetchSquad);
-router.route("/fetchTactics").post(handler.fetchTactics);
-router.route("/fetchHistory").post(handler.fetchHistory);
+router.route("/fetchHomeCalendar").post(auth, handler.fetchHomeCalendar);
+router.route("/fetchSquad").post(auth, handler.fetchSquad);
+router.route("/fetchTactics").post(auth, handler.fetchTactics);
+router.route("/fetchHistory").post(auth, handler.fetchHistory);
 
 // rebuilding
 

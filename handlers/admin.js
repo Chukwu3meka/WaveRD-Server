@@ -1,7 +1,7 @@
 const { playerStore, totalPlayers } = require("../source/database/playerStore.js");
 const { clubStore, totalClubs } = require("../source/database/clubStore.js");
 const { range, numToText, catchError, shuffleArray, validateRequestBody, getRef, arrayToChunks } = require("../utils/serverFunctions");
-const {  clubModel, playerModel, Mass } = require("../models/handler");
+const { clubModel, playerModel, Mass } = require("../models/handler");
 
 // const { clubs, clubModel, playerModel, players, Mass, Trends } = require("../models/handler");
 const { playLeagueMatch } = require("../source/playMatch/league");
@@ -316,7 +316,7 @@ exports.initializeMass = async (req, res) => {
           formation: "433A",
           "history.lastFiveMatches": ["win", "win", "win", "win", "win"],
           budget: Math.round(((200000 - capacity) * 1.5 - capacity) / 1000),
-          "tactics.squad": playersData.filter(({ loanClub }) => loanClub === ref).map(({ player }) => player),
+          "tactics.squad": playersData.filter(({ club }) => club === ref).map(({ player }) => player),
         });
 
         i++;
@@ -334,7 +334,7 @@ exports.initializeMass = async (req, res) => {
 
         massPlayers.push({
           player: ref,
-          energy: range(40, 95),
+          energy: range(55, 75),
           club: rating >= 85 ? "club000000" : parentClub,
         });
 
@@ -360,12 +360,12 @@ exports.initializeMass = async (req, res) => {
       await Players.insertMany(playersData);
 
       const clubsData = {};
-      for (const { player, loanClub } of playersData) {
-        if (clubsData[loanClub] === undefined) {
-          clubsData[loanClub] = [];
-          clubsData[loanClub].push(player);
+      for (const { player, club } of playersData) {
+        if (clubsData[club] === undefined) {
+          clubsData[club] = [];
+          clubsData[club].push(player);
         } else {
-          clubsData[loanClub].push(player);
+          clubsData[club].push(player);
         }
       }
       for (const [club, players] of Object.entries(clubsData)) {

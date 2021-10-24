@@ -1,6 +1,6 @@
-const router = require("express").Router();
-const handle = require("../handlers");
-const auth = require("../middleware/authentication");
+const handle = require("../handlers"),
+  router = require("express").Router(),
+  auth = require("../middleware/authentication");
 
 router.route("/inserttrend").post(auth, handle.insertTrend);
 

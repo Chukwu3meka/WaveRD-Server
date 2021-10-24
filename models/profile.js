@@ -9,7 +9,7 @@ const ProfileSchema = new Schema({
   email: { type: String, unique: true, required: false },
   password: { type: String, required: true },
   handle: { type: String, required: true },
-  session: { type: String, required: true, unique: true, },
+  session: { type: String, required: true, unique: true },
   stat: {
     dob: { type: Date, required: true },
     gender: { type: String, default: "male" },
@@ -60,4 +60,4 @@ ProfileSchema.methods.comparePassword = async function (attempt, next) {
   }
 };
 
-module.exports = mongoose.model("profiles", ProfileSchema);
+module.exports = mongoose.model("profile", ProfileSchema, "profile");

@@ -33,7 +33,6 @@ exports.fetchMassData = async (req, res, next) => {
       } = await Clubs.findOne({ club });
 
       const clubData = { club, manager, budget, squad };
-      clubs.push(clubData);
     }
 
     return res.status(200).json({ divisions, clubs });

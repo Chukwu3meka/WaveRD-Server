@@ -1,6 +1,6 @@
-const router = require("express").Router();
-const handle = require("../handlers");
-const passport = require("../middleware/oAuth");
+const handle = require("../handlers"),
+  router = require("express").Router(),
+  passport = require("../middleware/oAuth");
 
 router.route("/facebook").get(passport.authenticate("facebook", { scope: ["email"] }));
 router.route("/facebook/callback").get(passport.authenticate("facebook"), handle.facebookAuth);
