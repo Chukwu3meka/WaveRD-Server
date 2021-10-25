@@ -316,6 +316,7 @@ exports.initializeMass = async (req, res) => {
           formation: "433A",
           "history.lastFiveMatches": ["win", "win", "win", "win", "win"],
           budget: Math.round(((200000 - capacity) * 1.5 - capacity) / 1000),
+          "expenditure.sponsor": Math.round(((200000 - capacity) * 1.5 - capacity) / 1000),
           "tactics.squad": playersData.filter(({ club }) => club === ref).map(({ player }) => player),
         });
 

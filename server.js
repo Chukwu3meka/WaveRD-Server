@@ -21,12 +21,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/club/", routes.Club);
-app.use("/player/", routes.Player);
 app.use("/mass/", routes.Mass);
-app.use("/profile/", routes.Profile);
-app.use("/trend/", routes.Trend);
 app.use("/auth/", routes.oAuth);
+app.use("/trend/", routes.Trend);
 app.use("/admin/", routes.Admin);
+app.use("/player/", routes.Player);
+app.use("/profile/", routes.Profile);
 
 io.on("connection", socketManager);
 

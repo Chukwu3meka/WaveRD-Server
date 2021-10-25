@@ -67,7 +67,7 @@ const ClubsSchema = new Schema({
       title: String,
       content: String,
       date: { type: Date, default: Date.now },
-      image: { type: String, default: "soccermass.png" },
+      image: { type: String, default: "/soccermass.webp" },
     },
   ],
   tactics: {
@@ -104,6 +104,11 @@ const ClubsSchema = new Schema({
     },
   ],
   transferTarget: [{ type: String }],
+  nominalAccount: {
+    sponsor: { type: Number, default: 0, required: true },
+    arrival: { type: Number, default: 0, required: true },
+    departure: { type: Number, default: 0, required: true },
+  },
 });
 
 module.exports = ClubsSchema;

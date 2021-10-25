@@ -178,6 +178,26 @@ exports.fetchHistory = async (req, res, next) => {
   }
 };
 
+exports.fetchFinance = async (req, res, next) => {
+  try {
+    const { mass, club } = validateRequestBody(req.body, ["mass", "club"]);
+
+    const Clubs = clubModel(mass);
+    const clubData = await Clubs.findOne({ club });
+    if (!clubData) throw "Club not found";
+    const {
+      review,
+      budget,
+      nominalAccount,
+      tactics: { squad },
+    } = clubData;
+
+    res.status(200).json({ budget, nominalAccount, review, club, squad });
+  } catch (err) {
+    return catchError({ res, err, message: "unable to locate masses" });
+  }
+};
+
 exports.starter = async (req, res, next) => {
   try {
     const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
