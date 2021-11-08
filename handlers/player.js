@@ -30,6 +30,28 @@ exports.listPlayer = async (req, res, next) => {
   }
 };
 
+exports.randomAgents = async (req, res, next) => {
+  try {
+    const { mass, club } = validateRequestBody(req.body, ["mass", "club"]);
+
+    const Players = playerModel(mass);
+
+    const freeAgents = [];
+    await Players.aggregate([{ $match: { club: "club000000" } }, { $sample: { size: 3 } }], (err, docs) =>
+      !err ? docs.forEach((x) => freeAgents.push(x.player)) : null
+    );
+
+    const transferList = [];
+    await Players.aggregate([{ $match: { "transfer.listed": true } }, { $sample: { size: 3 } }], (err, docs) =>
+      !err ? docs.forEach((x) => transferList.push(x.player)) : null
+    );
+
+    res.status(200).json({ transferList, freeAgents, mass, club });
+  } catch (err) {
+    return catchError({ res, err, message: "unable to locate masses" });
+  }
+};
+
 exports.starter = async (req, res, next) => {
   try {
     const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);

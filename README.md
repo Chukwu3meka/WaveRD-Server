@@ -38,3 +38,12 @@ https://soccermass.herokuapp.com/admin/createSoccermass
 https://soccermass.herokuapp.com/admin/populateMass
 http://127.0.0.1:5000/admin/createSoccermass
 http://127.0.0.1:5000/admin/populateMass
+
+
+
+  "scripts": {
+    "start": "node server.js",
+    "server": "pm2 start process.json",
+    "dev": "pm2 kill && npm run server && pm2 logs",
+    "multiDev": "pm2 kill && npm run server"
+  },

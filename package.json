@@ -4,10 +4,8 @@
   "description": "Soccermass API for its Frontend",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "server": "pm2 start process.json",
-    "dev": "pm2 kill && npm run server && pm2 logs",
-    "multiDev": "pm2 kill && npm run server"
+    "dev": "pm2 kill && pm2 start process.json",
+    "server": "pm2 kill && pm2 start process.json && pm2 logs"
   },
   "keywords": [
     "soccermass",

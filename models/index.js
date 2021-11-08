@@ -1,14 +1,13 @@
-const MongoURI = process.env.MONGODB_URI;
 const mongoose = require("mongoose");
 
 mongoose.set("debug", true);
 mongoose.Promise = global.Promise;
 mongoose
-  .connect(MongoURI, {
+  .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useFindAndModify: true,
     useCreateIndex: true,
-    useUnifiedTopology: true,
+    // useUnifiedTopology: true,
     useFindAndModify: false,
   })
   .catch((err) => {

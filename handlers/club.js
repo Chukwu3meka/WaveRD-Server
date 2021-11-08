@@ -132,7 +132,7 @@ exports.fetchHistory = async (req, res, next) => {
     history.manager = clubData.manager;
     history.won = clubData.history.match.won;
     history.tie = clubData.history.match.tie;
-    history.draw = clubData.history.match.draw;
+    history.lost = clubData.history.match.lost;
     history.goalAgainst = clubData.history.match.goalAgainst;
     history.goalFor = clubData.history.match.goalFor;
     history.events = clubData.history.events;
