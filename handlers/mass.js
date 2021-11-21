@@ -5,10 +5,13 @@ const { catchError, validateRequestBody, shuffleArray, validInputs, getRef } = r
 
 exports.fetchMasses = async (req, res, next) => {
   try {
-    const masses = [];
     const response = await Mass.find({});
-    for (const { mass, created, unmanaged, season } of Object.values(response)) {
-      masses.push({ mass, unmanaged, created, season });
+
+    const masses = [];
+
+    for (const { ref, created, unmanaged, season } of Object.values(response)) {
+      console.log(ref);
+      masses.push({ ref, unmanaged, created, season });
     }
     return res.status(200).json(masses);
   } catch (err) {
@@ -22,17 +25,16 @@ exports.fetchMassData = async (req, res, next) => {
 
     const clubs = [];
     const Clubs = clubModel(mass);
-    const { divisions } = await Mass.findOne({ mass });
+    const { divisions } = await Mass.findOne({ ref: mass });
 
     for (let clubRef = 1; clubRef <= totalClubs; clubRef++) {
-      const club = getRef("club", clubRef);
+      const ref = getRef("club", clubRef);
       const {
         budget,
         manager,
         tactics: { squad },
-      } = await Clubs.findOne({ club });
-
-      const clubData = { club, manager, budget, squad };
+      } = await Clubs.findOne({ ref });
+      clubs.push({ ref, manager, budget, squad });
     }
 
     return res.status(200).json({ divisions, clubs });
@@ -45,7 +47,7 @@ exports.fetchHomeTables = async (req, res, next) => {
   try {
     const { mass, division } = validateRequestBody(req.body, ["mass", "division"]);
 
-    const massData = await Mass.findOne({ mass });
+    const massData = await Mass.findOne({ ref: mass });
     if (!massData) throw "Mass not found";
 
     const { table, goal } = massData[division];
@@ -60,7 +62,7 @@ exports.fetchCalendar = async (req, res, next) => {
   try {
     const { mass } = validateRequestBody(req.body, ["mass"]);
 
-    const massData = await Mass.findOne({ mass });
+    const massData = await Mass.findOne({ ref: mass });
     if (!massData) throw "Mass not found";
 
     const calendar = {
@@ -82,9 +84,9 @@ exports.starter = async (req, res, next) => {
   try {
     const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
 
-    const massData = await Mass.findOne({ mass });
+    const massData = await Mass.findOne({ ref: mass });
     const Clubs = clubModel(mass);
-    const clubData = await Clubs.findOne({ club });
+    const clubData = await Clubs.findOne({ ref: club });
     if (!clubData) throw "Club not found";
     console.log(homeCal, clubData.history.lastFiveMatches);
 

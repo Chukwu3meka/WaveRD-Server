@@ -13,7 +13,7 @@ exports.initializeMass = async (req, res) => {
     const { mass, password } = validateRequestBody(req.body, ["mass", "password"]);
     if (password !== process.env.OTP) throw "Auth server unable to validate admin";
 
-    const dbMassData = await Mass.findOne({ mass });
+    const dbMassData = await Mass.findOne({ ref: mass });
 
     let clubs = [],
       divisions = {};
@@ -312,12 +312,12 @@ exports.initializeMass = async (req, res) => {
         const { ref, capacity } = clubStore(getRef("club", i));
 
         massClubs.push({
-          club: ref,
+          ref,
           formation: "433A",
           "history.lastFiveMatches": ["win", "win", "win", "win", "win"],
           budget: Math.round(((200000 - capacity) * 1.5 - capacity) / 1000),
-          "expenditure.sponsor": Math.round(((200000 - capacity) * 1.5 - capacity) / 1000),
-          "tactics.squad": playersData.filter(({ club }) => club === ref).map(({ player }) => player),
+          "nominalAccount.sponsor": Math.round(((200000 - capacity) * 1.5 - capacity) / 1000),
+          "tactics.squad": playersData.filter(({ club }) => club === ref).map(({ ref }) => ref),
         });
 
         i++;
@@ -334,7 +334,7 @@ exports.initializeMass = async (req, res) => {
         const { ref, rating, parentClub } = playerStore(getRef("player", i));
 
         massPlayers.push({
-          player: ref,
+          ref,
           energy: range(55, 75),
           club: rating >= 85 ? "club000000" : parentClub,
         });
@@ -354,29 +354,30 @@ exports.initializeMass = async (req, res) => {
     const Players = playerModel(mass);
 
     if (dbMassData) {
-      await Mass.updateOne({ mass }, { divisions, ...massData });
+      await Mass.updateOne({ ref: mass }, { divisions, ...massData });
       // await Clubs.collection.drop();
       await Players.collection.drop();
       // create mass players collection
       await Players.insertMany(playersData);
 
       const clubsData = {};
-      for (const { player, club } of playersData) {
+      for (const x of playersData) {
+        const { ref, club } = x;
         if (clubsData[club] === undefined) {
           clubsData[club] = [];
-          clubsData[club].push(player);
+          clubsData[club].push(ref);
         } else {
-          clubsData[club].push(player);
+          clubsData[club].push(ref);
         }
       }
       for (const [club, players] of Object.entries(clubsData)) {
-        await Clubs.updateOne({ club }, { "tactics.squad": players });
+        await Clubs.updateOne({ ref: club }, { "tactics.squad": players });
       }
 
       return res.json(clubsData);
     } else {
       // add mass to masses collection
-      await Mass.create({ mass, divisions, ...massData });
+      await Mass.create({ ref: mass, divisions, ...massData });
       // create mass clubs collection
       await Clubs.insertMany(clubsData);
       // create mass players collection

@@ -9,7 +9,7 @@ const table = [{ club: String, pld: Number, w: Number, d: Number, l: Number, pts
 const MassesSchema = new mongoose.Schema({
   season: { type: Number, default: 1 },
   created: { type: Date, default: Date.now },
-  mass: { type: String, unique: true, required: true },
+  ref: { type: String, unique: true, required: true },
   unmanaged: {
     divisionOne: { type: Number, required: true, default: 16 },
     divisionTwo: { type: Number, required: true, default: 16 },
@@ -75,6 +75,15 @@ const MassesSchema = new mongoose.Schema({
       date: { type: Date, default: Date.now() },
     },
   ],
+  offer: [
+    {
+      fee: Number,
+      club: String,
+      player: String,
+      recipent: String,
+      date: { type: Date, default: Date.now, required: true },
+    },
+  ],
 });
 
-module.exports = mongoose.model("mass", MassesSchema,"mass");
+module.exports = mongoose.model("mass", MassesSchema, "mass");

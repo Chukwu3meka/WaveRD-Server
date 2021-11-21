@@ -7,9 +7,12 @@ mongoose
     useNewUrlParser: true,
     useFindAndModify: true,
     useCreateIndex: true,
-    // useUnifiedTopology: true,
+    useUnifiedTopology: true,
     useFindAndModify: false,
   })
+  .then(() => {
+    console.log("MongoDB Connected Successfully");
+  })
   .catch((err) => {
-    console.log(`Error From MongoDB: ${err}`);
+    console.log(`MongoDB Error: ${err}`);
   });

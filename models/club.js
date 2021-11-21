@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const ClubsSchema = new Schema({
-  club: { type: String, unique: true, required: true },
+  ref: { type: String, unique: true, required: true },
   manager: { type: String, default: null },
   budget: { type: Number, default: 200, required: true },
   history: {
@@ -84,7 +84,7 @@ const ClubsSchema = new Schema({
     tikitaka: { type: String, required: true, default: "Opponent's Half" },
   },
   review: {
-    mediaCoverage: { type: Number, default: 2, required: true },
+    mediaCoverage: { type: Number, default: 4, required: true },
     boardConfidence: { type: String, default: "B", required: true },
     fansSatisfaction: { type: Number, default: 70, required: true },
     presidentsMessage: {
@@ -94,16 +94,7 @@ const ClubsSchema = new Schema({
       required: true,
     },
   },
-  transferOffer: [
-    {
-      fee: Number,
-      club: String,
-      player: String,
-      date: { type: Date, default: Date.now, required: true },
-      offerType: { type: String, default: "arrival, departure", required: true },
-    },
-  ],
-  transferTarget: [{ type: String }],
+  transferTarget: ["player000000010", "player000001247", "player000000954", "player000000331"],
   nominalAccount: {
     sponsor: { type: Number, default: 0, required: true },
     arrival: { type: Number, default: 0, required: true },

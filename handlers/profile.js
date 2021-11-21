@@ -32,7 +32,7 @@ exports.signup = async (req, res, next) => {
     if (!conditionMet) throw "incomplete parameter passed";
 
     const Clubs = clubModel(mass);
-    const clubData = await Clubs.findOne({ club });
+    const clubData = await Clubs.findOne({ ref: club });
 
     // check if club is vaild
     if (!clubData) throw "invalid club";
@@ -60,11 +60,11 @@ exports.signup = async (req, res, next) => {
       image: `club/${club}.webp`,
     };
 
-    const massData = await Mass.findOne({ mass });
+    const massData = await Mass.findOne({ ref: mass });
     if (!massData) throw "invalid mass";
 
     await Mass.updateOne(
-      { mass },
+      { ref: mass },
       {
         $set: { [`unmanaged.${division}`]: massData.unmanaged[division] - 1, "unmanages.total": massData.unmanaged.total - 1 },
         $push: { news: { $each: [news], $slice: -10 } },
@@ -72,7 +72,7 @@ exports.signup = async (req, res, next) => {
     );
 
     await Clubs.updateOne(
-      { club },
+      { ref: club },
       {
         $set: { manager: handle },
         $push: {

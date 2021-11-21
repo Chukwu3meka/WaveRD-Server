@@ -14,7 +14,7 @@ const matchData = {
 const PlayersSchema = new Schema({
   club: { type: String, required: true },
   energy: { type: Number, required: true, default: 0 },
-  player: { type: String, unique: true, required: true },
+  ref: { type: String, unique: true, required: true },
   minutesNotPlayed: { type: Number, required: true, default: 0 },
   minutesPlayedRight: { type: Number, required: true, default: 0 },
   minutesPlayedWrong: { type: Number, required: true, default: 0 },
