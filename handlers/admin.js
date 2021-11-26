@@ -44,7 +44,10 @@ exports.initializeMass = async (req, res) => {
       // create unique set of matches
       for (const club of clubs) {
         for (const opp of unusedClubs.filter((x) => x !== club)) {
-          uniqueMatches.push(`${club}@@@${opp}`);
+          // to prevent one team from always being the home team week in week out
+          uniqueMatches.push(unusedClubs.filter((x) => x !== club).indexOf(opp) % 2 ? `${club}@@@${opp}` : `${opp}@@@${club}`);
+
+          //   uniqueMatches.push(`${club}@@@${opp}`);
           unusedClubs = unusedClubs.filter((x) => x !== club);
         }
       }
@@ -87,24 +90,26 @@ exports.initializeMass = async (req, res) => {
     };
 
     const initMass = async () => {
+      const groups = {
+        groupOne: {},
+        groupTwo: {},
+        groupThree: {},
+        groupFour: {},
+        groupFive: {},
+        groupSix: {},
+        groupSeven: {},
+        groupEight: {},
+      };
+
       const massData = {
         divisionOne: {},
         divisionTwo: {},
         divisionFour: {},
         divisionThree: {},
-        champLeag: { calendar: [], table: { groupOne: {}, groupTwo: {}, groupThree: {}, groupFour: {} } },
+        league: { calendar: [], table: { ...groups } },
         cup: {
           calendar: [],
-          table: {
-            groupOne: {},
-            groupTwo: {},
-            groupThree: {},
-            groupFour: {},
-            groupFive: {},
-            groupSix: {},
-            groupSeven: {},
-            groupEight: {},
-          },
+          table: { ...groups },
         },
       };
 
@@ -115,7 +120,6 @@ exports.initializeMass = async (req, res) => {
           const groupName = `group${numToText(cupGroups.indexOf(group) + 1)}`;
 
           const weeklyFixture = await generateMatches(group);
-
           // generate date for matches
           const datesArray = [];
           const currentYear = new Date().getFullYear();
@@ -166,7 +170,7 @@ exports.initializeMass = async (req, res) => {
         }
       };
 
-      const generateLeagueSchedule = async () => {
+      const generateDivisionSchedule = async () => {
         for (const [division, clubs] of Object.entries(divisions)) {
           const weeklyFixture = await generateMatches(clubs);
           // generate date for matches
@@ -220,12 +224,13 @@ exports.initializeMass = async (req, res) => {
         }
       };
 
-      const generateChampionsLeague = async () => {
+      const generateLeagueSchedule = async () => {
         const eligibleClubs = [];
         for (const [division, clubs] of Object.entries(divisions)) {
-          // fetch eligible clubs: divisionOne = club 1 - 10// divisionTwo = club 1, to 3// divisionThree = club 1 to 2// divisionFour = club 1 only
+          // fetch eligible clubs: top 8 teams in each divisions
           eligibleClubs.push(
-            [...clubs].splice(0, division === "divisionOne" ? 10 : division === "divisionTwo" ? 3 : division === "divisionThree" ? 2 : 1)
+            // [...clubs].splice(0, division === "divisionOne" ? 8 : division === "divisionTwo" ? 8 : division === "divisionThree" ? 5 : 3)
+            [...clubs].splice(0, 8)
           );
         }
 
@@ -261,7 +266,7 @@ exports.initializeMass = async (req, res) => {
             // loop through each fixture in the week
             for (const fixture of weeklyFixture[i]) {
               const [home, away] = fixture.split("@@@");
-              massData.champLeag.calendar.push({
+              massData.league.calendar.push({
                 week: i + 1,
                 date,
                 home,
@@ -273,7 +278,7 @@ exports.initializeMass = async (req, res) => {
             }
           }
 
-          massData.champLeag.table[groupName] = group.map((club) => ({
+          massData.league.table[groupName] = group.map((club) => ({
             club,
             w: 0,
             d: 0,
@@ -289,14 +294,16 @@ exports.initializeMass = async (req, res) => {
 
       await generateCupSchedule();
       await generateLeagueSchedule();
-      await generateChampionsLeague();
+      await generateDivisionSchedule();
+
+      console.log(massData.league.table);
 
       massData.cup.calendar.sort((x, y) => {
         if (x.week > y.week) return 1;
         if (x.week < y.week) return -1;
       });
 
-      massData.champLeag.calendar.sort((x, y) => {
+      massData.league.calendar.sort((x, y) => {
         if (x.week > y.week) return 1;
         if (x.week < y.week) return -1;
       });

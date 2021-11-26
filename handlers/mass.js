@@ -58,23 +58,23 @@ exports.fetchHomeTables = async (req, res, next) => {
   }
 };
 
-exports.fetchCalendar = async (req, res, next) => {
+exports.fetchTournament = async (req, res, next) => {
   try {
     const { mass } = validateRequestBody(req.body, ["mass"]);
 
     const massData = await Mass.findOne({ ref: mass });
     if (!massData) throw "Mass not found";
 
-    const calendar = {
+    const tournament = {
       cup: massData.cup,
-      champLeag: massData.champLeag,
+      league: massData.league,
       divisionOne: massData.divisionOne,
       divisionTwo: massData.divisionTwo,
       divisionFour: massData.divisionFour,
       divisionThree: massData.divisionThree,
     };
 
-    res.status(200).json(calendar);
+    res.status(200).json(tournament);
   } catch (err) {
     return catchError({ res, err, message: "unable to locate masses" });
   }

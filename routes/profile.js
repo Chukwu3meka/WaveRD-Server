@@ -9,6 +9,8 @@ router.route("/resetPassword").post(handler.resetPassword);
 router.route("/emailTaken").post(handler.emailTaken);
 router.route("/signin").post(handler.signin);
 
+router.route("/persistUser").post(auth, () => {});
+
 // rebuilding
 // router.route("/resendVerification").post(handler.resendVerification);
 // router.route("/portfolio").post(auth, handler.portfolio);

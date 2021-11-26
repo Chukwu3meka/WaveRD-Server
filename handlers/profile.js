@@ -262,6 +262,23 @@ exports.emailTaken = async (req, res, next) => {
   }
 };
 
+// exports.persistUser = async (req, res, next) => {};
+exports.starter = async (req, res, next) => {
+  try {
+    const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
+
+    const massData = await Mass.findOne({ ref: mass });
+    const Clubs = clubModel(mass);
+    const clubData = await Clubs.findOne({ ref: club });
+    if (!clubData) throw "Club not found";
+    console.log(homeCal, clubData.history.lastFiveMatches);
+
+    res.status(200).json("hey");
+  } catch (err) {
+    return catchError({ res, err, message: "unable to locate masses" });
+  }
+};
+
 // exports.portfolio = async (req, res, next) => {
 //   try {
 //     const { handle, club, soccermass } = req.body;

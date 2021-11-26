@@ -5,7 +5,7 @@ const handle = require("../handlers"),
 router.route("/fetchMasses").post(handle.fetchMasses);
 router.route("/fetchMassData").post(handle.fetchMassData);
 router.route("/fetchHomeTables").post(auth, handle.fetchHomeTables);
-router.route("/fetchCalendar").post(auth, handle.fetchCalendar);
+router.route("/fetchTournament").post(auth, handle.fetchTournament);
 
 // rebuilding
 // router.route("/getAvailableTeam").post(handle.getAvailableTeam);

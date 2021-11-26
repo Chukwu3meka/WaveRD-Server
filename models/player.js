@@ -21,7 +21,7 @@ const PlayersSchema = new Schema({
   competition: {
     cup: matchData,
     league: matchData,
-    champLeag: matchData,
+    division: matchData,
   },
   history: {
     mp: { type: Number, default: 0, required: true },
@@ -36,6 +36,7 @@ const PlayersSchema = new Schema({
     injuryType: { type: String, required: true, default: "Players is fit" },
   },
   transfer: {
+    offers: [String],
     listed: { type: Boolean, required: true, default: false },
     locked: { type: Boolean, required: true, default: false },
   },

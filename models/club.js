@@ -56,9 +56,9 @@ const ClubsSchema = new Schema({
     lastFiveMatches: [{ type: String, default: "win", required: true }],
     managers: [{ manager: String, arrival: { type: Date, default: Date.now }, departure: { type: Date } }],
     trophies: {
-      league: { type: Number, default: 0, required: true },
       cup: { type: Number, default: 0, required: true },
-      champLeag: { type: Number, default: 0, required: true },
+      league: { type: Number, default: 0, required: true },
+      division: { type: Number, default: 0, required: true },
     },
     events: [{ date: { type: Date, default: Date.now }, event: String }],
   },

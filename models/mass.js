@@ -1,10 +1,38 @@
 const mongoose = require("mongoose");
 
-const table = [{ club: String, pld: Number, w: Number, d: Number, l: Number, pts: Number, gf: Number, ga: Number, gd: Number }],
+const fixture = {
+    date: { type: Date, required: true },
+    home: { type: String, required: true },
+    hg: { type: Number, required: true },
+    ag: { type: Number, required: true },
+    away: { type: String, required: true },
+  },
+  table = [{ club: String, pld: Number, w: Number, d: Number, l: Number, pts: Number, gf: Number, ga: Number, gd: Number }],
   players = [{ name: String, club: String, mp: Number, goal: Number, assist: Number, cs: Number }],
   calendar = [{ week: Number, date: String, home: String, hg: Number, ag: Number, away: String }],
-  leagueFormat = { cs: players, goal: players, assist: players, calendar, table },
-  cupFormat = { calendar, cs: players, goal: players, assist: players };
+  atomFormat = {
+    calendar,
+    cs: players,
+    goal: players,
+    assist: players,
+    table: {
+      groupOne: table,
+      groupTwo: table,
+      groupThree: table,
+      groupFour: table,
+      groupFive: table,
+      groupSix: table,
+      groupSeven: table,
+      groupEight: table,
+    },
+    knockOut: {
+      roundOf32: [fixture],
+      roundOf16: [fixture],
+      quarterFinalFixture: [fixture],
+      semiFinalFixture: [fixture],
+      finalFixture: [fixture],
+    },
+  };
 
 const MassesSchema = new mongoose.Schema({
   season: { type: Number, default: 1 },
@@ -23,32 +51,12 @@ const MassesSchema = new mongoose.Schema({
     divisionFour: [{ type: String }],
     divisionThree: [{ type: String }],
   },
-  cup: {
-    ...cupFormat,
-    table: {
-      groupOne: table,
-      groupTwo: table,
-      groupThree: table,
-      groupFour: table,
-      groupFive: table,
-      groupSix: table,
-      groupSeven: table,
-      groupEight: table,
-    },
-  },
-  champLeag: {
-    ...cupFormat,
-    table: {
-      groupOne: table,
-      groupTwo: table,
-      groupThree: table,
-      groupFour: table,
-    },
-  },
-  divisionOne: leagueFormat,
-  divisionTwo: leagueFormat,
-  divisionFour: leagueFormat,
-  divisionThree: leagueFormat,
+  cup: atomFormat,
+  league: atomFormat,
+  divisionOne: { cs: players, goal: players, assist: players, calendar, table },
+  divisionTwo: { cs: players, goal: players, assist: players, calendar, table },
+  divisionFour: { cs: players, goal: players, assist: players, calendar, table },
+  divisionThree: { cs: players, goal: players, assist: players, calendar, table },
   award: [
     {
       club: { type: String, required: true },

@@ -17,11 +17,11 @@ exports.fetchHomeCalendar = async (req, res) => {
     const cup = massData.cup.calendar
       .filter((x) => x.home === club || x.away === club)
       .map(({ _doc }) => ({ ..._doc, competition: "cup" }));
-    const champLeag = massData.champLeag.calendar
+    const league = massData.league.calendar
       .filter((x) => x.home === club || x.away === club)
       .map(({ _doc }) => ({ ..._doc, competition: "champ" }));
 
-    const calendar = sortArr([...leagueCal, ...cup, ...champLeag], "week");
+    const calendar = sortArr([...leagueCal, ...cup, ...league], "week");
     const nextMatchIndex = calendar.indexOf(calendar.find((x) => x.hg === null && x.hg === null));
 
     const homeCal = {
@@ -82,11 +82,11 @@ exports.fetchTactics = async (req, res) => {
     const cup = massData.cup.calendar
       .filter((x) => x.home === club || x.away === club)
       .map(({ _doc }) => ({ ..._doc, competition: "cup" }));
-    const champLeag = massData.champLeag.calendar
+    const league = massData.league.calendar
       .filter((x) => x.home === club || x.away === club)
       .map(({ _doc }) => ({ ..._doc, competition: "champ" }));
 
-    const calendar = sortArr([...leagueCal, ...cup, ...champLeag], "week");
+    const calendar = sortArr([...leagueCal, ...cup, ...league], "week");
 
     const nextMatch = { ...calendar.find((x) => x.hg === null && x.hg === null) };
     nextMatch.opponent = nextMatch.home === club ? nextMatch.away : nextMatch.home;
