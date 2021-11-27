@@ -3,12 +3,12 @@ const mongoose = require("mongoose");
 const ClubSchema = require("./club");
 const PlayerSchema = require("./player");
 
-exports.clubModel = (mass) => {
+exports.Club = (mass) => {
   mongoose.models = {};
   return mongoose.model(`${mass}club`.replace(/ /g, "_").toLowerCase(), ClubSchema, `${mass}club`.replace(/ /g, "_").toLowerCase());
 };
 
-exports.playerModel = (mass) => {
+exports.Player = (mass) => {
   mongoose.models = {};
   return mongoose.model(
     `${mass}player`.replace(/ /g, "_").toLowerCase(),

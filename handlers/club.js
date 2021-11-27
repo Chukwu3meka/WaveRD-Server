@@ -1,53 +1,13 @@
 const { catchError, validateRequestBody, sortArr } = require("../utils/serverFunctions");
-const { playerModel, clubModel, Mass } = require("../models/handler");
+const { Player, Club, Mass } = require("../models/handler");
 const { clubStore, totalClubs } = require("../source/database/clubStore");
 const { sortArray } = require("../source/library/commonFunc");
-
-exports.fetchHomeCalendar = async (req, res) => {
-  try {
-    const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
-
-    // get home calendar
-    const massData = await Mass.findOne({ ref: mass });
-    if (!massData) throw "Mass not found";
-
-    const leagueCal = massData[division].calendar
-      .filter((x) => x.home === club || x.away === club)
-      .map(({ _doc }) => ({ ..._doc, competition: "league" }));
-    const cup = massData.cup.calendar
-      .filter((x) => x.home === club || x.away === club)
-      .map(({ _doc }) => ({ ..._doc, competition: "cup" }));
-    const league = massData.league.calendar
-      .filter((x) => x.home === club || x.away === club)
-      .map(({ _doc }) => ({ ..._doc, competition: "champ" }));
-
-    const calendar = sortArr([...leagueCal, ...cup, ...league], "week");
-    const nextMatchIndex = calendar.indexOf(calendar.find((x) => x.hg === null && x.hg === null));
-
-    const homeCal = {
-      prevMatch: nextMatchIndex === 0 ? null : calendar[nextMatchIndex - 1],
-      curMatch: calendar[nextMatchIndex],
-      nextMatch: calendar[nextMatchIndex + 1],
-    };
-
-    // get lastFiveMatches
-    const Clubs = clubModel(mass);
-    const clubData = await Clubs.findOne({ ref: club });
-    if (!clubData) throw "Club not found";
-
-    res.status(200).json({ ...homeCal, lastFiveMatches: clubData.history.lastFiveMatches });
-  } catch (err) {
-    return catchError({ res, err, message: "Issue fetching home calendar" });
-  }
-};
 
 exports.fetchSquad = async (req, res) => {
   try {
     const { mass, club } = validateRequestBody(req.body, ["mass", "club"]);
 
-    const Clubs = clubModel(mass);
-    const clubData = await Clubs.findOne({ ref: club });
-
+    const clubData = await Club(mass).findOne({ ref: club });
     if (!clubData) throw "Club not found";
 
     const {
@@ -64,12 +24,8 @@ exports.fetchTactics = async (req, res) => {
   try {
     const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
 
-    // const massData = await Mass.findOne({ mass });
-    const Clubs = clubModel(mass);
-    const Players = playerModel(mass);
-
     // get club data
-    const clubData = await Clubs.findOne({ ref: club });
+    const clubData = await Club(mass).findOne({ ref: club });
     if (!clubData) throw "Club not found";
 
     // get next match
@@ -91,10 +47,10 @@ exports.fetchTactics = async (req, res) => {
     const nextMatch = { ...calendar.find((x) => x.hg === null && x.hg === null) };
     nextMatch.opponent = nextMatch.home === club ? nextMatch.away : nextMatch.home;
 
-    const opponentData = await Clubs.findOne({ ref: nextMatch.opponent });
+    const opponentData = await Club(mass).findOne({ ref: nextMatch.opponent });
     nextMatch.lastFiveMatches = opponentData.history.lastFiveMatches;
 
-    const playerData = await Players.find({ ref: { $in: clubData.tactics.squad } });
+    const playerData = await Player(mass).find({ ref: { $in: clubData.tactics.squad } });
     const clubPlayers = playerData.map((player) => {
       const injuryReturnDate = new Date();
       injuryReturnDate.setDate(injuryReturnDate.getDate() + player.injury.daysLeftToRecovery);
@@ -121,8 +77,7 @@ exports.fetchHistory = async (req, res, next) => {
   try {
     const { mass, club } = validateRequestBody(req.body, ["mass", "club"]);
 
-    const Clubs = clubModel(mass);
-    const clubData = await Clubs.findOne({ ref: club });
+    const clubData = await Club(mass).findOne({ ref: club });
     if (!clubData) throw "Club not found";
 
     const history = {};
@@ -182,8 +137,7 @@ exports.fetchFinance = async (req, res, next) => {
   try {
     const { mass, club } = validateRequestBody(req.body, ["mass", "club"]);
 
-    const Clubs = clubModel(mass);
-    const clubData = await Clubs.findOne({ ref: club });
+    const clubData = await Club(mass).findOne({ ref: club });
     if (!clubData) throw "Club not found";
     const {
       review,
@@ -203,8 +157,7 @@ exports.starter = async (req, res, next) => {
     const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
 
     const massData = await Mass.findOne({ ref: mass });
-    const Clubs = clubModel(mass);
-    const clubData = await Clubs.findOne({ ref: club });
+    const clubData = await Club(mass).findOne({ ref: club });
     if (!clubData) throw "Club not found";
     console.log(homeCal, clubData.history.lastFiveMatches);
 

@@ -1,20 +1,20 @@
-const handle = require("../handlers"),
+const handler = require("../handlers"),
   router = require("express").Router(),
   auth = require("../middleware/authentication");
 
-router.route("/fetchMasses").post(handle.fetchMasses);
-router.route("/fetchMassData").post(handle.fetchMassData);
-router.route("/fetchHomeTables").post(auth, handle.fetchHomeTables);
-router.route("/fetchTournament").post(auth, handle.fetchTournament);
+router.route("/fetchMasses").post(handler.fetchMasses);
+router.route("/fetchMassData").post(handler.fetchMassData);
+router.route("/fetchHomeData").post(auth, handler.fetchHomeData);
+router.route("/fetchTournament").post(auth, handler.fetchTournament);
 
 // rebuilding
-// router.route("/getAvailableTeam").post(handle.getAvailableTeam);
-// router.route("/getCurrentMatches").post(handle.getCurrentMatches);
-// router.route("/getnews").post(handle.getnews);
-// router.route("/leaguedata").post(auth, handle.leagueData);
-// router.route("/getRecords").post(auth, handle.getRecords);
-// router.route("/competition").post(auth, handle.competition);
-// router.route("/transfers").post(auth, handle.transfers);
-// router.route("/getawards").post(handle.getAwards);
+// router.route("/getAvailableTeam").post(handler.getAvailableTeam);
+// router.route("/getCurrentMatches").post(handler.getCurrentMatches);
+// router.route("/getnews").post(handler.getnews);
+// router.route("/leaguedata").post(auth, handler.leagueData);
+// router.route("/getRecords").post(auth, handler.getRecords);
+// router.route("/competition").post(auth, handler.competition);
+// router.route("/transfers").post(auth, handler.transfers);
+// router.route("/getawards").post(handler.getAwards);
 
 module.exports = router;

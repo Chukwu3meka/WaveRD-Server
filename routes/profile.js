@@ -8,8 +8,7 @@ router.route("/resetPasswordOTPSender").post(handler.resetPasswordOTPSender);
 router.route("/resetPassword").post(handler.resetPassword);
 router.route("/emailTaken").post(handler.emailTaken);
 router.route("/signin").post(handler.signin);
-
-router.route("/persistUser").post(auth, () => {});
+router.route("/persistUser").post(auth, handler.persistUser);
 
 // rebuilding
 // router.route("/resendVerification").post(handler.resendVerification);

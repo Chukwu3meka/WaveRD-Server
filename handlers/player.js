@@ -1,4 +1,4 @@
-const { clubModel, Mass, playerModel } = require("../models/handler");
+const { Club, Mass, Player } = require("../models/handler");
 const { clubStore, totalClubs } = require("../source/database/clubStore");
 const { sortArray } = require("../source/library/commonFunc");
 const { catchError, validateRequestBody, shuffleArray, validInputs, getRef, sortArr } = require("../utils/serverFunctions");
@@ -7,12 +7,10 @@ exports.fetchPlayer = async (req, res, next) => {
   try {
     const { club, mass, player } = validateRequestBody(req.body, ["mass", "player", "club"]);
 
-    const Players = playerModel(mass);
-    const playerData = await Players.findOne({ ref: player });
+    const playerData = await Player(mass).findOne({ ref: player });
     if (!playerData) throw "Player not found";
 
-    const Clubs = clubModel(mass);
-    const clubData = await Clubs.findOne({ ref: club });
+    const clubData = await Club(mass).findOne({ ref: club });
 
     playerData.transferTarget = clubData.transferTarget;
 
@@ -28,8 +26,7 @@ exports.listPlayer = async (req, res, next) => {
   try {
     const { mass, player, club, list } = validateRequestBody(req.body, ["mass", "player", "club", "list"]);
 
-    const Players = playerModel(mass);
-    await Players.updateOne({ ref: player, club }, { "transfer.listed": list });
+    await Player(mass).updateOne({ ref: player, club }, { "transfer.listed": list });
 
     res.status(200).json("success");
   } catch (err) {
@@ -41,19 +38,16 @@ exports.randomAgents = async (req, res, next) => {
   try {
     const { mass, club } = validateRequestBody(req.body, ["mass", "club"]);
 
-    const Players = playerModel(mass);
-
     const freeAgents = [];
-    await Players.aggregate([{ $match: { club: "club000000" } }, { $sample: { size: 3 } }], (err, docs) =>
+    await Player(mass).aggregate([{ $match: { club: "club000000" } }, { $sample: { size: 3 } }], (err, docs) =>
       !err ? docs.forEach((x) => freeAgents.push(x.ref)) : null
     );
 
     const transferList = [];
-    await Players.aggregate([{ $match: { "transfer.listed": true } }, { $sample: { size: 3 } }], (err, docs) =>
+    await Player(mass).aggregate([{ $match: { "transfer.listed": true } }, { $sample: { size: 3 } }], (err, docs) =>
       !err ? docs.forEach((x) => x.club !== club && transferList.push(x.ref)) : null
     );
 
-    console.log({ transferList, freeAgents });
 
     res.status(200).json({ transferList, freeAgents, mass, club });
   } catch (err) {
@@ -65,8 +59,7 @@ exports.targetPlayer = async (req, res, next) => {
   try {
     const { mass, player, club } = validateRequestBody(req.body, ["mass", "player", "club"]);
 
-    const Club = playerModel(mass);
-    await Club.updateOne({ ref: club }, { $addToSet: { transferTarget: player } });
+    await Club(mass).updateOne({ ref: club }, { $addToSet: { transferTarget: player } });
 
     res.status(200).json("success");
   } catch (err) {
@@ -78,8 +71,7 @@ exports.makeOffer = async (req, res, next) => {
   try {
     const { mass, player, club } = validateRequestBody(req.body, ["mass", "player", "club"]);
 
-    const Club = playerModel(mass);
-    await Club.updateOne({ ref: club }, { $addToSet: { transferTarget: player } });
+    await Club(mass).updateOne({ ref: club }, { $addToSet: { transferTarget: player } });
   } catch (err) {
     return catchError({ res, err, message: "unable to send offer" });
   }
@@ -90,8 +82,7 @@ exports.starter = async (req, res, next) => {
     const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
 
     const massData = await Mass.findOne({ mass });
-    const Clubs = clubModel(mass);
-    const clubData = await Clubs.findOne({ club });
+    const clubData = await Club(mass).findOne({ club });
     if (!clubData) throw "Club not found";
 
     console.log(homeCal, clubData.history.lastFiveMatches);

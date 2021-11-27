@@ -1,7 +1,7 @@
 const { playerStore, totalPlayers } = require("../source/database/playerStore.js");
 const { clubStore, totalClubs } = require("../source/database/clubStore.js");
 const { range, numToText, catchError, shuffleArray, validateRequestBody, getRef, arrayToChunks } = require("../utils/serverFunctions");
-const { clubModel, playerModel, Mass } = require("../models/handler");
+const { Club, Player, Mass } = require("../models/handler");
 
 // const { clubs, clubModel, playerModel, players, Mass, Trends } = require("../models/handler");
 const { playLeagueMatch } = require("../source/playMatch/league");
@@ -101,16 +101,29 @@ exports.initializeMass = async (req, res) => {
         groupEight: {},
       };
 
+      const player = [
+        { player: "player000000331", club: "club000000", mp: 0, goal: 0, assist: 0, cs: 0, yellow: 0, red: 0 },
+        { player: "player000000010", club: "club000000", mp: 0, goal: 0, assist: 0, cs: 0, yellow: 0, red: 0 },
+        { player: "player000001247", club: "club000000", mp: 0, goal: 0, assist: 0, cs: 0, yellow: 0, red: 0 },
+        { player: "player000000954", club: "club000000", mp: 0, goal: 0, assist: 0, cs: 0, yellow: 0, red: 0 },
+        { player: "player000000696", club: "club000000", mp: 0, goal: 0, assist: 0, cs: 0, yellow: 0, red: 0 },
+      ];
+
+      const playerStat = {
+        cs: player,
+        red: player,
+        goal: player,
+        assist: player,
+        yellow: player,
+      };
+
       const massData = {
-        divisionOne: {},
-        divisionTwo: {},
-        divisionFour: {},
-        divisionThree: {},
-        league: { calendar: [], table: { ...groups } },
-        cup: {
-          calendar: [],
-          table: { ...groups },
-        },
+        divisionOne: { ...playerStat, calendar: [] },
+        divisionTwo: { ...playerStat, calendar: [] },
+        divisionFour: { ...playerStat, calendar: [] },
+        divisionThree: { ...playerStat, calendar: [] },
+        league: { calendar: [], table: { ...groups }, ...playerStat },
+        cup: { calendar: [], table: { ...groups }, ...playerStat },
       };
 
       const generateCupSchedule = async () => {
@@ -190,7 +203,6 @@ exports.initializeMass = async (req, res) => {
             datesArray.push(date1.toDateString()) && date1.setDate(date1.getDate() + 7);
           }
 
-          massData[division].calendar = [];
           for (let i = 0; i < weeklyFixture.length; i++) {
             // pull first date in dates array
             const date = datesArray.shift();
@@ -296,8 +308,6 @@ exports.initializeMass = async (req, res) => {
       await generateLeagueSchedule();
       await generateDivisionSchedule();
 
-      console.log(massData.league.table);
-
       massData.cup.calendar.sort((x, y) => {
         if (x.week > y.week) return 1;
         if (x.week < y.week) return -1;
@@ -357,15 +367,12 @@ exports.initializeMass = async (req, res) => {
     const clubsData = await initClubs({ playersData });
     const massData = await initMass();
 
-    const Clubs = clubModel(mass);
-    const Players = playerModel(mass);
-
     if (dbMassData) {
-      await Mass.updateOne({ ref: mass }, { divisions, ...massData });
-      // await Clubs.collection.drop();
-      await Players.collection.drop();
+      await Mass.updateOne({ ref: mass }, { ...massData, divisions });
+      // await Club(mass).collection.drop();
+      await Player(mass).collection.drop();
       // create mass players collection
-      await Players.insertMany(playersData);
+      await Player(mass).insertMany(playersData);
 
       const clubsData = {};
       for (const x of playersData) {
@@ -378,17 +385,60 @@ exports.initializeMass = async (req, res) => {
         }
       }
       for (const [club, players] of Object.entries(clubsData)) {
-        await Clubs.updateOne({ ref: club }, { "tactics.squad": players });
+        await Club(mass).updateOne({ ref: club }, { "tactics.squad": players });
       }
 
       return res.json(clubsData);
     } else {
       // add mass to masses collection
-      await Mass.create({ ref: mass, divisions, ...massData });
+      await Mass.create({
+        ref: mass,
+        divisions,
+        ...massData,
+        transfer: [
+          { from: "club000001", to: "club000031", fee: 222, player: "player000000955", date: Date.now() },
+          { from: "club000021", to: "club000001", fee: 145, player: "player000000019", date: Date.now() },
+          { from: "club000033", to: "club000031", fee: 145, player: "player000000954", date: Date.now() },
+          { from: "club000058", to: "club000003", fee: 126, player: "player000000083", date: Date.now() },
+          { from: "club000012", to: "club000001", fee: 125, player: "player000000013", date: Date.now() },
+        ],
+        news: [
+          {
+            title: "Tips and Tricks",
+            image: "/layout/indexSignup.png",
+            content: `It's necessary you understand how and why the game was built to get the most from it. To be a succesfull Manager here requires a lot and the first is to understand how to get better match result. You'll learn a lot from visiting the mass/info page`,
+            date: new Date(),
+          },
+          {
+            title: "You've been offered a 3-year contract",
+            image: "/layout/media.png",
+            content: `The quote “Rome wasn't built in a day” means that it takes time to create great work, and that while you cannot expect success to come right away, it will be achieved with continued persistence. “Whatever Your Mind Can Conceive and Believe, It Can Achieve.” – Napoleon Hill`,
+            date: new Date(),
+          },
+          {
+            title: "Beware of the fans",
+            image: "/layout/fans.png",
+            content: `The Fans are the most important aspect in the game, and once you've built trust, they will lead your team through whatever storm that comes in the way, be careful not to upset them lest you risk the wrath of board coupled with negative match result and financial limitations`,
+            date: new Date(),
+          },
+          {
+            title: "Relaunch Date: 1st January 2022",
+            image: "/layout/indexPlayers.png",
+            content: `SoccerMASS Team: We are happy to announce that we have conpleted the rebuilding of SoccerMASS. The following improvements are obvious: Improved Layout, Easy Navigation, Improved transfer structure and regulation, Optimization and speed improvement.`,
+            date: new Date(),
+          },
+          {
+            title: "Welcome to SoccerMASS",
+            image: "/soccermass.webp",
+            content: `With joy in our heart, we gladly welcome you to the most competitive SoccerMASS: Online soccer manager, Take your team to the peak and leave no space in your Trophy shelf`,
+            date: new Date(),
+          },
+        ],
+      });
       // create mass clubs collection
-      await Clubs.insertMany(clubsData);
+      await Club(mass).insertMany(clubsData);
       // create mass players collection
-      await Players.insertMany(playersData);
+      await Player(mass).insertMany(playersData);
     }
 
     return res.json("successfull");
@@ -397,7 +447,7 @@ exports.initializeMass = async (req, res) => {
   }
 };
 
-// // await Players.insertMany(playersData);
+// // await     Player(mass).insertMany(playersData);
 // exports.removeManager = async (req, res, next) => {
 //   try {
 //     let { email, club, soccermass, division } = req.body;
@@ -415,7 +465,7 @@ exports.initializeMass = async (req, res) => {
 //       }
 //     }
 //     if (status) {
-//       const Clubs = clubs(soccermass);
+//       const Club(mass) = clubs(soccermass);
 //       const news = {
 //         detail: `${club} has dismissed their Manager.`,
 //         content: `${club} has dismissed their manager as a result of breach in terms agreed with the club, and have started search for a new manager`,
@@ -424,7 +474,7 @@ exports.initializeMass = async (req, res) => {
 //         date: new Date().toDateString(),
 //         event: `${club} head-coach and general manager have been dismissed. After a well cordinated investigation into his activities and profile, the tactical coach was released for a breach in terms`,
 //       };
-//       await Clubs.updateOne({ club }, { events, "stat.manager": null });
+//       await Club(mass).updateOne({ club }, { events, "stat.manager": null });
 //       await Profiles.deleteOne({ soccermass, club, email, division });
 
 //       //get divisions array from SoccerMASS
@@ -525,14 +575,14 @@ exports.initializeMass = async (req, res) => {
 // };
 // exports.addReport = async (req, res, next) => {
 //   try {
-//     const Clubs = detail(req);
+//     const Club(mass) = detail(req);
 //     const { club } = req.body;
 //     const report = [];
 //     req.body.report.forEach((i) => {
 //       const { detail, content, pic } = i;
 //       report.push({ detail, content, pic });
 //     });
-//     const result = await Clubs.updateOne({ club }, { $set: { report } });
+//     const result = await Club(mass).updateOne({ club }, { $set: { report } });
 //     res.status(200).send(result);
 //   } catch (err) {
 //     return next({
@@ -561,10 +611,10 @@ exports.initializeMass = async (req, res) => {
 // };
 // exports.updateStat = async (req, res, next) => {
 //   try {
-//     const Clubs = detail(req);
+//     const Club(mass) = detail(req);
 //     req.body.stat.forEach(async (i) => {
 //       const { rating, stadium, location, capacity, fanbase, teamMoral, fearFactor, value, sponsorship, mall, club } = i;
-//       await Clubs.updateOne(
+//       await Club(mass).updateOne(
 //         { club },
 //         {
 //           $set: {
@@ -628,10 +678,10 @@ exports.initializeMass = async (req, res) => {
 // };
 // exports.changeEnergy = async (req, res, next) => {
 //   try {
-//     const Players = player(req);
-//     const team = await Players.find({});
+//     constPlayer Club(mass) = player(req);
+//     const team = await     Player(mass).find({});
 //     const result = await team.forEach(
-//       async (i) => await Players.updateOne({ name: i.name }, { $set: { "slot.energy": Math.floor(Math.random() * 99) } })
+//       async (i) => await     Player(mass).updateOne({ name: i.name }, { $set: { "slot.energy": Math.floor(Math.random() * 99) } })
 //     );
 //     res.send("successful");
 //   } catch (err) {

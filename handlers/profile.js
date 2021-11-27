@@ -11,7 +11,7 @@ const pushMail = require("../utils/pushMail").pushMail;
 const { sessionGenerator, catchError, validateRequestBody, obfuscate } = require("../utils/serverFunctions");
 
 const { v4 } = require("uuid");
-const { clubModel, Mass } = require("../models/handler");
+const { Club, Mass } = require("../models/handler");
 const { clubStore } = require("../source/database/clubStore");
 const emailTemplates = require("../utils/emailTemplates").emailTemplates;
 
@@ -31,8 +31,7 @@ exports.signup = async (req, res, next) => {
     let conditionMet = [mass, division, club, handle, password, dob, email, gender].every((x) => x);
     if (!conditionMet) throw "incomplete parameter passed";
 
-    const Clubs = clubModel(mass);
-    const clubData = await Clubs.findOne({ ref: club });
+    const clubData = await Club(mass).findOne({ ref: club });
 
     // check if club is vaild
     if (!clubData) throw "invalid club";
@@ -45,11 +44,11 @@ exports.signup = async (req, res, next) => {
 
     // @(club,${club},title) where title is get method of club
     const news = {
-      title: `${clubStore(club).title} has a new manager`,
+      title: `@(club,${club},title) has a new manager`,
       content: `@(club,${club},title) has appointed ${handle} as General Manager and Head Coach, following a convincing and engaging search by @(club,${club},nickname) President and Technical staff, ${handle} will take the hot sit of @(club,${club},title), though inexperienced only time will tell how long ${
         gender === "male" ? "he" : "she"
       } can keep ${gender === "male" ? "his" : "her"} job`,
-      image: `club/${club}.webp`,
+      image: `/club/${club}.webp`,
     };
 
     const event = `${handle} was presented as @(club,${club},title) Head coach and General manager. After an extensive and tiring search`;
@@ -57,7 +56,7 @@ exports.signup = async (req, res, next) => {
     const report = {
       title: `First training session with @(club,${club},nickname) first team players`,
       content: `Head coach ${handle}, has just completed his first training session with @(club,${club},title) senior squad, it was an intense exercise as the new manager gets ready to dip his feet into the sea, his next meeting will be with his technical staff and his assistant, before moving on to youth squad.`,
-      image: `club/${club}.webp`,
+      image: `/club/${club}.webp`,
     };
 
     const massData = await Mass.findOne({ ref: mass });
@@ -71,7 +70,7 @@ exports.signup = async (req, res, next) => {
       }
     );
 
-    await Clubs.updateOne(
+    await Club(mass).updateOne(
       { ref: club },
       {
         $set: { manager: handle },
@@ -262,14 +261,20 @@ exports.emailTaken = async (req, res, next) => {
   }
 };
 
-// exports.persistUser = async (req, res, next) => {};
+exports.persistUser = async (req, res) => {
+  try {
+    res.status(200).json("valid token");
+  } catch (err) {
+    return catchError({ res, err, message: "suspicious token" });
+  }
+};
+
 exports.starter = async (req, res, next) => {
   try {
     const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
 
     const massData = await Mass.findOne({ ref: mass });
-    const Clubs = clubModel(mass);
-    const clubData = await Clubs.findOne({ ref: club });
+    const clubData = await Club(mass).findOne({ ref: club });
     if (!clubData) throw "Club not found";
     console.log(homeCal, clubData.history.lastFiveMatches);
 

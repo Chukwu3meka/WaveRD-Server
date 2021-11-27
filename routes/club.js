@@ -2,7 +2,6 @@ const handler = require("../handlers"),
   router = require("express").Router(),
   auth = require("../middleware/authentication");
 
-router.route("/fetchHomeCalendar").post(auth, handler.fetchHomeCalendar);
 router.route("/fetchSquad").post(auth, handler.fetchSquad);
 router.route("/fetchTactics").post(auth, handler.fetchTactics);
 router.route("/fetchHistory").post(auth, handler.fetchHistory);
