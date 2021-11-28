@@ -1,4 +1,4 @@
-const { catchError, validateRequestBody, sortArr } = require("../utils/serverFunctions");
+const { catchError, validateRequestBody, sortArr, range } = require("../utils/serverFunctions");
 const { Player, Club, Mass } = require("../models/handler");
 const { clubStore, totalClubs } = require("../source/database/clubStore");
 const { sortArray } = require("../source/library/commonFunc");
@@ -52,6 +52,7 @@ exports.fetchTactics = async (req, res) => {
 
     const playerData = await Player(mass).find({ ref: { $in: clubData.tactics.squad } });
     const clubPlayers = playerData.map((player) => {
+      console.log(player.ref);
       const injuryReturnDate = new Date();
       injuryReturnDate.setDate(injuryReturnDate.getDate() + player.injury.daysLeftToRecovery);
 
@@ -67,13 +68,14 @@ exports.fetchTactics = async (req, res) => {
       };
     });
 
-    res.status(200).json({ ...clubData.tactics, clubPlayers, nextMatch });
+    const players = [...clubData.tactics.squad.map((player) => clubPlayers.find((x) => x.player === player))];
+    res.status(200).json({ ...clubData.tactics, players, nextMatch });
   } catch (err) {
     return catchError({ res, err, message: "tactics not available" });
   }
 };
 
-exports.fetchHistory = async (req, res, next) => {
+exports.fetchHistory = async (req, res) => {
   try {
     const { mass, club } = validateRequestBody(req.body, ["mass", "club"]);
 
@@ -133,7 +135,7 @@ exports.fetchHistory = async (req, res, next) => {
   }
 };
 
-exports.fetchFinance = async (req, res, next) => {
+exports.fetchFinance = async (req, res) => {
   try {
     const { mass, club } = validateRequestBody(req.body, ["mass", "club"]);
 
@@ -152,7 +154,27 @@ exports.fetchFinance = async (req, res, next) => {
   }
 };
 
-exports.starter = async (req, res, next) => {
+exports.saveTactics = async (req, res) => {
+  try {
+    const { mass, club, formation, mentality, attacking, tackling, tikitaka, squad } = validateRequestBody(req.body, [
+      "mass",
+      "club",
+      "formation",
+      "mentality",
+      "tackling",
+      "tikitaka",
+      "attacking",
+      "squad",
+    ]);
+
+    await Club(mass).updateOne({ ref: club }, { tactics: { squad: [...squad], formation, mentality, attacking, tackling, tikitaka } });
+
+    res.status(200).json(range(1, 10000000));
+  } catch (err) {
+    return catchError({ res, err, message: "unable to locate masses" });
+  }
+};
+exports.starter = async (req, res) => {
   try {
     const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
 

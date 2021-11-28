@@ -71,17 +71,13 @@ const ClubsSchema = new Schema({
     },
   ],
   tactics: {
-    penalty: String,
-    captain: String,
-    freekick: String,
-    cornerkick: String,
     squad: [{ type: String }],
     pastMatch: { type: Object },
     formation: { type: String, required: true, default: "433A" },
     tackling: { type: String, required: true, default: "Confident" },
     mentality: { type: String, required: true, default: "Balanced" },
     attacking: { type: String, required: true, default: "Middle Axis" },
-    tikitaka: { type: String, required: true, default: "Opponent's Half" },
+    tikitaka: { type: String, required: true, default: "Opponent Half" },
   },
   review: {
     mediaCoverage: { type: Number, default: 4, required: true },

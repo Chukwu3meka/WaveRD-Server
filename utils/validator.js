@@ -13,7 +13,7 @@ const sanitize = (value) => {
 };
 
 module.exports.validate = (valueType, value) => {
-  if (!["boolean"].includes(valueType)) value = value && value.trim();
+  if (!["boolean", "textArray"].includes(valueType)) value = value && value.trim();
   // console.log(valueType, value);
   switch (valueType) {
     case "boolean": {
@@ -65,6 +65,15 @@ module.exports.validate = (valueType, value) => {
       }
       return false;
     }
+    case "textArray": {
+      const reg = /^(?!.*\.\.)(?!.*\.$)[^\W][\w\s\-]{2,200}$/gim;
+
+      const textArray = [];
+      for (const text of value) return reg.test(text) ? textArray.push(value) : undefined;
+
+      return textArray.length ? textArray : undefined;
+    }
+
     default:
       return false;
   }

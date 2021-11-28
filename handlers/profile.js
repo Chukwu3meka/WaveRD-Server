@@ -263,6 +263,9 @@ exports.emailTaken = async (req, res, next) => {
 
 exports.persistUser = async (req, res) => {
   try {
+    const { mass, club, session } = validateRequestBody(req.body, ["mass", "club", "session"]);
+    const profile = await Profile.findOne({ session, mass, club });
+    if (!profile) throw "suspicious token";
     res.status(200).json("valid token");
   } catch (err) {
     return catchError({ res, err, message: "suspicious token" });

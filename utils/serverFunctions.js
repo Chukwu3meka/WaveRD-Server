@@ -22,13 +22,15 @@ module.exports.validateRequestBody = (body, arr) => {
           ? "number"
           : ["list"].includes(key)
           ? "boolean"
+          : ["squad"].includes(key)
+          ? "textArray"
           : ["dob", "date"].includes(key)
           ? "date"
           : "text",
         body[key]
       ) === undefined
     ) {
-      throw "param not validataed";
+      throw `${key} parameter not validataed`;
     }
 
     newBody[key] = ["serverStamp"].includes(key) ? Number(body[key]) : body[key];

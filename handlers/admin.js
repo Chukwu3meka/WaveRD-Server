@@ -24,11 +24,12 @@ exports.initializeMass = async (req, res) => {
         dbMassData[division].table.forEach((x) => clubs.push(x.club));
       }
       const [divisionOne, divisionTwo, divisionThree, divisionFour] = arrayToChunks(clubs, 16);
-      const div1 = [...divisionOne.splice(0, 13), ...divisionTwo.splice(0, 3)];
-      const div2 = [...divisionOne.splice(0, 3), ...divisionTwo.splice(0, 10), ...divisionThree.splice(0, 3)];
-      const div3 = [...divisionTwo.splice(0, 3), ...divisionThree.splice(0, 10), ...divisionFour.splice(0, 3)];
-      const div4 = [...divisionThree.splice(0, 3), ...divisionFour.splice(0, 13)];
-      divisions = { divisionOne: div1, divisionTwo: div2, divisionThree: div3, divisionFour: div4 };
+      divisions = {
+        divisionOne: [...divisionOne.splice(0, 13), ...divisionTwo.splice(0, 3)],
+        divisionTwo: [...divisionOne.splice(0, 3), ...divisionTwo.splice(0, 10), ...divisionThree.splice(0, 3)],
+        divisionThree: [...divisionTwo.splice(0, 3), ...divisionThree.splice(0, 10), ...divisionFour.splice(0, 3)],
+        divisionFour: [...divisionThree.splice(0, 3), ...divisionFour.splice(0, 13)],
+      };
     } else {
       //  randomize clubs for new mass where 0000 = premium agents, 0001 - 0064 for clubs
       clubs = shuffleArray([...Array(64).keys()].map((x) => getRef("club", x + 1)));
