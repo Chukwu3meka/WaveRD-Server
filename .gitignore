@@ -1,0 +1,25 @@
+#dependencies
+node_modules/
+
+#next.js
+/out/
+/.next/
+
+#production
+build/
+control/
+pages/api/crunch/upload/
+pages/api/profile/upload/
+
+#misc
+.vscode/
+.DS_Store
+package-lock.json
+
+#debug
+.log
+report.*
+npm-debug.log*
+
+#local env files
+/*.env
