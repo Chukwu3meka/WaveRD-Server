@@ -3,9 +3,10 @@ const handler = require("../handlers"),
   auth = require("../middleware/authentication");
 
 router.route("/fetchPlayer").post(auth, handler.fetchPlayer);
-router.route("/listPlayer").post(auth, handler.listPlayer);
 router.route("/randomAgents").post(auth, handler.randomAgents);
 router.route("/searchPlayers").post(handler.searchPlayers);
+router.route("/listPlayer").post(auth, handler.listPlayer);
+router.route("/targetPlayer").post(auth, handler.targetPlayer);
 // router.route("/viewsquad").post(auth, handler.viewSquad);
 // router.route("/getplayers").post(auth, handler.getPlayers);
 // router.route("/matchsquad").post(auth, handler.matchSquad);

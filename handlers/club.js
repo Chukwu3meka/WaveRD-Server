@@ -174,6 +174,19 @@ exports.saveTactics = async (req, res) => {
     return catchError({ res, err, message: "unable to locate masses" });
   }
 };
+
+exports.fetchTargets = async (req, res) => {
+  try {
+    const { mass, club } = validateRequestBody(req.body, ["mass", "club"]);
+
+    const clubData = await Club(mass).findOne({ ref: club });
+
+    res.status(200).json(clubData.transferTarget);
+  } catch (err) {
+    return catchError({ res, err, message: "unable to locate masses" });
+  }
+};
+
 exports.starter = async (req, res) => {
   try {
     const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);

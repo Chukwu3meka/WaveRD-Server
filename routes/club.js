@@ -7,6 +7,7 @@ router.route("/fetchTactics").post(auth, handler.fetchTactics);
 router.route("/fetchHistory").post(auth, handler.fetchHistory);
 router.route("/fetchFinance").post(auth, handler.fetchFinance);
 router.route("/saveTactics").post(auth, handler.saveTactics);
+router.route("/fetchTargets").post(auth, handler.fetchTargets);
 
 // rebuilding
 

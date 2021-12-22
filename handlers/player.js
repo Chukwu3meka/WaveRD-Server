@@ -22,18 +22,6 @@ exports.fetchPlayer = async (req, res, next) => {
   }
 };
 
-exports.listPlayer = async (req, res, next) => {
-  try {
-    const { mass, player, club, list } = validateRequestBody(req.body, ["mass", "player", "club", "list"]);
-
-    await Player(mass).updateOne({ ref: player, club }, { "transfer.listed": list });
-
-    res.status(200).json("success");
-  } catch (err) {
-    return catchError({ res, err, message: "unable to locate masses" });
-  }
-};
-
 exports.randomAgents = async (req, res, next) => {
   try {
     const { mass, club } = validateRequestBody(req.body, ["mass", "club"]);
@@ -66,29 +54,8 @@ exports.targetPlayer = async (req, res, next) => {
   }
 };
 
-exports.makeOffer = async (req, res, next) => {
-  try {
-    const { mass, player, club } = validateRequestBody(req.body, ["mass", "player", "club"]);
-
-    await Club(mass).updateOne({ ref: club }, { $addToSet: { transferTarget: player } });
-  } catch (err) {
-    return catchError({ res, err, message: "unable to send offer" });
-  }
-};
-
 exports.searchPlayers = async (req, res, next) => {
   try {
-    // club: "search",
-    // listed: "all",
-
-    // name: "search",
-    // country: "search",
-    // roles: ["search"],
-
-    // age: [23, 27],
-    // value: [80, 160],
-    // rating: [80, 87],
-
     const { club, mass, name, roles, listed, country, age, value, rating, myClub } = validateRequestBody(req.body, [
       "club",
       "mass",
@@ -138,6 +105,42 @@ exports.searchPlayers = async (req, res, next) => {
     res.status(200).json(searchResult.filter((x) => x.club !== myClub).map(({ ref: player, club }) => ({ player, club })));
   } catch (err) {
     return catchError({ res, err, message: "unable to locate masses" });
+  }
+};
+
+exports.listPlayer = async (req, res, next) => {
+  try {
+    const { mass, player, club, list } = validateRequestBody(req.body, ["mass", "player", "club", "list"]);
+
+    await Player(mass).updateOne({ ref: player, club }, { "transfer.listed": list });
+
+    res.status(200).json("success");
+  } catch (err) {
+    return catchError({ res, err, message: "unable to locate masses" });
+  }
+};
+
+exports.targetPlayer = async (req, res, next) => {
+  try {
+    const { mass, player, club, list } = validateRequestBody(req.body, ["mass", "player", "club", "list"]);
+
+    console.log({ mass, player, club, list });
+
+    // await Player(mass).updateOne({ ref: player, club }, { "transfer.listed": list });
+
+    res.status(200).json("success");
+  } catch (err) {
+    return catchError({ res, err, message: "unable to locate masses" });
+  }
+};
+
+exports.makeOffer = async (req, res, next) => {
+  try {
+    const { mass, player, club } = validateRequestBody(req.body, ["mass", "player", "club"]);
+
+    await Club(mass).updateOne({ ref: club }, { $addToSet: { transferTarget: player } });
+  } catch (err) {
+    return catchError({ res, err, message: "unable to send offer" });
   }
 };
 
