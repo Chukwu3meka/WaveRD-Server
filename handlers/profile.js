@@ -63,7 +63,7 @@ exports.signup = async (req, res, next) => {
       { ref: mass },
       {
         $set: { [`unmanaged.${division}`]: massData.unmanaged[division] - 1, "unmanaged.total": massData.unmanaged.total - 1 },
-        $push: { news: { $each: [news], $slice: -10, $position: 0 } },
+        $push: { news: { $each: [news], $slice: -15, $position: 0 } },
       }
     );
 
@@ -74,7 +74,7 @@ exports.signup = async (req, res, next) => {
         $push: {
           "history.events": { event },
           "history.managers": { manager: handle, departure: null },
-          reports: { $each: [report], $slice: -10, $position: 0 },
+          reports: { $each: [report], $slice: -15, $position: 0 },
         },
       }
     );

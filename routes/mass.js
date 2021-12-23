@@ -6,6 +6,7 @@ router.route("/fetchMasses").post(handler.fetchMasses);
 router.route("/fetchMassData").post(handler.fetchMassData);
 router.route("/fetchHomeData").post(auth, handler.fetchHomeData);
 router.route("/fetchTournament").post(auth, handler.fetchTournament);
+router.route("/sendOffer").post(auth, handler.sendOffer);
 
 // rebuilding
 // router.route("/getAvailableTeam").post(handler.getAvailableTeam);

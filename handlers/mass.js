@@ -118,6 +118,24 @@ exports.fetchTournament = async (req, res, next) => {
   }
 };
 
+exports.sendOffer = async (req, res, next) => {
+  try {
+    console.log(req.body);
+    const { mass, player, club, to, fee, from } = validateRequestBody(req.body, ["mass", "player", "club", "to", "fee", "from"]);
+
+    console.log({ mass, player, club, to, fee, from });
+
+    // to: player.club,
+    // fee: props.offerValue,
+    // from: auth.club,
+    // player: player.ref,
+
+    // await Club(mass).updateOne({ ref: club }, { $addToSet: { transferTarget: player } });
+  } catch (err) {
+    return catchError({ res, err, message: "unable to send offer" });
+  }
+};
+
 exports.starter = async (req, res, next) => {
   try {
     const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);

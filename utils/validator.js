@@ -13,7 +13,7 @@ const sanitize = (value) => {
 };
 
 module.exports.validate = (valueType, value) => {
-  if (!["boolean", "textArray", "numberArray", "roles"].includes(valueType)) value = value && value.trim();
+  if (!["boolean", "textArray", "numberArray", "roles", "number"].includes(valueType)) value = value && value.trim();
   // console.log(valueType, value);
   switch (valueType) {
     case "boolean": {

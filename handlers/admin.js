@@ -349,7 +349,6 @@ exports.initializeMass = async (req, res) => {
 
       let i = 1;
       while (i <= totalPlayers) {
-        console.log(i);
         const { ref, rating, parentClub } = playerStore(getRef("player", i));
 
         massPlayers.push({

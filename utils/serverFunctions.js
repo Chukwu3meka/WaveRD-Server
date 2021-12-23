@@ -18,9 +18,9 @@ module.exports.validateRequestBody = (body, arr) => {
           ? "handle"
           : key === "email"
           ? "email"
-          : key === "serverStamp"
+          : ["serverStamp", "fee"].includes(key)
           ? "number"
-          : ["list"].includes(key)
+          : ["list", "target"].includes(key)
           ? "boolean"
           : ["squad", "roles"].includes(key)
           ? "textArray"
@@ -35,7 +35,7 @@ module.exports.validateRequestBody = (body, arr) => {
       throw `${key} parameter not validataed`;
     }
 
-    newBody[key] = ["serverStamp"].includes(key) ? Number(body[key]) : body[key];
+    newBody[key] = ["serverStamp", "fee"].includes(key) ? Number(body[key]) : body[key];
   }
 
   return { ...newBody };

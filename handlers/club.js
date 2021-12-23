@@ -2,6 +2,7 @@ const { catchError, validateRequestBody, sortArr, range } = require("../utils/se
 const { Player, Club, Mass } = require("../models/handler");
 const { clubStore, totalClubs } = require("../source/database/clubStore");
 const { sortArray } = require("../source/library/commonFunc");
+const { playerStore, totalPlayers } = require("../source/database/playerStore.js");
 
 exports.fetchSquad = async (req, res) => {
   try {
@@ -182,6 +183,46 @@ exports.fetchTargets = async (req, res) => {
     const clubData = await Club(mass).findOne({ ref: club });
 
     res.status(200).json(clubData.transferTarget);
+  } catch (err) {
+    return catchError({ res, err, message: "unable to locate masses" });
+  }
+};
+
+exports.targetPlayer = async (req, res) => {
+  try {
+    const { mass, player, club, target } = validateRequestBody(req.body, ["mass", "player", "club", "target"]);
+
+    const massData = await Mass.findOne({ ref: mass });
+    if (!massData) throw "Mass not found";
+
+    await Club(mass).updateOne({ ref: club }, { [target ? "$addToSet" : "$pull"]: { transferTarget: player } });
+
+    if (
+      playerStore(player) &&
+      playerStore(player).rating >= 84 &&
+      !massData.news.find((x) => x.title === `@(club,${club},title) new transfer target`)
+    ) {
+      await Mass.updateOne(
+        { ref: mass },
+        {
+          $push: {
+            news: {
+              $each: [
+                {
+                  title: `@(club,${club},title) new transfer target`,
+                  content: `@(club,${club},title) has decleared interest in signing @(player,${player},name). Only time will tell how commited @(club,${club},nickname) are in signing him. Our source is yet to determine the level of interest.`,
+                  image: `/player/${player}.webp`,
+                },
+              ],
+              $slice: -15,
+              $position: 0,
+            },
+          },
+        }
+      );
+    }
+
+    res.status(200).json("success");
   } catch (err) {
     return catchError({ res, err, message: "unable to locate masses" });
   }
