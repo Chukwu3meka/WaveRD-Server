@@ -1,9 +1,9 @@
 #dependencies
 node_modules/
 
-#next.js
-/out/
-/.next/
+# #next.js
+# /out/
+# /.next/
 
 #production
 build/
@@ -12,6 +12,7 @@ pages/api/crunch/upload/
 pages/api/profile/upload/
 
 #misc
+.git/
 .vscode/
 .DS_Store
 package-lock.json

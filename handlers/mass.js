@@ -131,6 +131,57 @@ exports.sendOffer = async (req, res, next) => {
     // player: player.ref,
 
     // await Club(mass).updateOne({ ref: club }, { $addToSet: { transferTarget: player } });
+
+    // exports.makeOffer = async (req, res, next) => {
+    //   try {
+    //     const { soccermass, club, team, player, fee, transferType } = req.body,
+    //       Clubs = clubs(soccermass),
+    //       Athletes = athletes(soccermass),
+    //       playerValue = await Athletes.findOne({ name: player }).then((res) => res.value),
+    //       budget = await Clubs.findOne({ club }).then((res) => res.board.budget),
+    //       minFee = playerValue + 10,
+    //       maxFee = playerValue + 50;
+
+    //     if (budget > fee && fee <= maxFee && fee >= minFee && fee > playerValue) {
+    //       // if ([7, 8].includes(new Date().getMonth() + 1)) {
+    //       const offers = await Clubs.findOne({ club: team }).then((res) => res.offers),
+    //         status = offers.some((i) => i.player === player && i.team === club);
+
+    //       switch (!status) {
+    //         case true: {
+    //           const transactions = { player, team, fee, transferType };
+    //           const offers = { player, team: club, fee, transferType };
+    //           // add transaction in current club transaction
+    //           await Clubs.findOneAndUpdate({ club }, { $addToSet: { transactions } }, { upsert: true });
+    //           //add transaction in pending club offers
+    //           await Clubs.findOneAndUpdate({ club: team }, { $addToSet: { offers } }, { upsert: true });
+    //           res.status(200).send("Bid succesful");
+    //           break;
+    //         }
+    //         default: {
+    //           res.status(400).send("Bid Failed");
+    //           break;
+    //         }
+    //       }
+    //       // }else
+    //       // {
+    //       //   res.status(400).send("Wait till July/August for transfers");
+    //       // }
+    //     } else {
+    //       const reports = {
+    //         detail: `Transfer offer rejected by ${team}'s President`,
+    //         content: `${team} do not value your offer for ${player}, and have no intention selling him, if he's really worth something to you, you know what to do in order to get him.`,
+    //       };
+    //       await Clubs.findOneAndUpdate({ club }, { $addToSet: { reports } }, { upsert: true });
+    //       res.status(400).send("considering bid");
+    //     }
+    //   } catch (err) {
+    //     return next({
+    //       status: 400,
+    //       message: err,
+    //     });
+    //   }
+    // };
   } catch (err) {
     return catchError({ res, err, message: "unable to send offer" });
   }
