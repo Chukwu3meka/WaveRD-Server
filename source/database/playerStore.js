@@ -1,32 +1,25 @@
-const { range, uniqueArray } = require("../../utils/serverFunctions");
+const { uniqueArray } = require("../../utils/serverFunctions");
+
+// import { uniqueArray } from "@utils/clientFuncs";
 
 const genericValue = (rating) => {
   return rating > 95
-    ? 70
-    : rating > 90
-    ? 65
+    ? 80
     : rating > 87
+    ? 70
+    : rating > 83
     ? 60
-    : rating > 85
-    ? 55
-    : rating > 82
-    ? 50
-    : rating > 80
-    ? 45
     : rating > 77
     ? 40
     : rating > 75
-    ? 35
-    : rating > 70
-    ? 30
-    : rating > 65
     ? 25
+    : rating > 70
+    ? 15
     : rating > 60
-    ? 20
-    : 15;
+    ? 10
+    : 5;
 };
 
-// name, rating, roles, club, dob, nationality;
 // name, rating, roles, club, dob, nationality;
 const players = {
   // barcelona
@@ -2011,22 +2004,31 @@ const players = {
   player000000010: ["Kuku Fidelis", 60, ["LW", "ST"], "club000064", "13 May 1999", "Nigeria"],
 };
 
-module.exports.totalPlayers = Object.keys(players).length;
-
 module.exports.playerStore = (ref) => {
-  if (players[ref]) {
-    const [name, rating, initialRoles, parentClub, dob, country] = players[ref];
+  const [name, rating, initialRoles, parentClub, dob, country] = players[ref];
 
-    const roles = uniqueArray(initialRoles).map((x) =>
-        x === "CDM" ? "DM" : x === "ST" ? "CF" : x === "CAM" ? "AM" : x === "LWB" ? "LB" : x === "RWB" ? "RB" : x
-      ),
-      age = Math.floor(Math.abs((new Date(dob) - new Date()) / (24 * 60 * 60 * 1000)) / 365),
-      valueRange = (rating / age) * genericValue(rating),
-      value = range(valueRange - 13, valueRange + 13);
-
-    return { ref, name, rating, parentClub, dob, country, value, roles, age };
-  }
-  return null;
+  const roles = uniqueArray(
+      initialRoles.map((x) =>
+        x === "CDM"
+          ? "DM"
+          : x === "ST"
+          ? "CF"
+          : x === "CAM"
+          ? "AM"
+          : x === "LWB"
+          ? "LB"
+          : x === "RWB"
+          ? "RB"
+          : x === "RW"
+          ? "RF"
+          : x === "LW"
+          ? "LF"
+          : x
+      )
+    ),
+    age = Math.floor(Math.abs((new Date(dob) - new Date()) / (24 * 60 * 60 * 1000)) / 365),
+    value = Number(((rating / age) * genericValue(rating)).toFixed(2));
+  return { ref, name, rating, parentClub, dob, country, value, roles, age };
 };
 
 module.exports.allPlayersInStore = () => {
@@ -2037,3 +2039,5 @@ module.exports.allPlayersInStore = () => {
 
   return allPlayers;
 };
+
+module.exports.totalPlayers = Object.keys(players).length;

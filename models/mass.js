@@ -87,11 +87,11 @@ const MassesSchema = new mongoose.Schema({
   ],
   offer: [
     {
-      fee: Number,
-      club: String,
-      player: String,
-      recipent: String,
-      date: { type: Date, default: Date.now, required: true },
+      to: { type: String },
+      fee: { type: Number },
+      from: { type: String },
+      player: { type: String },
+      date: { type: Date, default: Date.now() },
     },
   ],
 });

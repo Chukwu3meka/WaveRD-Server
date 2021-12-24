@@ -2,6 +2,7 @@ const { Player, Club, Mass } = require("../models/handler");
 const { clubStore, totalClubs } = require("../source/database/clubStore");
 const { sortArray } = require("../source/library/commonFunc");
 const { catchError, validateRequestBody, sortArr, shuffleArray, validInputs, getRef } = require("../utils/serverFunctions");
+const { playerStore, totalPlayers } = require("../source/database/playerStore.js");
 
 exports.fetchMasses = async (req, res, next) => {
   try {
@@ -120,29 +121,39 @@ exports.fetchTournament = async (req, res, next) => {
 
 exports.sendOffer = async (req, res, next) => {
   try {
-    console.log(req.body);
-    const { mass, player, club, to, fee, from } = validateRequestBody(req.body, ["mass", "player", "club", "to", "fee", "from"]);
+    const { mass, player, club, to, fee } = validateRequestBody(req.body, ["mass", "player", "club", "to", "fee"]);
 
-    console.log({ mass, player, club, to, fee, from });
+    // _______________________________ check if Transfer period _____________________________________
+    // if (![0, 6, 7].includes(new Date().getMonth()) && player.club !== "club000000") throw "Not yet Transfer period";
 
-    // to: player.club,
-    // fee: props.offerValue,
-    // from: auth.club,
-    // player: player.ref,
+    const playerData = await Player(mass).findOne({ ref: player });
+    if (!playerData) throw "Player not found";
 
-    // await Club(mass).updateOne({ ref: club }, { $addToSet: { transferTarget: player } });
+    const clubData = await Club(mass).findOne({ ref: club });
+    if (!clubData) throw "Club not found";
 
-    // exports.makeOffer = async (req, res, next) => {
-    //   try {
-    //     const { soccermass, club, team, player, fee, transferType } = req.body,
-    //       Clubs = clubs(soccermass),
-    //       Athletes = athletes(soccermass),
-    //       playerValue = await Athletes.findOne({ name: player }).then((res) => res.value),
-    //       budget = await Clubs.findOne({ club }).then((res) => res.board.budget),
-    //       minFee = playerValue + 10,
-    //       maxFee = playerValue + 50;
+    // _______________________________check if club has enough fund for max player offer_____________________________________
+    // if (fee > clubData.budget) throw "Insuffucent Funds";
 
-    //     if (budget > fee && fee <= maxFee && fee >= minFee && fee > playerValue) {
+    // _______________________________check if club will exceed salary cap after signing________________________________
+
+    if (
+      [...clubData.tactics.squad, player].reduce((total, cur) => total + (10 / 100) * playerStore(cur).value, 0) > process.env.SALARY_CAP
+    )
+      throw "Salary Cap will be exceeded after signing";
+
+    //  _____________________________Club already sent offer_____________________________________________
+    if (playerData.transfer.offers.includes(club)) throw "Previous Offer not attended to";
+
+    //  _____________________________ Player transfer ban _____________________________________________
+    if (playerData.transfer.locked) throw "Player currently suspended from transfer";
+
+    // add to mass offers
+    await Mass.updateOne({ ref: mass }, { $addToSet: { offer: { to, fee, from: club, player } } });
+    // add to player offers
+    await Player(mass).updateOne({ ref: player }, { $addToSet: { "transfer.offers": club } });
+
+    console.log("hey", player);
     //       // if ([7, 8].includes(new Date().getMonth() + 1)) {
     //       const offers = await Clubs.findOne({ club: team }).then((res) => res.offers),
     //         status = offers.some((i) => i.player === player && i.team === club);
@@ -182,7 +193,18 @@ exports.sendOffer = async (req, res, next) => {
     //     });
     //   }
     // };
+    res.status(200).json("hey");
   } catch (err) {
+    if (
+      [
+        "Insuffucent Funds",
+        "Previous Offer not attended to",
+        "Player currently suspended from transfer",
+        "Salary Cap will be exceeded after signing",
+      ].includes(err)
+    )
+      res.status(400).json(err);
+
     return catchError({ res, err, message: "unable to send offer" });
   }
 };

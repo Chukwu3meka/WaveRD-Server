@@ -15,6 +15,7 @@ exports.fetchPlayer = async (req, res, next) => {
 
     res.status(200).json({
       ...playerData._doc,
+      budget: clubData.budget,
       transfer: {
         ...playerData.transfer,
         target: clubData.transferTarget.includes(player),
