@@ -149,51 +149,32 @@ exports.sendOffer = async (req, res, next) => {
     if (playerData.transfer.locked) throw "Player currently suspended from transfer";
 
     // add to mass offers
-    await Mass.updateOne({ ref: mass }, { $addToSet: { offer: { to, fee, from: club, player } } });
+    await Mass.updateOne(
+      { ref: mass },
+      {
+        $addToSet: {
+          offer: {
+            $each: [{ to, fee, from: club, player }],
+            $position: 0,
+          },
+        },
+      }
+    );
+
     // add to player offers
-    await Player(mass).updateOne({ ref: player }, { $addToSet: { "transfer.offers": club } });
+    await Player(mass).updateOne(
+      { ref: player },
+      {
+        $addToSet: {
+          "transfer.offers": {
+            $each: [club],
+            $position: 0,
+          },
+        },
+      }
+    );
 
-    console.log("hey", player);
-    //       // if ([7, 8].includes(new Date().getMonth() + 1)) {
-    //       const offers = await Clubs.findOne({ club: team }).then((res) => res.offers),
-    //         status = offers.some((i) => i.player === player && i.team === club);
-
-    //       switch (!status) {
-    //         case true: {
-    //           const transactions = { player, team, fee, transferType };
-    //           const offers = { player, team: club, fee, transferType };
-    //           // add transaction in current club transaction
-    //           await Clubs.findOneAndUpdate({ club }, { $addToSet: { transactions } }, { upsert: true });
-    //           //add transaction in pending club offers
-    //           await Clubs.findOneAndUpdate({ club: team }, { $addToSet: { offers } }, { upsert: true });
-    //           res.status(200).send("Bid succesful");
-    //           break;
-    //         }
-    //         default: {
-    //           res.status(400).send("Bid Failed");
-    //           break;
-    //         }
-    //       }
-    //       // }else
-    //       // {
-    //       //   res.status(400).send("Wait till July/August for transfers");
-    //       // }
-    //     } else {
-    //       const reports = {
-    //         detail: `Transfer offer rejected by ${team}'s President`,
-    //         content: `${team} do not value your offer for ${player}, and have no intention selling him, if he's really worth something to you, you know what to do in order to get him.`,
-    //       };
-    //       await Clubs.findOneAndUpdate({ club }, { $addToSet: { reports } }, { upsert: true });
-    //       res.status(400).send("considering bid");
-    //     }
-    //   } catch (err) {
-    //     return next({
-    //       status: 400,
-    //       message: err,
-    //     });
-    //   }
-    // };
-    res.status(200).json("hey");
+    res.status(200).json("success");
   } catch (err) {
     if (
       [
@@ -209,11 +190,85 @@ exports.sendOffer = async (req, res, next) => {
   }
 };
 
+exports.fetchOffers = async (req, res, next) => {
+  try {
+    const { mass, club } = validateRequestBody(req.body, ["mass", "club"]);
+
+    const massData = await Mass.findOne({ ref: mass });
+    if (!massData) throw "Club not found";
+
+    res.status(200).json(massData.offer.filter((offer) => offer.to === club || offer.from === club));
+  } catch (err) {
+    return catchError({ res, err, message: "unable to locate masses" });
+  }
+};
+
+exports.callOffOffer = async (req, res) => {
+  try {
+    const { mass, player, from, to } = validateRequestBody(req.body, ["mass", "player", "from", "to"]);
+
+    await Mass.updateOne({ ref: mass }, { $pull: { offer: { from, player, to } } });
+
+    // remove club from clubsInContact
+    await Player(mass).updateOne({ ref: player }, { $pull: { "transfer.offers": { from } } });
+
+    res.status(200).json("success");
+  } catch (err) {
+    return catchError({ res, err, message: "unable to locate masses" });
+  }
+};
+
+exports.acceptOffer = async (req, res) => {
+  try {
+    const { mass, player, from, to } = validateRequestBody(req.body, ["mass", "player", "from", "to"]);
+
+    // _______________________________ check if Transfer period _____________________________________
+    // if (![0, 6, 7].includes(new Date().getMonth()) && player.club !== "club000000") throw "Not yet Transfer period";
+
+    const massData = await Mass.findOne({ ref: mass });
+    if (!massData) throw "Mass not found";
+
+    console.log(massData.offer);
+    const offerData = massData.offer.find((x) => x.player === player && x.from === from && x.to === to);
+    console.log(offerData);
+
+    // await Mass.updateOne(
+    //   { ref: mass },
+    //   {
+    //     $push: {
+    //       news: {
+    //         $each: [
+    //           {
+    //             title: `@(club,${from},title) Transfer NEWS`,
+    //             content: `@(club,${from},title) has completed the signing of @(player,${player},name) from @(club,${to},title) for a fee rumored to be in the range of ${fee}. Our sources tells us that his Medicals will be completed in the next few hours`,
+    //             image: `/player/${player}.webp`,
+    //           },
+    //         ],
+    //         $slice: -15,
+    //         $position: 0,
+    //       },
+    //     },
+    //   }
+    // );
+
+    console.log({ mass, player, from, to });
+
+    // await Mass.updateOne({ ref: mass }, { $pull: { offer: { from, player, to } } });
+    // remove club from clubsInContact
+    // await Player(mass).updateOne({ ref: player }, { $pull: { "transfer.offers": { from } } });
+
+    res.status(200).json("success");
+  } catch (err) {
+    return catchError({ res, err, message: "unable to locate masses" });
+  }
+};
+
 exports.starter = async (req, res, next) => {
   try {
     const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
 
     const massData = await Mass.findOne({ ref: mass });
+    if (!massData) throw "Mass not found";
     const clubData = await Club(mass).findOne({ ref: club });
     if (!clubData) throw "Club not found";
     console.log(homeCal, clubData.history.lastFiveMatches);
