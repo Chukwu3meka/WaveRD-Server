@@ -10,6 +10,7 @@ router.route("/sendOffer").post(auth, handler.sendOffer);
 router.route("/fetchOffers").post(auth, handler.fetchOffers);
 router.route("/callOffOffer").post(auth, handler.callOffOffer);
 router.route("/acceptOffer").post(auth, handler.acceptOffer);
+router.route("/fetchTransfers").post(auth, handler.fetchTransfers);
 
 // rebuilding
 // router.route("/getAvailableTeam").post(handler.getAvailableTeam);

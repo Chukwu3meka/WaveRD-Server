@@ -210,7 +210,7 @@ exports.targetPlayer = async (req, res) => {
               $each: [
                 {
                   title: `@(club,${club},title) new transfer target`,
-                  content: `@(club,${club},title) has decleared interest in signing @(player,${player},name). Only time will tell how commited @(club,${club},nickname) are in signing him. Our source is yet to determine the level of interest.`,
+                  content: `@(club,${club},title) has decleared interest in signing @(player,${player},name). Only time will tell how commited @(club,${club},nickname) are in signing him. Our source is yet to determine the level of interest. Also confirmed is that there might be some delay in his transfer, for some undisclosed reason.`,
                   image: `/player/${player}.webp`,
                 },
               ],

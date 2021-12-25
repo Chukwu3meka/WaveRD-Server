@@ -66,8 +66,6 @@ exports.fetchHomeData = async (req, res) => {
       "date"
     );
 
-    console.log(calendar[0]);
-
     const nextMatchIndex = calendar.indexOf(calendar.find((x) => x.hg === null && x.hg === null));
 
     const myClubCalendar = {
@@ -89,7 +87,7 @@ exports.fetchHomeData = async (req, res) => {
       goal: goal?.splice(0, 3),
       calendar: myClubCalendar,
       nextDivisionFixture,
-      transfer: massData.transfer,
+      transfer: massData.transfer.slice(0, 5),
       news: massData.news,
     });
   } catch (err) {
@@ -152,7 +150,7 @@ exports.sendOffer = async (req, res, next) => {
     await Mass.updateOne(
       { ref: mass },
       {
-        $addToSet: {
+        $push: {
           offer: {
             $each: [{ to, fee, from: club, player }],
             $position: 0,
@@ -165,7 +163,7 @@ exports.sendOffer = async (req, res, next) => {
     await Player(mass).updateOne(
       { ref: player },
       {
-        $addToSet: {
+        $push: {
           "transfer.offers": {
             $each: [club],
             $position: 0,
@@ -228,36 +226,146 @@ exports.acceptOffer = async (req, res) => {
     const massData = await Mass.findOne({ ref: mass });
     if (!massData) throw "Mass not found";
 
-    console.log(massData.offer);
     const offerData = massData.offer.find((x) => x.player === player && x.from === from && x.to === to);
-    console.log(offerData);
+    if (!offerData) throw "Offer not found";
+    const { to: clubFrom, fee, from: clubTo } = offerData;
 
-    // await Mass.updateOne(
-    //   { ref: mass },
-    //   {
-    //     $push: {
-    //       news: {
-    //         $each: [
-    //           {
-    //             title: `@(club,${from},title) Transfer NEWS`,
-    //             content: `@(club,${from},title) has completed the signing of @(player,${player},name) from @(club,${to},title) for a fee rumored to be in the range of ${fee}. Our sources tells us that his Medicals will be completed in the next few hours`,
-    //             image: `/player/${player}.webp`,
-    //           },
-    //         ],
-    //         $slice: -15,
-    //         $position: 0,
-    //       },
-    //     },
-    //   }
-    // );
+    // update mass data
+    await Mass.updateOne(
+      { ref: mass },
+      {
+        $push: {
+          news: {
+            $each: [
+              {
+                title: `@(club,${from},title) Transfer NEWS`,
+                content: `@(club,${from},title) has completed the signing of @(player,${player},name) from @(club,${to},title) for a fee rumored to be in the range of $${fee}m. Our sources tells us that his Medicals will be completed in the next few hours.`,
+                image: `/player/${player}.webp`,
+              },
+            ],
+            $slice: -15,
+            $position: 0,
+          },
+          transfer: {
+            $each: [
+              {
+                to: from,
+                fee: fee,
+                from: to,
+                player,
+              },
+            ],
+            $slice: -50,
+            $position: 0,
+          },
+        },
+        $pull: { offer: { player } },
+      }
+    );
 
-    console.log({ mass, player, from, to });
+    const clubsInContact = massData.offer.filter((x) => {
+      x.player === player;
+    });
+    console.log({ clubsInContact });
 
-    // await Mass.updateOne({ ref: mass }, { $pull: { offer: { from, player, to } } });
-    // remove club from clubsInContact
-    // await Player(mass).updateOne({ ref: player }, { $pull: { "transfer.offers": { from } } });
+    // update former club data
+    const clubFromData = await Club(mass).findOne({ ref: clubFrom });
+
+    const {
+      history: {
+        transfer: { priciestDeparture, cheapestDeparture },
+      },
+    } = clubFromData;
+
+    await Club(mass).updateOne(
+      { ref: clubFrom },
+      {
+        $pull: {
+          "tactics.squad": player,
+          transferTarget: player,
+        },
+        $inc: { "nominalAccount.departure": fee },
+        $set: {
+          budget: clubFromData.budget + fee > process.env.MAX_BUDGET ? process.env.MAX_BUDGET : clubFromData.budget + fee,
+          "history.transfer.priciestDeparture": {
+            club: fee > Number(priciestDeparture.fee) ? clubTo : priciestDeparture.club,
+            fee: fee > Number(priciestDeparture.fee) ? fee : priciestDeparture.fee,
+            player: fee > Number(priciestDeparture.fee) ? player : priciestDeparture.player,
+            date: fee > Number(priciestDeparture.fee) ? new Date() : priciestDeparture.date,
+          },
+          "history.transfer.cheapestDeparture": {
+            club: cheapestDeparture.fee === null || fee < cheapestDeparture.fee ? clubTo : cheapestDeparture.club,
+            fee: cheapestDeparture.fee === null || fee < cheapestDeparture.fee ? fee : cheapestDeparture.fee,
+            player: cheapestDeparture.fee === null || fee < cheapestDeparture.fee ? player : cheapestDeparture.player,
+            date: cheapestDeparture.fee === null || fee < cheapestDeparture.fee ? new Date() : cheapestDeparture.date,
+          },
+        },
+      }
+    );
+
+    // update to club data
+    const clubToData = await Club(mass).findOne({ ref: clubTo });
+
+    const {
+      history: {
+        transfer: { priciestArrival, cheapestArrival },
+      },
+    } = clubToData;
+
+    await Club(mass).updateOne(
+      { ref: clubTo },
+      {
+        $pull: {
+          transferTarget: player,
+        },
+        $addToSet: {
+          "tactics.squad": player,
+        },
+        $inc: { "nominalAccount.arrival": fee, budget: -fee },
+        $set: {
+          "history.transfer.priciestArrival": {
+            club: fee > Number(priciestArrival.fee) ? clubFrom : priciestArrival.club,
+            fee: fee > Number(priciestArrival.fee) ? fee : priciestArrival.fee,
+            player: fee > Number(priciestArrival.fee) ? player : priciestArrival.player,
+            date: fee > Number(priciestArrival.fee) ? new Date() : priciestArrival.date,
+          },
+          "history.transfer.cheapestArrival": {
+            club: cheapestArrival.fee === null || fee < cheapestArrival.fee ? clubFrom : cheapestArrival.club,
+            fee: cheapestArrival.fee === null || fee < cheapestArrival.fee ? fee : cheapestArrival.fee,
+            player: cheapestArrival.fee === null || fee < cheapestArrival.fee ? player : cheapestArrival.player,
+            date: cheapestArrival.fee === null || fee < cheapestArrival.fee ? new Date() : cheapestArrival.date,
+          },
+        },
+      }
+    );
+
+    // update player data
+    await Player(mass).updateOne(
+      { ref: player },
+      {
+        $set: {
+          club: clubTo,
+          "transfer.listed": false,
+          "transfer.locked": true,
+        },
+        $pull: { "transfer.offers": { from } },
+      }
+    );
 
     res.status(200).json("success");
+  } catch (err) {
+    return catchError({ res, err, message: "unable to locate masses" });
+  }
+};
+
+exports.fetchTransfers = async (req, res, next) => {
+  try {
+    const { mass, club } = validateRequestBody(req.body, ["mass", "club"]);
+
+    const massData = await Mass.findOne({ ref: mass });
+    if (!massData) throw "Mass not found";
+
+    res.status(200).json(massData.transfer);
   } catch (err) {
     return catchError({ res, err, message: "unable to locate masses" });
   }
