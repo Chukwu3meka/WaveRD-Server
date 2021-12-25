@@ -208,7 +208,7 @@ exports.callOffOffer = async (req, res) => {
     await Mass.updateOne({ ref: mass }, { $pull: { offer: { from, player, to } } });
 
     // remove club from clubsInContact
-    await Player(mass).updateOne({ ref: player }, { $pull: { "transfer.offers": { from } } });
+    await Player(mass).updateOne({ ref: player }, { $pull: { "transfer.offers": from } });
 
     res.status(200).json("success");
   } catch (err) {
@@ -223,12 +223,26 @@ exports.acceptOffer = async (req, res) => {
     // _______________________________ check if Transfer period _____________________________________
     // if (![0, 6, 7].includes(new Date().getMonth()) && player.club !== "club000000") throw "Not yet Transfer period";
 
+    // check length of club squad
+
     const massData = await Mass.findOne({ ref: mass });
     if (!massData) throw "Mass not found";
 
     const offerData = massData.offer.find((x) => x.player === player && x.from === from && x.to === to);
     if (!offerData) throw "Offer not found";
     const { to: clubFrom, fee, from: clubTo } = offerData;
+
+    const clubToData = await Club(mass).findOne({ ref: clubTo });
+    const clubFromData = await Club(mass).findOne({ ref: clubFrom });
+
+    if (clubToData.tactics.squad.length >= process.env.MAX_SQUAD || clubFromData.tactics.squad.length <= process.env.MIN_SQUAD)
+      throw "Squad limit prevents registeration";
+
+    // const clubsInContact = massData.offer.filter((x) => {
+    //   x.player === player;
+    // });
+
+    // console.log({ clubsInContact });
 
     // update mass data
     await Mass.updateOne(
@@ -263,13 +277,7 @@ exports.acceptOffer = async (req, res) => {
       }
     );
 
-    const clubsInContact = massData.offer.filter((x) => {
-      x.player === player;
-    });
-    console.log({ clubsInContact });
-
     // update former club data
-    const clubFromData = await Club(mass).findOne({ ref: clubFrom });
 
     const {
       history: {
@@ -304,7 +312,6 @@ exports.acceptOffer = async (req, res) => {
     );
 
     // update to club data
-    const clubToData = await Club(mass).findOne({ ref: clubTo });
 
     const {
       history: {
@@ -354,7 +361,9 @@ exports.acceptOffer = async (req, res) => {
 
     res.status(200).json("success");
   } catch (err) {
-    return catchError({ res, err, message: "unable to locate masses" });
+    if (["Squad limit prevents registeration"].includes(err)) res.status(400).json(err);
+
+    return catchError({ res, err, message: "unable to accept offer" });
   }
 };
 
