@@ -214,7 +214,7 @@ exports.targetPlayer = async (req, res) => {
                   image: `/player/${player}.webp`,
                 },
               ],
-              $slice: -15,
+              $slice: 15,
               $position: 0,
             },
           },
@@ -230,207 +230,23 @@ exports.targetPlayer = async (req, res) => {
 
 exports.starter = async (req, res) => {
   try {
-    const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
+    const { mass, club } = validateRequestBody(req.body, ["mass", "club"]);
 
     const massData = await Mass.findOne({ ref: mass });
+    if (!massData) throw "Club not found";
     const clubData = await Club(mass).findOne({ ref: club });
     if (!clubData) throw "Club not found";
-    console.log(homeCal, clubData.history.lastFiveMatches);
 
-    res.status(200).json("hey");
+    console.log(clubData);
+
+    res.status(200).json("success");
   } catch (err) {
-    return catchError({ res, err, message: "unable to locate masses" });
+    return catchError({ res, err, message: "error occured" });
   }
 };
 
-// exports.getOffers = async (req, res, next) => {
-//   try {
-//     const { club, soccermass } = req.body,
-//       Clubs = clubs(soccermass),
-//       offers = await Clubs.findOne({ club }).then((res) => res.offers);
-//     res.status(200).send(offers);
-//   } catch (err) {
-//     return next({
-//       status: 400,
-//       message: err,
-//     });
-//   }
-// };
-// exports.getTransactions = async (req, res, next) => {
-//   try {
-//     const { club, soccermass } = req.body,
-//       Clubs = clubs(soccermass),
-//       transactions = await Clubs.findOne({ club }).then((res) => res.transactions);
-//     res.status(200).send(transactions);
-//   } catch (err) {
-//     return next({
-//       status: 400,
-//       message: err,
-//     });
-//   }
-// };
-// exports.withdrawOffer = async (req, res, next) => {
-//   try {
-//     const { player, team, soccermass, club } = req.body,
-//       Clubs = clubs(soccermass);
-
-//     await Clubs.updateOne({ club }, { $pull: { transactions: { player, team } } });
-//     await Clubs.updateOne({ club: team }, { $pull: { offers: { player, team: club } } });
-
-//     const result = await Clubs.findOne({ club });
-//     const transactions = result.transactions;
-//     res.status(200).send(transactions);
-//   } catch (err) {
-//     return next({
-//       status: 400,
-//       message: err,
-//     });
-//   }
-// };
-// exports.replyOffer = async (req, res, next) => {
-//   try {
-//     /*
-//      club : current team
-//      status: accept or reject
-//      player : player name
-//      team : club intrested in the player
-//      transferType: loan or transfer
-//      fee: amount offered
-//     */
-//     if ([7, 8].includes(new Date().getMonth() + 1)) {
-//       const { soccermass, club, status, player, team, transferType, fee } = req.body,
-//         Clubs = clubs(soccermass),
-//         Athletes = athletes(soccermass),
-//         playerValue = await Athletes.findOne({ name: player }).then((res) => res.value),
-//         budget = await Clubs.findOne({ club: team }).then((res) => res.board.budget),
-//         minFee = playerValue + 10,
-//         maxFee = playerValue + 50;
-
-//       let noClubPayers = await Clubs.findOne({ club }),
-//         noTeamPayers = await Clubs.findOne({ club: team });
-
-//       noClubPayers = noClubPayers.length;
-//       noTeamPayers = noTeamPayers.length;
-
-//       if (noTeamPayers < 32 && noClubPayers > 20) {
-//         if (budget > fee && fee <= maxFee && fee >= minFee && fee > playerValue) {
-//           let clubid = `${soccermass}@${club}`,
-//             Players = players(clubid);
-//           // remove offer from offers for club
-//           await Clubs.updateOne({ club }, { $pull: { offers: { player, team } } }, { multi: true });
-//           // remove offer from transaction for team
-//           await Clubs.updateOne({ club: team }, { $pull: { transaction: { player, team: club } } }, { multi: true });
-
-//           if (status === "accept") {
-//             const teamReport = {
-//               detail: "Transfer Accepted",
 //               content: `${club} has accepted your $${fee}m ${transferType} offer for ${player}. The player on his way here. Our Technical chief has also arranged for his presentation in coming days`,
-//             };
-//             const clubReport = {
-//               detail: "Player Transfered",
+
 //               content: `${player} has moved to ${team}, you should update the players on our new tactics and formation to cover up for ${player}`,
-//             };
-//             // add to club reports
-//             await Clubs.updateOne({ club: team }, { $addToSet: { reports: teamReport } }, { upsert: true });
-//             await Clubs.updateOne({ club }, { $addToSet: { reports: clubReport } }, { upsert: true });
 
-//             // add news to mass
-//             const transfers = { name: player, from: club, to: team, fee, transferType };
-//             const news = {
-//               detail: "Transfer NEWS",
 //               content: `${player} has completed his ${transferType} move to ${team}. The Media has been watching this for a while but now they don't have to. ${player} said it's a move that has been on his mind.`,
-//             };
-//             await Mass.updateOne({ soccermass }, { $addToSet: { transfers, news } }, { upsert: true });
-
-//             // update player new club in athlete collection
-//             await Athletes.updateOne({ name: player, club }, { $set: { club: team } });
-
-//             // remove offers from other clubs for player
-//             await Clubs.updateOne({ club }, { $pull: { offers: { player } } }, { multi: true });
-
-//             //  save player data record and then delete from Players collection
-//             let newPlayer = await Players.findOne({ name: player });
-//             await Players.deleteOne({ name: player });
-
-//             clubid = `${soccermass}@${team}`;
-//             Players = players(clubid);
-
-//             // assign unique number and slot to newly transfered player
-//             const noArray = [],
-//               teamNo = await Players.find({});
-//             teamNo.forEach((i) => noArray.push(i.number));
-//             noArray.sort((x, y) => x - y);
-//             let missingNo = [];
-//             for (let i = 1; i <= noArray.length; i++) {
-//               noArray.indexOf(i) == -1 ? missingNo.push(i) : null;
-//             }
-//             missingNo = missingNo.sort((x, y) => x - y);
-//             missingNo = missingNo[0].toString();
-//             newPlayer.number = Number(missingNo);
-//             newPlayer.slot.sn = teamNo.length;
-//             await Players.create(newPlayer);
-
-//             const offers = await Clubs.find({ club }).then((res) => res.offers);
-//             res.status(200).send(offers);
-//           } else {
-//             const reports = {
-//               detail: "Transfer Offer Rejected",
-//               content: `${club} has rejected your $${fee}m ${transferType} offer for ${player}`,
-//             };
-//             await Clubs.findOneAndUpdate({ club: team }, { $addToSet: { reports } }, { upsert: true });
-//             await Clubs.updateOne({ club: team }, { "board.budget": budget - fee });
-//             await Athletes.updateOne({ club, name: player }, { value: playerValue + 5 });
-//             const offers = await Clubs.find({ club }).then((res) => res.offers);
-
-//             res.status(200).send(offers);
-//           }
-//         }
-//       } else {
-//         const reports = {
-//           detail: "Transfer Offer Rejected",
-//           content: `${club} cannot exceed a maximum of 32 players, and ${team} cannot have less than 20 players, as a result of this, your ${fee}m ${transferType} offer for ${player} has rejected.`,
-//         };
-//         await Clubs.findOneAndUpdate({ club: team }, { $addToSet: { reports } }, { upsert: true });
-
-//         const offers = await Clubs.find({ club }).then((res) => res.offers);
-
-//         res.status(200).send(offers);
-//       }
-//     } else {
-//       res.status(400).send("Wait till July/August for transfers");
-//     }
-//   } catch (err) {
-//     return next({
-//       status: 400,
-//       message: err.message,
-//     });
-//   }
-// };
-// exports.viewBoard = async (req, res, next) => {
-//   try {
-//     const { club } = req.body;
-//     const Clubs = detail(req);
-//     let result = await Clubs.findOne({ club });
-//     res.status(200).send(result.board);
-//   } catch (err) {
-//     return next({
-//       status: 400,
-//       message: "Invalid Database Specified",
-//     });
-//   }
-// };
-
-// exports.deleteReport = async (req, res, next) => {
-//   try {
-//     const Clubs = detail(req);
-//     const { club, _id } = req.body;
-//     await Clubs.updateOne({ club }, { $pull: { reports: { _id } } });
-//     const result = await Clubs.findOne({ club }).then((res) => res.reports);
-//     res.status(200).send(result);
-//   } catch (err) {
-//     return next({
-//       status: 400,
-//       message: err,
-//     });
-//   }
-// };

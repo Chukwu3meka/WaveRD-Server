@@ -121,8 +121,8 @@ exports.sendOffer = async (req, res, next) => {
   try {
     const { mass, player, club, to, fee } = validateRequestBody(req.body, ["mass", "player", "club", "to", "fee"]);
 
-    // _______________________________ check if Transfer period _____________________________________
-    // if (![0, 6, 7].includes(new Date().getMonth()) && player.club !== "club000000") throw "Not yet Transfer period";
+    // _______________________________ check if Transfer period
+    if (![0, 6, 7].includes(new Date().getMonth()) && player.club !== "club000000") throw "Not yet Transfer period";
 
     const playerData = await Player(mass).findOne({ ref: player });
     if (!playerData) throw "Player not found";
@@ -130,20 +130,19 @@ exports.sendOffer = async (req, res, next) => {
     const clubData = await Club(mass).findOne({ ref: club });
     if (!clubData) throw "Club not found";
 
-    // _______________________________check if club has enough fund for max player offer_____________________________________
-    // if (fee > clubData.budget) throw "Insuffucent Funds";
+    // _______________________________check if club has enough fund for max player
+    if (fee > clubData.budget) throw "Insuffucent Funds";
 
-    // _______________________________check if club will exceed salary cap after signing________________________________
-
+    // _______________________________check if club will exceed salary cap after
     if (
       [...clubData.tactics.squad, player].reduce((total, cur) => total + (10 / 100) * playerStore(cur).value, 0) > process.env.SALARY_CAP
     )
       throw "Salary Cap will be exceeded after signing";
 
-    //  _____________________________Club already sent offer_____________________________________________
+    //  _____________________________Club already sent
     if (playerData.transfer.offers.includes(club)) throw "Previous Offer not attended to";
 
-    //  _____________________________ Player transfer ban _____________________________________________
+    //  _____________________________ Player transfer ban
     if (playerData.transfer.locked) throw "Player currently suspended from transfer";
 
     // add to mass offers
@@ -205,6 +204,11 @@ exports.callOffOffer = async (req, res) => {
   try {
     const { mass, player, from, to } = validateRequestBody(req.body, ["mass", "player", "from", "to"]);
 
+    const massData = await Mass.findOne({ ref: mass });
+    if (!massData) throw "Mass not found";
+
+    if (!massData.offer.find((x) => x.player === player && x.from === from && x.to === to)) throw "Offer not found";
+
     await Mass.updateOne({ ref: mass }, { $pull: { offer: { from, player, to } } });
 
     // remove club from clubsInContact
@@ -220,11 +224,10 @@ exports.acceptOffer = async (req, res) => {
   try {
     const { mass, player, from, to } = validateRequestBody(req.body, ["mass", "player", "from", "to"]);
 
-    // _______________________________ check if Transfer period _____________________________________
-    // if (![0, 6, 7].includes(new Date().getMonth()) && player.club !== "club000000") throw "Not yet Transfer period";
+    // _______________________________ check if Transfer period
+    if (![0, 6, 7].includes(new Date().getMonth()) && player.club !== "club000000") throw "Not yet Transfer period";
 
-    // check length of club squad
-
+    // _______________________________ check length of club squad
     const massData = await Mass.findOne({ ref: mass });
     if (!massData) throw "Mass not found";
 
@@ -244,7 +247,7 @@ exports.acceptOffer = async (req, res) => {
 
     // console.log({ clubsInContact });
 
-    // update mass data
+    // ______________________________________ update mass data
     await Mass.updateOne(
       { ref: mass },
       {
@@ -257,7 +260,7 @@ exports.acceptOffer = async (req, res) => {
                 image: `/player/${player}.webp`,
               },
             ],
-            $slice: -15,
+            $slice: 15,
             $position: 0,
           },
           transfer: {
@@ -269,7 +272,7 @@ exports.acceptOffer = async (req, res) => {
                 player,
               },
             ],
-            $slice: -50,
+            $slice: 50,
             $position: 0,
           },
         },
@@ -277,8 +280,7 @@ exports.acceptOffer = async (req, res) => {
       }
     );
 
-    // update former club data
-
+    // _______________________________________ update former club data
     const {
       history: {
         transfer: { priciestDeparture, cheapestDeparture },
@@ -311,8 +313,7 @@ exports.acceptOffer = async (req, res) => {
       }
     );
 
-    // update to club data
-
+    // ___________________________________________ update to club data
     const {
       history: {
         transfer: { priciestArrival, cheapestArrival },
@@ -346,7 +347,7 @@ exports.acceptOffer = async (req, res) => {
       }
     );
 
-    // update player data
+    // _______________________________________ update player data
     await Player(mass).updateOne(
       { ref: player },
       {
@@ -380,19 +381,20 @@ exports.fetchTransfers = async (req, res, next) => {
   }
 };
 
-exports.starter = async (req, res, next) => {
+exports.starter = async (req, res) => {
   try {
-    const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
+    const { mass, club } = validateRequestBody(req.body, ["mass", "club"]);
 
     const massData = await Mass.findOne({ ref: mass });
-    if (!massData) throw "Mass not found";
+    if (!massData) throw "Club not found";
     const clubData = await Club(mass).findOne({ ref: club });
     if (!clubData) throw "Club not found";
-    console.log(homeCal, clubData.history.lastFiveMatches);
 
-    res.status(200).json("hey");
+    console.log(clubData);
+
+    res.status(200).json("success");
   } catch (err) {
-    return catchError({ res, err, message: "unable to locate masses" });
+    return catchError({ res, err, message: "error occured" });
   }
 };
 

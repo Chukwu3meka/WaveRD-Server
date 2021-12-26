@@ -16,6 +16,7 @@ exports.fetchPlayer = async (req, res, next) => {
     res.status(200).json({
       ...playerData._doc,
       budget: clubData.budget,
+      mySquadLength: clubData.tactics.squad.length,
       transfer: {
         ...playerData.transfer,
         target: clubData.transferTarget.includes(player),
@@ -112,24 +113,72 @@ exports.listPlayer = async (req, res, next) => {
   }
 };
 
-exports.starter = async (req, res, next) => {
+exports.releasePlayer = async (req, res, next) => {
   try {
-    const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
+    const { mass, player, club } = validateRequestBody(req.body, ["mass", "player", "club"]);
 
-    const massData = await Mass.findOne({ mass });
-    const clubData = await Club(mass).findOne({ club });
-    if (!clubData) throw "Club not found";
+    // _______________________________ check if Transfer period
+    if (![0, 6, 7].includes(new Date().getMonth()) && player.club !== "club000000") throw "Not yet Transfer period";
 
-    console.log(homeCal, clubData.history.lastFiveMatches);
+    // _______________________ reject all offers for the player from mass collection
+    await Mass.updateOne(
+      { ref: mass },
+      {
+        $push: {
+          news: {
+            $each: [
+              {
+                title: `@(player,${player},name) Contract Termination`,
+                content: `@(club,${club},title) has terminated the contract of @(player,${player},age)yrs, @(player,${player},name), the Club has confirmed 'We have reached a mutual agreement with @(player,${player},name) to terminate his contract effective from today.'@(club,${club},title). The @(player,${player},country) internation agent, will be on the hunt to find his client a club soon.`,
+                image: `/player/${player}.webp`,
+              },
+            ],
+            $position: 0,
+            $slice: 15,
+          },
+        },
+        $pull: { offer: { player } },
+      }
+    );
 
-    res.status(200).json("hey");
+    // ___________________________________ update club record
+    await Club(mass).updateOne({ ref: club }, { $pull: { "tactics.squad": player } });
+
+    // ___________________________ update player data
+    await Player(mass).updateOne(
+      { ref: player },
+      {
+        $set: {
+          club: "club000000",
+          "transfer.listed": false,
+          "transfer.locked": false,
+          "transfer.offers": [],
+        },
+      }
+    );
+
+    res.status(200).json("success");
   } catch (err) {
     return catchError({ res, err, message: "unable to locate masses" });
   }
 };
-// const { Mass, clubs, athletes, players } = require("../models/handler");
 
-//
+exports.starter = async (req, res) => {
+  try {
+    const { mass, club } = validateRequestBody(req.body, ["mass", "club"]);
+
+    const massData = await Mass.findOne({ ref: mass });
+    if (!massData) throw "Club not found";
+    const clubData = await Club(mass).findOne({ ref: club });
+    if (!clubData) throw "Club not found";
+
+    console.log(clubData);
+
+    res.status(200).json("success");
+  } catch (err) {
+    return catchError({ res, err, message: "error occured" });
+  }
+};
 
 // //signup: to view players in any team
 // exports.viewPlayers = async (req, res, next) => {

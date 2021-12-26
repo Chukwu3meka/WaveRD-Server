@@ -63,7 +63,7 @@ exports.signup = async (req, res, next) => {
       { ref: mass },
       {
         $set: { [`unmanaged.${division}`]: massData.unmanaged[division] - 1, "unmanaged.total": massData.unmanaged.total - 1 },
-        $push: { news: { $each: [news], $slice: -15, $position: 0 } },
+        $push: { news: { $each: [news], $slice: 15, $position: 0 } },
       }
     );
 
@@ -74,7 +74,7 @@ exports.signup = async (req, res, next) => {
         $push: {
           "history.events": { event },
           "history.managers": { manager: handle, departure: null },
-          reports: { $each: [report], $slice: -15, $position: 0 },
+          reports: { $each: [report], $slice: 15, $position: 0 },
         },
       }
     );
@@ -267,18 +267,20 @@ exports.persistUser = async (req, res) => {
   }
 };
 
-exports.starter = async (req, res, next) => {
+exports.starter = async (req, res) => {
   try {
-    const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
+    const { mass, club } = validateRequestBody(req.body, ["mass", "club"]);
 
     const massData = await Mass.findOne({ ref: mass });
+    if (!massData) throw "Club not found";
     const clubData = await Club(mass).findOne({ ref: club });
     if (!clubData) throw "Club not found";
-    console.log(homeCal, clubData.history.lastFiveMatches);
 
-    res.status(200).json("hey");
+    console.log(clubData);
+
+    res.status(200).json("success");
   } catch (err) {
-    return catchError({ res, err, message: "unable to locate masses" });
+    return catchError({ res, err, message: "error occured" });
   }
 };
 
