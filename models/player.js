@@ -15,9 +15,12 @@ const PlayersSchema = new Schema({
   club: { type: String, required: true },
   energy: { type: Number, required: true, default: 0 },
   ref: { type: String, unique: true, required: true },
-  minutesNotPlayed: { type: Number, required: true, default: 0 },
-  minutesPlayedRight: { type: Number, required: true, default: 0 },
-  minutesPlayedWrong: { type: Number, required: true, default: 0 },
+  // played in right position emotion +1, worng position 0 else -1
+  session: { type: Number, required: true, default: 0 },
+  emotion: { type: String, required: true, default: "Happy" },
+  // minutesNotPlayed: { type: Number, required: true, default: 0 },
+  // minutesPlayedRight: { type: Number, required: true, default: 0 },
+  // minutesPlayedWrong: { type: Number, required: true, default: 0 },
   competition: {
     cup: matchData,
     league: matchData,

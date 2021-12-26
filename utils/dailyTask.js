@@ -1,3 +1,5 @@
+// runs at 1:00am UTC
+
 const MongoURI = process.env.MONGODB_URI;
 const mongoose = require("mongoose");
 
@@ -11,13 +13,15 @@ mongoose
     useUnifiedTopology: true,
     useFindAndModify: false,
   })
-  .catch((err) => {
-    if (process.env.NODE_ENV !== "production") console.log(`Error From MongoDB: ${err}`);
-  });
+  .catch((err) => console.log(`Error From MongoDB: ${err}`));
 
 async function autorun() {
-  // const autoMatch = require("./source/autorun/playMatch");
-  // await autoMatch();
+  // const energyTask = require("./source/autorun/energyTask");
+  // const injuryTask = require("./source/autorun/injuryTask");
+  // const emotionTask = require("./source/autorun/emotionTask");
+  // await energyTask();
+  // await injuryTask();
+  // await emotionTask();
   process.exit();
 }
 

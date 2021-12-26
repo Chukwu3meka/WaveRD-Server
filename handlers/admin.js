@@ -3,10 +3,6 @@ const { clubStore, totalClubs } = require("../source/clubStore.js");
 const { range, numToText, catchError, shuffleArray, validateRequestBody, getRef, arrayToChunks } = require("../utils/serverFunctions");
 const { Club, Player, Mass } = require("../models/handler");
 
-// const { clubs, clubModel, playerModel, players, Mass, Trends } = require("../models/handler");
-// const { playLeagueMatch } = require("../source/playMatch/league");
-// const { formations } = require("../source/serverVariables.js");
-
 // to create/refresh new mass ::::::: add tables, calendar and topPlayers, players and clubs for new season
 exports.initializeMass = async (req, res) => {
   try {
@@ -445,6 +441,27 @@ exports.initializeMass = async (req, res) => {
     return res.json("successfull");
   } catch (err) {
     return catchError({ res, err, message: "cannot create  mass right now" });
+  }
+};
+
+exports.testFunctionHandler = async (req, res) => {
+  try {
+    const { mass, password } = validateRequestBody(req.body, ["mass", "password"]);
+    if (password !== process.env.OTP) throw "Auth server unable to validate admin";
+
+    // const emotion =    require("../library/dailyTask/emotion");
+    // emotion();
+
+    // require("../library/dailyTask/emotion")();
+    require("../library/dailyTask/energy")();
+
+    // const massData = await Mass.findOne({ ref: mass });
+    // if (!massData) throw "Club not found";
+    // const clubData = await Club(mass).findOne({ ref: club });
+    // if (!clubData) throw "Club not found";
+    res.status(200).json("success");
+  } catch (err) {
+    return catchError({ res, err, message: "error occured" });
   }
 };
 

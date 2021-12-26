@@ -13,15 +13,9 @@ exports.injuryList = [
 ];
 
 exports.massList = [
-  "Goldman Sachs",
-  "NASA",
-  "Hewlett Packard",
-  "Ultimate",
-  "Extreme",
-  "Bluesea",
-  "Zenith",
-  "North",
-  "West",
-  "Antartica",
-  "Hill",
+  "sm000000001",
+  // "sm000000002",
+  // "sm000000003",
+  // "sm000000004",
+  // "sm000000005",
 ];
