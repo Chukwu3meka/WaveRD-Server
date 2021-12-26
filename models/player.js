@@ -36,7 +36,7 @@ const PlayersSchema = new Schema({
   },
   injury: {
     daysLeftToRecovery: { type: Number, required: true, default: 0 },
-    injuryType: { type: String, required: true, default: "Players is fit" },
+    injuryType: { type: String, required: true, default: null },
   },
   transfer: {
     offers: [String],

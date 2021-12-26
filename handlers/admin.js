@@ -452,8 +452,13 @@ exports.testFunctionHandler = async (req, res) => {
     // const emotion =    require("../library/dailyTask/emotion");
     // emotion();
 
+    // _______________ Daily Task
     // require("../library/dailyTask/emotion")();
-    require("../library/dailyTask/energy")();
+    // require("../library/dailyTask/energy")();
+    // require("../library/dailyTask/injury")();
+
+    // _______________ Match Task
+    require("../library/matchTask/playMatch")();
 
     // const massData = await Mass.findOne({ ref: mass });
     // if (!massData) throw "Club not found";

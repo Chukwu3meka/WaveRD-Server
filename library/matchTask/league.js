@@ -499,6 +499,7 @@ module.exports.playLeagueMatch = async ({ matchType, matchDate }) => {
           }
         });
       });
+
       // delete and add new squad to database
       const currentMatch = [home, away];
       const currentMatchGoal = [homeGoal, awayGoal];
