@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const Profile = require("../models/profile");
-const { validate } = require("../source/library/validator");
+const { validate } = require("../utils/validator");
 const { obfuscate, asterickMail } = require("../utils/serverFunctions");
 
 const catchErr = ({ res, req, err }) => {

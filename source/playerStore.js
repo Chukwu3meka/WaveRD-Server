@@ -1,4 +1,4 @@
-const { uniqueArray } = require("../../utils/serverFunctions");
+const { uniqueArray } = require("../utils/serverFunctions");
 
 // import { uniqueArray } from "@utils/clientFuncs";
 

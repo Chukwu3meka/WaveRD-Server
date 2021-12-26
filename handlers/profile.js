@@ -5,14 +5,14 @@ const express = require("express");
 const app = express();
 const fs = require("fs");
 const path = require("path");
-const validate = require("../source/library/validator").validate;
+const validate = require("../utils/validator").validate;
 const pushMail = require("../utils/pushMail").pushMail;
 
 const { sessionGenerator, catchError, validateRequestBody, obfuscate } = require("../utils/serverFunctions");
 
 const { v4 } = require("uuid");
 const { Club, Mass } = require("../models/handler");
-const { clubStore } = require("../source/database/clubStore");
+const { clubStore } = require("../source/clubStore");
 const emailTemplates = require("../utils/emailTemplates").emailTemplates;
 
 exports.signup = async (req, res, next) => {

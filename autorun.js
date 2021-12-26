@@ -14,12 +14,12 @@ mongoose
   .catch((err) => console.log(`Error From MongoDB: ${err}`));
 
 async function autorun() {
-  const energyTask = require("./source/autorun/energyTask");
-  const injuryTask = require("./source/autorun/injuryTask");
-  const emotionTask = require("./source/autorun/emotionTask");
-  await energyTask();
-  await injuryTask();
-  await emotionTask();
+  // const energyTask = require("./source/autorun/energyTask");
+  // const injuryTask = require("./source/autorun/injuryTask");
+  // const emotionTask = require("./source/autorun/emotionTask");
+  // await energyTask();
+  // await injuryTask();
+  // await emotionTask();
   process.exit();
 }
 

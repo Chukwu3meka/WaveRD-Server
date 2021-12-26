@@ -16,8 +16,8 @@ mongoose
   });
 
 async function autorun() {
-  const autoMatch = require("./source/autorun/playMatch");
-  await autoMatch();
+  // const autoMatch = require("./source/autorun/playMatch");
+  // await autoMatch();
   process.exit();
 }
 

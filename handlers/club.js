@@ -1,8 +1,7 @@
 const { catchError, validateRequestBody, sortArr, range } = require("../utils/serverFunctions");
 const { Player, Club, Mass } = require("../models/handler");
-const { clubStore, totalClubs } = require("../source/database/clubStore");
-const { sortArray } = require("../source/library/commonFunc");
-const { playerStore, totalPlayers } = require("../source/database/playerStore.js");
+const { clubStore, totalClubs } = require("../source/clubStore");
+const { playerStore, totalPlayers } = require("../source/playerStore.js");
 
 exports.fetchSquad = async (req, res) => {
   try {

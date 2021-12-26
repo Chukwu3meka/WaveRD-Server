@@ -1,6 +1,5 @@
 const { Club, Mass, Player } = require("../models/handler");
-const { clubStore, totalClubs } = require("../source/database/clubStore");
-const { sortArray } = require("../source/library/commonFunc");
+const { clubStore, totalClubs } = require("../source/clubStore");
 const { catchError, validateRequestBody, shuffleArray, validInputs, getRef, sortArr } = require("../utils/serverFunctions");
 
 exports.fetchPlayer = async (req, res, next) => {
@@ -62,7 +61,7 @@ exports.searchPlayers = async (req, res, next) => {
       "myClub",
     ]);
 
-    const { allPlayersInStore } = require("../source/database/playerStore");
+    const { allPlayersInStore } = require("../source/playerStore");
 
     let searchResult = allPlayersInStore().filter(
       (x) =>
@@ -179,91 +178,3 @@ exports.starter = async (req, res) => {
     return catchError({ res, err, message: "error occured" });
   }
 };
-
-// //signup: to view players in any team
-// exports.viewPlayers = async (req, res, next) => {
-//   try {
-//     const { clubid } = req.body;
-//     const Players = players(clubid);
-//     const result = await Players.find();
-//     const viewPlayers = [];
-//     result.forEach((x) => {
-//       const { name, rating, position, age } = x;
-//       viewPlayers.push({ name, rating, position, age });
-//     });
-//     res.status(200).send(viewPlayers);
-//   } catch (err) {
-//     return next({
-//       status: 400,
-//       message: err,
-//     });
-//   }
-// };
-// //team/squad: to view my current squad
-// exports.viewSquad = async (req, res, next) => {
-//   try {
-//     const { clubid } = req.body;
-//     const Players = players(clubid);
-//     const result = await Players.find();
-//     const viewPlayers = [];
-//     result.forEach((i) => {
-//       viewPlayers.push({
-//         number: i.number,
-//         name: i.name,
-//         rating: i.rating,
-//         position: i.position,
-//         mp: i.data.mp,
-//         goal: i.data.goal,
-//         assist: i.data.assist,
-//         save: i.data.save,
-//         age: i.age,
-//         report: i.data.emotion,
-//       });
-//     });
-//     viewPlayers.sort((x, y) => x.number - y.number);
-//     res.status(200).send(viewPlayers);
-//   } catch (err) {
-//     return next({
-//       status: 400,
-//       message: err,
-//     });
-//   }
-// };
-// //team/formation: fetch all players
-// exports.getPlayers = async (req, res, next) => {
-//   try {
-//     const { clubid } = req.body;
-//     const Players = players(clubid);
-//     const result = await Players.find();
-//     const viewPlayers = [];
-//     result.forEach((i) => {
-//       viewPlayers.push({
-//         id: i._id,
-//         name: i.name,
-//         rating: i.rating,
-//         position: i.position,
-//         slot: i.slot,
-//         stat: i.stat,
-//       });
-//     });
-//     res.status(200).send(viewPlayers);
-//   } catch (err) {
-//     return next({
-//       status: 400,
-//       message: err,
-//     });
-//   }
-// };
-// exports.matchSquad = async (req, res, next) => {
-//   try {
-//     const { players: squad, clubid } = req.body;
-//     const Players = players(clubid);
-//     for (const data of squad) {
-//       const { id, sn } = data;
-//       await Players.updateOne({ _id: id }, { $set: { "slot.sn": sn } });
-//     }
-//     res.status(200).send("successful");
-//   } catch (err) {
-//     return next({ status: 400, message: err });
-//   }
-// };

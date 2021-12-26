@@ -10,7 +10,7 @@ module.exports.playLeagueMatch = async ({ matchType, matchDate }) => {
   // match oject to store match for all masses
   const matchObject = [],
     goalers = [];
-  // loop through each mass in massList
+  // loop through each mass in  massList
   for (const soccermass of massList) {
     // compute difference between two values
     const computeDiff = (x, y) => x - y;

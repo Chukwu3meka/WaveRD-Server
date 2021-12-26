@@ -1,5 +1,5 @@
 const io = require("../server").io;
-const { formatMessage, userJoin, getCurrentUser, userLeave, getRoomUsers } = require("../source/library/chatSocket");
+const { formatMessage, userJoin, getCurrentUser, userLeave, getRoomUsers } = require("../utils/chatSocket");
 
 module.exports = (socket) => {
   socket.on("joinRoom", (newUser) => {
