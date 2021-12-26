@@ -244,8 +244,6 @@ exports.acceptOffer = async (req, res) => {
     //   x.player === player;
     // });
 
-    // console.log({ clubsInContact });
-
     // ______________________________________ update mass data
     await Mass.updateOne(
       { ref: mass },

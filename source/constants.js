@@ -1,17 +1,3 @@
-exports.massList = [
-  "Goldman Sachs",
-  "NASA",
-  "Hewlett Packard",
-  "Ultimate",
-  "Extreme",
-  "Bluesea",
-  "Zenith",
-  "North",
-  "West",
-  "Antartica",
-  "Hill",
-];
-
 exports.injuryList = [
   ["Fractured fingers", 5],
   ["Calf strains", 30],
@@ -24,4 +10,18 @@ exports.injuryList = [
   ["Sprained ankles", 10],
   ["Cuts and Laceration", 20],
   ["Acute neck strain", 15],
+];
+
+exports.massList = [
+  "Goldman Sachs",
+  "NASA",
+  "Hewlett Packard",
+  "Ultimate",
+  "Extreme",
+  "Bluesea",
+  "Zenith",
+  "North",
+  "West",
+  "Antartica",
+  "Hill",
 ];

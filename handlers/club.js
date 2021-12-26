@@ -52,7 +52,6 @@ exports.fetchTactics = async (req, res) => {
 
     const playerData = await Player(mass).find({ ref: { $in: clubData.tactics.squad } });
     const clubPlayers = playerData.map((player) => {
-      console.log(player.ref);
       const injuryReturnDate = new Date();
       injuryReturnDate.setDate(injuryReturnDate.getDate() + player.injury.daysLeftToRecovery);
 
@@ -127,7 +126,6 @@ exports.fetchHistory = async (req, res) => {
       },
     ];
     history.managers = clubData.history.managers;
-    // console.log(clubData.history.events);
 
     res.status(200).json(history);
   } catch (err) {
