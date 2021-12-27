@@ -18,6 +18,11 @@ Use {
 
 **SoccerMASS is developed/maintained by a team of highly skilled developers**
 
+### Comments
+
+- <!-- **************** Description comments -->
+- <!-- ################# Temp change, that must be updated -->
+
 ### Feel free to read our ViewCrunch doc
 
 ## Contributing

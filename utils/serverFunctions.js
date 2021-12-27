@@ -1,3 +1,5 @@
+const { massList, roleList, formationList, assistProbabilityList, goalProbabilityList } = require("../source/constants");
+
 // catch err in return
 module.exports.catchError = ({ res, err, status = 400, message = "Internal Server Error" }) => {
   if (process.env.NODE_ENV !== "production") console.log(`${res.req.originalUrl}: ${err}`);
@@ -149,4 +151,104 @@ module.exports.sortArr = (arr, sortKey, asc = true) => {
   }
 
   return arr;
+};
+
+module.exports.scoreGenerator = ({ diff, clubData }) => {
+  const gs =
+    diff >= 20
+      ? this.range(4, 7)
+      : diff >= 15
+      ? this.range(3, 5)
+      : diff >= 10
+      ? this.range(2, 3)
+      : diff >= 5
+      ? this.range(1, 2)
+      : diff >= 3
+      ? this.range(0, 1)
+      : this.range(0, 2);
+
+  const goalPlayers = this.shuffleArray(
+    clubData.players
+      .filter((x) => !x.roles.includes("GK"))
+      .flatMap((x) =>
+        x.roles.includes("CF")
+          ? [...new Array(20)].map(() => x.ref)
+          : x.roles.includes("RF")
+          ? [...new Array(15)].map(() => x.ref)
+          : x.roles.includes("LF")
+          ? [...new Array(15)].map(() => x.ref)
+          : x.roles.includes("AM")
+          ? [...new Array(10)].map(() => x.ref)
+          : x.roles.includes("RM")
+          ? [...new Array(10)].map(() => x.ref)
+          : x.roles.includes("LM")
+          ? [...new Array(10)].map(() => x.ref)
+          : x.roles.includes("CM")
+          ? [...new Array(7)].map(() => x.ref)
+          : x.roles.includes("DM")
+          ? [...new Array(5)].map(() => x.ref)
+          : x.roles.includes("LB")
+          ? [...new Array(3)].map(() => x.ref)
+          : x.roles.includes("RB")
+          ? [...new Array(3)].map(() => x.ref)
+          : x.roles.includes("CB")
+          ? [...new Array(1)].map(() => x.ref)
+          : 10
+      )
+  );
+
+  const assist = [...new Array(this.range(0, gs))].map(() => goalPlayers[this.range(0, goalPlayers.length - 1)]);
+
+  const goalEvent = [...new Array(gs)]
+    .map(() => goalPlayers[this.range(0, goalPlayers.length - 1)])
+    .map((goal, index) => ({
+      goal,
+      assist: assist?.length && goal !== assist[index] ? assist[index] || null : null,
+      time: this.range(0, 93),
+    }))
+    .sort((x, y) => x.time - y.time);
+
+  // yellow card
+  const yellowEvents = [...new Array(this.range(0, diff >= 10 ? 0 : diff >= 5 ? 1 : diff >= 0 ? 2 : 3))]
+    .map(() => goalPlayers[this.range(0, 10)])
+    .map((yellow, index) => ({
+      yellow,
+      time: this.range(0, 93),
+    }))
+    .sort((x, y) => x.time - y.time);
+
+  // get all Players in events and their time
+  const eventsPlayers = [
+    ...goalEvent.map((x) => ({ player: x.goal, time: x.time })),
+    ...goalEvent.map((x) => ({ player: x.assist, time: x.time })),
+    ...yellowEvents.map((x) => ({ player: x.yellow, time: x.time })),
+  ]
+    .filter((x) => x.player)
+    .sort((x, y) => y.time - x.time);
+
+  // substitution
+  const subsInPlayers = clubData.players.filter((x, i) => !x.roles.includes("GK") && i >= 11);
+  const subsOutPlayers = clubData.players.filter((x, i) => !x.roles.includes("GK") && i <= 10);
+
+  const subEvent = [...new Array(5)].map(() => {
+    const subInIndex = this.range(0, subsInPlayers.length - 1);
+    const subOutIndex = this.range(0, subsOutPlayers.length - 1);
+    const subIn = subsInPlayers[subInIndex]?.ref;
+    const subOut = subsOutPlayers[subOutIndex]?.ref;
+
+    subsInPlayers.splice(subInIndex, 1);
+    subsOutPlayers.splice(subOutIndex, 1);
+
+    const eventsWithSubs = eventsPlayers.filter((x) => [subIn, subOut].includes(x.player));
+
+    if (eventsWithSubs.length) {
+      return { subIn, subOut, time: this.range(eventsWithSubs[0].time < 70 ? 70 : eventsWithSubs[0].time, 93) };
+    } else {
+      return { subIn, subOut, time: this.range(40, 93) };
+    }
+  });
+
+  const matchEvent = { goal: goalEvent, yellow: yellowEvents, sub: subEvent };
+
+  return { gs, matchEvent };
 };

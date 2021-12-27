@@ -12,20 +12,15 @@ const ClubsSchema = new Schema({
       tie: { type: Number, default: 0 },
       goalFor: { type: Number, default: 0 },
       goalAgainst: { type: Number, default: 0 },
-      bestMatch: {
-        hg: { type: Number, default: 0 },
-        ag: { type: Number, default: 0 },
-        away: { type: String, default: null },
-        home: { type: String, default: null },
-        date: { type: Date, default: Date.now },
-      },
-      worstMatch: {
-        hg: { type: Number, default: 0 },
-        ag: { type: Number, default: 0 },
-        away: { type: String, default: null },
-        home: { type: String, default: null },
-        date: { type: Date, default: Date.now },
-      },
+      lastMatch: [
+        {
+          hg: { type: Number, default: 0 },
+          ag: { type: Number, default: 0 },
+          away: { type: String, default: null },
+          home: { type: String, default: null },
+          date: { type: Date, default: Date.now },
+        },
+      ],
     },
     transfer: {
       priciestArrival: {

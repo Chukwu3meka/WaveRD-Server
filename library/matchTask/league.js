@@ -338,6 +338,7 @@ module.exports.playLeagueMatch = async ({ matchType, matchDate }) => {
             }
           }
         }
+
         // yellow card
         const probOfYC = Math.round(Math.random() * 2);
         for (count = 0; count < probOfYC; count++) {
@@ -359,6 +360,7 @@ module.exports.playLeagueMatch = async ({ matchType, matchDate }) => {
             });
         }
       };
+
       generateEvent(homeGoal, "homeTeam", homeEvent);
       generateEvent(awayGoal, "awayTeam", awayEvent);
 

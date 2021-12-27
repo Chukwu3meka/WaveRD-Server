@@ -237,6 +237,8 @@ exports.acceptOffer = async (req, res) => {
     const clubToData = await Club(mass).findOne({ ref: clubTo });
     const clubFromData = await Club(mass).findOne({ ref: clubFrom });
 
+    if (fee > clubToData.budget) throw "Insufficient Funds";
+
     if (clubToData.tactics.squad.length >= process.env.MAX_SQUAD || clubFromData.tactics.squad.length <= process.env.MIN_SQUAD)
       throw "Squad limit prevents registeration";
 
@@ -359,7 +361,7 @@ exports.acceptOffer = async (req, res) => {
 
     res.status(200).json("success");
   } catch (err) {
-    if (["Squad limit prevents registeration"].includes(err)) res.status(400).json(err);
+    if (["Squad limit prevents registeration", "Insufficient Funds"].includes(err)) res.status(400).json(err);
 
     return catchError({ res, err, message: "unable to accept offer" });
   }
