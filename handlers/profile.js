@@ -146,13 +146,10 @@ exports.signin = async (req, res, next) => {
       mass,
       handle,
       session,
-      division,
       stat: { verified: signupReference, registered },
     } = profile;
-    const manager = { handle, club, mass, division, session };
-
     if (signupReference === "verified") {
-      const token = jwt.sign(manager, process.env.SECRET, { expiresIn: "90 days" });
+      const token = jwt.sign({ club, mass, session }, process.env.SECRET, { expiresIn: "90 days" });
       return res.status(200).json({ token });
     } else {
       const serverStamp = new Date(registered).getTime();
@@ -258,10 +255,17 @@ exports.emailTaken = async (req, res, next) => {
 
 exports.persistUser = async (req, res) => {
   try {
-    const { mass, club, session } = validateRequestBody(req.body, ["mass", "club", "session"]);
-    const profile = await Profile.findOne({ session, mass, club });
+    const { session } = validateRequestBody(req.body, ["session"]);
+    const profile = await Profile.findOne({ session });
     if (!profile) throw "suspicious token";
-    res.status(200).json("valid token");
+
+    res.status(200).json({
+      session,
+      mass: profile.mass,
+      club: profile.club,
+      handle: profile.handle,
+      division: profile.division,
+    });
   } catch (err) {
     return catchError({ res, err, message: "suspicious token" });
   }

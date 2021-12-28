@@ -8,12 +8,6 @@ router.route("/resetPasswordOTPSender").post(handler.resetPasswordOTPSender);
 router.route("/resetPassword").post(handler.resetPassword);
 router.route("/emailTaken").post(handler.emailTaken);
 router.route("/signin").post(handler.signin);
-router.route("/persistUser").post(auth, handler.persistUser);
-
-// rebuilding
-// router.route("/resendVerification").post(handler.resendVerification);
-// router.route("/portfolio").post(auth, handler.portfolio);
-// router.route("/managers").post(auth, handler.managers);
-// router.route("/updatesettings").post(auth, handler.updateSettings);
+router.route("/persistUser").post(handler.persistUser);
 
 module.exports = router;
