@@ -464,7 +464,7 @@ exports.testFunctionHandler = async (req, res) => {
     // if (!massData) throw "Club not found";
     // const clubData = await Club(mass).findOne({ ref: club });
     // if (!clubData) throw "Club not found";
-    // res.status(200).json("success");
+    res.status(200).json("success");
   } catch (err) {
     return catchError({ res, err, message: "error occured" });
   }

@@ -7,7 +7,7 @@ const fixture = {
     ag: { type: Number, required: true },
     away: { type: String, required: true },
   },
-  table = [{ club: String, pld: Number, w: Number, d: Number, l: Number, pts: Number, gf: Number, ga: Number, gd: Number }],
+  table = [{ club: String, pld: Number, w: Number, d: Number, l: Number, pts: Number, gf: Number, ga: Number }],
   players = [{ player: String, club: String, mp: Number, goal: Number, assist: Number, cs: Number, yellow: Number, red: Number }],
   calendar = [{ week: Number, date: String, home: String, hg: Number, ag: Number, away: String }],
   atomFormat = {
@@ -40,6 +40,7 @@ const MassesSchema = new mongoose.Schema({
   season: { type: Number, default: 1 },
   created: { type: Date, default: Date.now },
   ref: { type: String, unique: true, required: true },
+
   unmanaged: {
     divisionOne: { type: Number, required: true, default: 16 },
     divisionTwo: { type: Number, required: true, default: 16 },
@@ -53,6 +54,7 @@ const MassesSchema = new mongoose.Schema({
     divisionFour: [{ type: String }],
     divisionThree: [{ type: String }],
   },
+
   cup: atomFormat,
   league: atomFormat,
   divisionOne: { cs: players, goal: players, yellow: players, red: players, assist: players, calendar, table },

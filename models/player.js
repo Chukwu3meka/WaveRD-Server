@@ -8,11 +8,13 @@ const matchData = {
   goal: { type: Number, default: 0, required: true },
   yellow: { type: Number, default: 0, required: true },
   assist: { type: Number, default: 0, required: true },
+  // 5 yellow card, one match suspension
   suspended: { type: Number, default: 0, required: true },
 };
 
 const PlayersSchema = new Schema({
   club: { type: String, required: true },
+  // - 30 per match
   energy: { type: Number, required: true, default: 0 },
   ref: { type: String, unique: true, required: true },
   // played in right position emotion +1, worng position 0 else -1

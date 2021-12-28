@@ -1,39 +1,35 @@
 const { Club, Player, Mass } = require("../../models/handler");
 const { clubStore, totalClubs } = require("../../source/clubStore.js");
 const { playerStore, totalPlayers } = require("../../source/playerStore.js");
-const { massList, roleList, formationList } = require("../../source/constants");
-const { scoreGenerator, range } = require("../../utils/serverFunctions");
+const { massList, roleList, formationList, divisionList } = require("../../source/constants");
+const { scoreGenerator, range, sortArr } = require("../../utils/serverFunctions");
+
+// redcard not implemented yet
 
 module.exports = async ({ matchDate, matchType, res }) => {
   for (const mass of massList) {
     const massData = await Mass.findOne({ ref: mass });
     if (!massData) throw "Club not found";
 
-    const matchData = {};
-    for (const divNum of ["divisionOne", "divisionTwo", "divisionThree", "divisionFour"]) {
-      matchData[divNum] = [];
+    const newMassData = {};
 
-      const fixture =
-        // massData[divNum].calendar.filter(({ date, home, away }) => date === matchDate && { date, home, away })
-        [
-          {
-            home: "club000001",
-            away: "club000002",
-            week: 1,
-          },
-        ];
+    for (const division of divisionList) {
+      const divisionMatch = [];
+      const divisionPlayers = [];
 
-      for (const { home, away, week } of fixture) {
+      const fixture = massData[division].calendar.filter(({ date, home, away }) => date === matchDate && { date, home, away });
+
+      for (const { home, away, date } of fixture) {
         let homeClubData = {};
         let awayClubData = {};
 
         for (const ref of [home, away]) {
           const clubData = await Club(mass).findOne({ ref });
 
-          clubData.players = await Player(mass).find({ ref: { $in: clubData.tactics.squad } });
+          clubData.initialPlayers = await Player(mass).find({ ref: { $in: clubData.tactics.squad } });
 
           clubData.players = await clubData.tactics.squad
-            .map((player) => clubData.players.find(({ ref }) => ref === player))
+            .map((player) => clubData.initialPlayers.find(({ ref }) => ref === player))
             .map(({ ref, energy, session, injury: { daysLeftToRecovery }, competition }) => ({
               ref,
               energy,
@@ -87,7 +83,7 @@ module.exports = async ({ matchDate, matchType, res }) => {
           clubData.tacticsRating = Math.round(
             clubData.players
               .slice(0, 11)
-              .reduce((total, curr) => total + curr.rating + (curr.session > week ? 3 : 0) - clubData.tacticsPenalty, 0) / 11
+              .reduce((total, curr) => total + curr.rating + (curr.session > 0 ? 3 : 0) - clubData.tacticsPenalty, 0) / 11
           );
 
           if (ref === home) homeClubData = clubData;
@@ -113,7 +109,7 @@ module.exports = async ({ matchDate, matchType, res }) => {
             ? range(50, 60)
             : range(20, 50);
 
-        matchData[divNum].push({
+        const matchStat = {
           homeMatchEvent,
           awayMatchEvent,
           // to generate match statistics
@@ -142,7 +138,9 @@ module.exports = async ({ matchDate, matchType, res }) => {
           awaySub: awayClubData.players.filter((x, i) => i >= 11),
           awayMissing: awayClubData.missingPlayers,
           awayFormation: awayClubData.tactics.formation,
-        });
+        };
+
+        divisionMatch.push(matchStat);
 
         const updateClubHandler = async (club) => {
           const opponent = club === home ? away : home;
@@ -153,14 +151,17 @@ module.exports = async ({ matchDate, matchType, res }) => {
             { ref: club },
             {
               $inc: {
-                budget: Math.floor(
-                  ((700 * clubStore(club).capacity) / 13.7 / 1000000) * (myGoal > oppGoal ? 1.5 : myGoal === oppGoal ? 1 : 0.5)
-                ),
-                "history.match.won": myGoal > oppGoal ? 1 : 0,
-                "history.match.lost": myGoal === oppGoal ? 1 : 0,
-                "history.match.tie": oppGoal > myGoal ? 1 : 0,
-                "history.match.goalFor": myGoal,
-                "history.match.goalAgainst": oppGoal,
+                budget:
+                  process.env.NODE_ENV !== "production"
+                    ? 0
+                    : Math.floor(
+                        ((700 * clubStore(club).capacity) / 13.7 / 1000000) * (myGoal > oppGoal ? 1.5 : myGoal === oppGoal ? 1 : 0.5)
+                      ),
+                "history.match.won": myGoal > oppGoal ? +1 : +0,
+                "history.match.lost": myGoal === oppGoal ? +1 : +0,
+                "history.match.tie": oppGoal > myGoal ? +1 : +0,
+                "history.match.goalFor": +myGoal,
+                "history.match.goalAgainst": +oppGoal,
               },
               $push: {
                 lastFiveMatches: {
@@ -182,21 +183,165 @@ module.exports = async ({ matchDate, matchType, res }) => {
                 },
               },
               $set: {
-                "history.match.lastMatch": {
+                lastMatch: {
                   away,
                   home,
                   hg: homeScore,
                   ag: awayScore,
+                  date: Date.now(),
+                  ...matchStat,
                 },
               },
             }
           );
         };
+
         updateClubHandler(home);
-        updateClubHandler(club);
+        updateClubHandler(away);
+
+        const updatePlayerHandler = (club) => {
+          const matchEvent = club === home ? homeMatchEvent : awayMatchEvent;
+          const clubData = club === home ? homeClubData : awayClubData;
+          const oppGoal = club === home ? awayScore : homeScore;
+
+          const featuredPlayersRef = [...clubData.players.filter((x, i) => i <= 10), ...matchEvent.sub.map((x) => x.subIn)].map(
+            (x) => x.ref || x
+          );
+
+          return [
+            ...featuredPlayersRef
+              .map((x) => clubData.initialPlayers.find((y) => y.ref === x))
+              .map((x, index) => {
+                const yellow = matchEvent.yellow.reduce((total, { yellow }) => (total + (x.ref === yellow) ? 1 : 0), 0);
+                const goal = matchEvent.goal.reduce((total, { goal }) => (total + (x.ref === goal) ? 1 : 0), 0);
+                const assist = matchEvent.goal.reduce((total, { assist }) => (total + (x.ref === assist) ? 1 : 0), 0);
+
+                const injury =
+                  x.energy < 20 ? injuryList[range(0, injuryList.length)] : [x.injury.daysLeftToRecovery, x.injury.injuryType];
+
+                return {
+                  club,
+                  ref: x.ref,
+                  // -30 per match
+                  energy: process.env.NODE_ENV !== "production" ? x.energy : x.energy - 30,
+                  // played in right position emotion +1, worng position 0 else -1
+                  session:
+                    x.session +
+                    (index > 10 ? 0 : playerStore(x.ref).roles.includes(roleList[clubData.tactics.formation][index]) ? 1 : 0),
+
+                  "injury.daysLeftToRecovery": injury[0],
+                  "injury.injuryType": injury[1],
+
+                  "history.mp": x.history.mp + 1,
+                  "history.goal": x.history.goal + goal,
+                  "history.yellow": x.history.yellow + yellow,
+                  "history.assist": x.history.assist + assist,
+                  "history.cs": x.history.cs + (oppGoal ? 0 : 1),
+
+                  "competition.division.red": x.competition.division.red,
+                  "competition.division.mp": x.competition.division.mp + 1,
+                  "competition.division.goal": x.competition.division.goal + goal,
+                  "competition.division.yellow": x.competition.division.yellow + yellow,
+                  "competition.division.assist": x.competition.division.assist + assist,
+                  "competition.division.cs": x.competition.division.cs + (oppGoal ? 0 : 1),
+                  // 5 yellow card, one match suspension
+                  "competition.division.suspended": yellow ? ((x.competition.division.yellow + yellow) % 5 === 0 ? 1 : 0) : 0,
+                };
+              }),
+
+            ...clubData.initialPlayers
+              .filter((x) => !featuredPlayersRef.includes(x.ref))
+              .map((x) => ({
+                club,
+                ref: x.ref,
+                session: x.session - 1,
+                "competition.division.mp": x.competition.division.mp,
+                "competition.division.cs": x.competition.division.cs,
+                "competition.division.red": x.competition.division.red,
+                "competition.division.goal": x.competition.division.goal,
+                "competition.division.yellow": x.competition.division.yellow,
+                "competition.division.assist": x.competition.division.assist,
+                "competition.division.suspended": x.competition.division.suspended > 0 ? x.competition.division.suspended - 1 : 0,
+              })),
+          ];
+        };
+
+        // for (player of clubsSquad) {
+        for (player of [...updatePlayerHandler(home), ...updatePlayerHandler(away)]) {
+          divisionPlayers.push({
+            club: player.club,
+            player: player.ref,
+            mp: player["competition.division.mp"],
+            cs: player["competition.division.cs"],
+            red: player["competition.division.red"],
+            goal: player["competition.division.goal"],
+            assist: player["competition.division.assist"],
+            yellow: player["competition.division.yellow"],
+          });
+
+          await Player(mass).updateOne({ ref: player.ref }, player);
+        }
+
+        // _____________ update calendar in Mass
+        await Mass.updateOne(
+          { ref: mass, [`${division}.calendar`]: { $elemMatch: { home, away, date } } },
+          {
+            $set: {
+              [`${division}.calendar.$.hg`]: homeScore,
+              [`${division}.calendar.$.ag`]: awayScore,
+            },
+          }
+        );
       }
+
+      const goal = sortArr(divisionPlayers, "goal").slice(0, 5);
+      const assist = sortArr(divisionPlayers, "assist").slice(0, 5);
+      const cs = sortArr(divisionPlayers, "cs").slice(0, 5);
+      const yellow = sortArr(divisionPlayers, "yellow").slice(0, 5);
+      const red = sortArr(divisionPlayers, "red").slice(0, 5);
+      const table = sortArr(
+        divisionMatch.flatMap((x) => {
+          const homeGoalDiff = x.matchStat.goals[0] - x.matchStat.goals[1];
+          const awayGoalDiff = x.matchStat.goals[1] - x.matchStat.goals[0];
+
+          const homeData = massData[division].table.find((y) => y.club === x.matchStat.clubs[0]);
+          const awayData = massData[division].table.find((y) => y.club === x.matchStat.clubs[1]);
+
+          return [
+            {
+              pld: homeData.pld + 1,
+              club: x.matchStat.clubs[0],
+              gf: homeData.gf + x.matchStat.goals[0],
+              ga: homeData.ga + x.matchStat.goals[1],
+              w: homeData.w + (homeGoalDiff > 0 ? 1 : 0),
+              l: homeData.l + (homeGoalDiff < 0 ? 1 : 0),
+              d: homeData.d + (homeGoalDiff === 0 ? 1 : 0),
+              pts: homeData.pts + (homeGoalDiff > 0 ? 3 : homeGoalDiff === 0 ? 1 : 0),
+            },
+            {
+              pld: awayData.pld + 1,
+              club: x.matchStat.clubs[1],
+              gf: awayData.gf + x.matchStat.goals[1],
+              ga: awayData.ga + x.matchStat.goals[0],
+              w: awayData.w + (awayGoalDiff > 0 ? 1 : 0),
+              l: awayData.l + (awayGoalDiff < 0 ? 1 : 0),
+              d: awayData.d + (awayGoalDiff === 0 ? 1 : 0),
+              pts: awayData.pts + (awayGoalDiff > 0 ? 3 : awayGoalDiff === 0 ? 1 : 0),
+            },
+          ];
+        }),
+        "table"
+      );
+
+      newMassData[`${division}.cs`] = cs;
+      newMassData[`${division}.red`] = red;
+      newMassData[`${division}.goal`] = goal;
+      newMassData[`${division}.table`] = table;
+      newMassData[`${division}.assist`] = assist;
+      newMassData[`${division}.yellow`] = yellow;
     }
 
-    return res.status(200).json(matchData.divisionOne);
+    // update mass Data
+    await Mass.updateOne({ ref: mass }, newMassData);
   }
 };

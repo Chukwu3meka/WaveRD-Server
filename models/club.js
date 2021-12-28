@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const ClubsSchema = new Schema({
   ref: { type: String, unique: true, required: true },
   manager: { type: String, default: null },
-  budget: { type: Number, default: 200, required: true },
+  budget: { type: Number, max: process.env.MAX_BUDGET, default: 200, required: true },
   history: {
     match: {
       won: { type: Number, default: 0 },
@@ -12,15 +12,6 @@ const ClubsSchema = new Schema({
       tie: { type: Number, default: 0 },
       goalFor: { type: Number, default: 0 },
       goalAgainst: { type: Number, default: 0 },
-      lastMatch: [
-        {
-          hg: { type: Number, default: 0 },
-          ag: { type: Number, default: 0 },
-          away: { type: String, default: null },
-          home: { type: String, default: null },
-          date: { type: Date, default: Date.now },
-        },
-      ],
     },
     transfer: {
       priciestArrival: {
@@ -90,6 +81,40 @@ const ClubsSchema = new Schema({
     sponsor: { type: Number, default: 0, required: true },
     arrival: { type: Number, default: 0, required: true },
     departure: { type: Number, default: 0, required: true },
+  },
+  lastMatch: {
+    hg: { type: Number, default: 0 },
+    ag: { type: Number, default: 0 },
+    away: { type: String, default: null },
+    home: { type: String, default: null },
+    date: { type: Date, default: Date.now },
+    homeMatchEvent: Object,
+    awayMatchEvent: Object,
+    matchStat: {
+      clubs: Array,
+      goals: Array,
+      possesion: Array,
+      shots: Array,
+      shotsOnTarget: Array,
+      passAccuracy: Array,
+      attacks: Array,
+      tackles: Array,
+      freekick: Array,
+      corner: Array,
+      yellow: Array,
+      red: Array,
+      saves: Array,
+    },
+
+    home11: Array,
+    homeSub: Array,
+    homeMissing: Array,
+    homeFormation: String,
+
+    away11: Array,
+    awaySub: Array,
+    awayMissing: Array,
+    awayFormation: String,
   },
 });
 

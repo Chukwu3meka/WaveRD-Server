@@ -141,16 +141,107 @@ module.exports.numToText = (no) => {
 };
 
 module.exports.sortArr = (arr, sortKey, asc = true) => {
-  if (sortKey === "date") {
-    asc ? arr.sort((x, y) => new Date(x.date) - new Date(y.date)) : arr.sort((x, y) => new Date(y.date) - new Date(x.date));
-  } else {
-    arr.sort((x, y) => {
-      if (x[sortKey] > y[sortKey]) return asc ? 1 : -1;
-      if (x[sortKey] < y[sortKey]) return asc ? -1 : 1;
+  let sortedArray = [...arr];
+
+  if (sortedArray?.length) {
+    sortedArray = sortedArray.filter((x) => x.sortKey !== null);
+    sortedArray.sort((x, y) => {
+      if (sortKey === "date") {
+        asc
+          ? sortedArray.sort((x, y) => new Date(x.date) - new Date(y.date))
+          : sortedArray.sort((x, y) => new Date(y.date) - new Date(x.date));
+      } else if (sortKey === "goal") {
+        if (x.goal > y.goal) return -1;
+        if (x.goal < y.goal) return 1;
+        if (x.mp < y.mp) return -1;
+        if (x.mp > y.mp) return 1;
+        if (x.assist > y.assist) return -1;
+        if (x.assist < y.assist) return 1;
+        if (x.cs > y.cs) return -1;
+        if (x.cs < y.cs) return 1;
+        if (x.red < y.red) return -1;
+        if (x.red > y.red) return 1;
+        if (x.yellow < y.yellow) return -1;
+        if (x.yellow > y.yellow) return 1;
+      } else if (sortKey === "assist") {
+        if (x.assist > y.assist) return -1;
+        if (x.assist < y.assist) return 1;
+        if (x.mp < y.mp) return -1;
+        if (x.mp > y.mp) return 1;
+        if (x.goal > y.goal) return -1;
+        if (x.goal < y.goal) return 1;
+        if (x.cs > y.cs) return -1;
+        if (x.cs < y.cs) return 1;
+        if (x.red < y.red) return -1;
+        if (x.red > y.red) return 1;
+        if (x.yellow < y.yellow) return -1;
+        if (x.yellow > y.yellow) return 1;
+      } else if (sortKey === "cs") {
+        if (x.cs > y.cs) return -1;
+        if (x.cs < y.cs) return 1;
+        if (x.mp < y.mp) return -1;
+        if (x.mp > y.mp) return 1;
+        if (x.goal > y.goal) return -1;
+        if (x.goal < y.goal) return 1;
+        if (x.assist > y.assist) return -1;
+        if (x.assist < y.assist) return 1;
+        if (x.red < y.red) return -1;
+        if (x.red > y.red) return 1;
+        if (x.yellow < y.yellow) return -1;
+        if (x.yellow > y.yellow) return 1;
+      } else if (sortKey === "yellow") {
+        if (x.yellow > y.yellow) return -1;
+        if (x.yellow < y.yellow) return 1;
+        if (x.mp > y.mp) return -1;
+        if (x.mp < y.mp) return 1;
+        if (x.red > y.red) return -1;
+        if (x.red < y.red) return 1;
+        if (x.cs < y.cs) return -1;
+        if (x.cs > y.cs) return 1;
+        if (x.goal < y.goal) return -1;
+        if (x.goal > y.goal) return 1;
+        if (x.assist < y.assist) return -1;
+        if (x.assist > y.assist) return 1;
+      } else if (sortKey === "red") {
+        if (x.red > y.red) return -1;
+        if (x.red < y.red) return 1;
+        if (x.mp > y.mp) return -1;
+        if (x.mp < y.mp) return 1;
+        if (x.yellow > y.yellow) return -1;
+        if (x.yellow < y.yellow) return 1;
+        if (x.cs < y.cs) return -1;
+        if (x.cs > y.cs) return 1;
+        if (x.goal < y.goal) return -1;
+        if (x.goal > y.goal) return 1;
+        if (x.assist < y.assist) return -1;
+        if (x.assist > y.assist) return 1;
+      } else if (sortKey === "table") {
+        if (x.pts > y.pts) return -1;
+        if (x.pts < y.pts) return 1;
+        if (x.pld < y.pld) return -1;
+        if (x.pld > y.pld) return 1;
+        if (x.gf - x.ga > y.gf - y.ga) return -1;
+        if (x.gf - x.ga < y.gf - y.ga) return 1;
+        if (x.gf > y.gf) return -1;
+        if (x.gf < y.gf) return 1;
+        if (x.w > y.w) return -1;
+        if (x.w < y.w) return 1;
+        if (x.ga < y.ga) return -1;
+        if (x.ga > y.ga) return 1;
+        if (x.d > y.d) return -1;
+        if (x.d < y.d) return 1;
+        if (x.l < y.l) return -1;
+        if (x.l > y.l) return 1;
+      } else {
+        sortedArray.sort((x, y) => {
+          if (x[sortKey] > y[sortKey]) return asc ? 1 : -1;
+          if (x[sortKey] < y[sortKey]) return asc ? -1 : 1;
+        });
+      }
     });
   }
 
-  return arr;
+  return sortedArray;
 };
 
 module.exports.scoreGenerator = ({ diff, clubData }) => {
@@ -230,7 +321,7 @@ module.exports.scoreGenerator = ({ diff, clubData }) => {
   const subsInPlayers = clubData.players.filter((x, i) => !x.roles.includes("GK") && i >= 11);
   const subsOutPlayers = clubData.players.filter((x, i) => !x.roles.includes("GK") && i <= 10);
 
-  const subEvent = [...new Array(5)].map(() => {
+  const subEvent = [...new Array(this.range(2, 5))].map(() => {
     const subInIndex = this.range(0, subsInPlayers.length - 1);
     const subOutIndex = this.range(0, subsOutPlayers.length - 1);
     const subIn = subsInPlayers[subInIndex]?.ref;

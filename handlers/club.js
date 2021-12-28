@@ -92,8 +92,7 @@ exports.fetchHistory = async (req, res) => {
     history.goalAgainst = clubData.history.match.goalAgainst;
     history.goalFor = clubData.history.match.goalFor;
     history.events = clubData.history.events;
-    history.bestMatch = clubData.history.match.bestMatch;
-    history.worstMatch = clubData.history.match.worstMatch;
+    history.lastMatch = clubData.lastMatch;
     history.squad = clubData.tactics.squad;
     history.transfers = [
       {
