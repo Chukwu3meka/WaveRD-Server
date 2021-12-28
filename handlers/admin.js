@@ -365,7 +365,29 @@ exports.initializeMass = async (req, res) => {
     const massData = await initMass();
 
     if (dbMassData) {
-      await Mass.updateOne({ ref: mass }, { ...massData, divisions });
+      await Mass.updateOne(
+        { ref: mass },
+        {
+          divisions,
+          ...massData,
+          $inc: { season: 1 },
+          $push: {
+            news: {
+              $each: [
+                {
+                  title: `${new Date().toDateString()} ~ A new season is here`,
+                  content: `
+                  @(mass,${mass},sponsor), welcomes you to a new season. It's that time of the year where plan ahead of time. Make Transfer Decisions and Set your target for the season.`,
+                  image: `/soccermass.webp`,
+                },
+              ],
+              $slice: 15,
+              $position: 0,
+            },
+          },
+        }
+      );
+
       // await Club(mass).collection.drop();
       await Player(mass).collection.drop();
       // create mass players collection
@@ -384,8 +406,6 @@ exports.initializeMass = async (req, res) => {
       for (const [club, players] of Object.entries(clubsData)) {
         await Club(mass).updateOne({ ref: club }, { "tactics.squad": players });
       }
-
-      return res.json(clubsData);
     } else {
       // add mass to masses collection
       await Mass.create({

@@ -12,12 +12,7 @@ exports.injuryList = [
   ["Acute neck strain", 15],
 ];
 
-exports.divisionList = [
-  "divisionOne",
-  // "divisionTwo",
-  // "divisionThree",
-  // "divisionFour",
-];
+exports.divisionList = ["divisionOne", "divisionTwo", "divisionThree", "divisionFour"];
 
 exports.massList = [
   "sm000000001",

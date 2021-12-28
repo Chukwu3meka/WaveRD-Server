@@ -6,7 +6,7 @@ const { scoreGenerator, range, sortArr } = require("../../utils/serverFunctions"
 
 // redcard not implemented yet
 
-module.exports = async ({ matchDate, matchType, res }) => {
+module.exports = async ({ matchDate, matchType }) => {
   for (const mass of massList) {
     const massData = await Mass.findOne({ ref: mass });
     if (!massData) throw "Club not found";
@@ -204,9 +204,10 @@ module.exports = async ({ matchDate, matchType, res }) => {
           const clubData = club === home ? homeClubData : awayClubData;
           const oppGoal = club === home ? awayScore : homeScore;
 
-          const featuredPlayersRef = [...clubData.players.filter((x, i) => i <= 10), ...matchEvent.sub.map((x) => x.subIn)].map(
-            (x) => x.ref || x
-          );
+          const featuredPlayersRef = [...clubData.players.filter((x, i) => i <= 10), ...matchEvent.sub.map((x) => x.subIn)].map((x) => {
+            console.log(x.ref || x);
+            return x.ref || x;
+          });
 
           return [
             ...featuredPlayersRef
@@ -294,11 +295,11 @@ module.exports = async ({ matchDate, matchType, res }) => {
         );
       }
 
-      const goal = sortArr(divisionPlayers, "goal").slice(0, 5);
-      const assist = sortArr(divisionPlayers, "assist").slice(0, 5);
-      const cs = sortArr(divisionPlayers, "cs").slice(0, 5);
-      const yellow = sortArr(divisionPlayers, "yellow").slice(0, 5);
-      const red = sortArr(divisionPlayers, "red").slice(0, 5);
+      const goal = sortArr(divisionPlayers, "goal").slice(0, 10);
+      const assist = sortArr(divisionPlayers, "assist").slice(0, 10);
+      const cs = sortArr(divisionPlayers, "cs").slice(0, 10);
+      const yellow = sortArr(divisionPlayers, "yellow").slice(0, 10);
+      const red = sortArr(divisionPlayers, "red").slice(0, 10);
       const table = sortArr(
         divisionMatch.flatMap((x) => {
           const homeGoalDiff = x.matchStat.goals[0] - x.matchStat.goals[1];
@@ -309,7 +310,7 @@ module.exports = async ({ matchDate, matchType, res }) => {
 
           return [
             {
-              pld: homeData.pld + 1,
+              pld: homeData.pld + 1 || 1,
               club: x.matchStat.clubs[0],
               gf: homeData.gf + x.matchStat.goals[0],
               ga: homeData.ga + x.matchStat.goals[1],
@@ -319,7 +320,7 @@ module.exports = async ({ matchDate, matchType, res }) => {
               pts: homeData.pts + (homeGoalDiff > 0 ? 3 : homeGoalDiff === 0 ? 1 : 0),
             },
             {
-              pld: awayData.pld + 1,
+              pld: awayData.pld + 1 || 1,
               club: x.matchStat.clubs[1],
               gf: awayData.gf + x.matchStat.goals[1],
               ga: awayData.ga + x.matchStat.goals[0],

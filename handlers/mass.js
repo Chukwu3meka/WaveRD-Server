@@ -121,7 +121,7 @@ exports.sendOffer = async (req, res, next) => {
     const { mass, player, club, to, fee } = validateRequestBody(req.body, ["mass", "player", "club", "to", "fee"]);
 
     // _______________________________ check if Transfer period
-    if (![0, 6, 7].includes(new Date().getMonth()) && player.club !== "club000000") throw "Not yet Transfer period";
+    if (![0, 6, 7].includes(new Date().getMonth()) && to !== "club000000") throw "Not yet Transfer period";
 
     const playerData = await Player(mass).findOne({ ref: player });
     if (!playerData) throw "Player not found";
@@ -158,17 +158,7 @@ exports.sendOffer = async (req, res, next) => {
     );
 
     // add to player offers
-    await Player(mass).updateOne(
-      { ref: player },
-      {
-        $push: {
-          "transfer.offers": {
-            $each: [club],
-            $position: 0,
-          },
-        },
-      }
-    );
+    await Player(mass).updateOne({ ref: player }, { $addToSet: { "transfer.offers": club } });
 
     res.status(200).json("success");
   } catch (err) {
@@ -224,7 +214,7 @@ exports.acceptOffer = async (req, res) => {
     const { mass, player, from, to } = validateRequestBody(req.body, ["mass", "player", "from", "to"]);
 
     // _______________________________ check if Transfer period
-    if (![0, 6, 7].includes(new Date().getMonth()) && player.club !== "club000000") throw "Not yet Transfer period";
+    if (![0, 6, 7].includes(new Date().getMonth()) && to !== "club000000") throw "Not yet Transfer period";
 
     // _______________________________ check length of club squad
     const massData = await Mass.findOne({ ref: mass });
