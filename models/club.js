@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const ClubsSchema = new Schema({
   ref: { type: String, unique: true, required: true },
   manager: { type: String, default: null },
+  email: { type: String, unique: true, required: false },
   budget: { type: Number, max: process.env.MAX_BUDGET, default: 200, required: true },
   history: {
     match: {

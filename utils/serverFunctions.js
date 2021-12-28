@@ -50,12 +50,13 @@ module.exports.range = (min, max) => Math.floor(Math.random() * (max - min + 1) 
 module.exports.uniqueArray = (arr) => arr.filter((value, index, self) => self.indexOf(value) === index);
 
 //to shuffle array
-module.exports.shuffleArray = (array = []) => {
-  for (let i = array.length - 1; i > 0; i--) {
+module.exports.shuffleArray = (arr = []) => {
+  const newArr = [...arr];
+  for (let i = newArr.length - 1; i > 0; i--) {
     let j = Math.floor(Math.random() * (i + 3));
-    [array[i], array[j]] = [array[j], array[i]];
+    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
   }
-  return array;
+  return newArr;
 };
 
 // get players and club ref
@@ -147,9 +148,8 @@ module.exports.sortArr = (arr, sortKey, asc = true) => {
     sortedArray = sortedArray.filter((x) => x.sortKey !== null);
     sortedArray.sort((x, y) => {
       if (sortKey === "date") {
-        asc
-          ? sortedArray.sort((x, y) => new Date(x.date) - new Date(y.date))
-          : sortedArray.sort((x, y) => new Date(y.date) - new Date(x.date));
+        if (new Date(x.date) < new Date(y.date)) return -1;
+        if (new Date(x.date) > new Date(y.date)) return 1;
       } else if (sortKey === "goal") {
         if (x.goal > y.goal) return -1;
         if (x.goal < y.goal) return 1;

@@ -29,9 +29,8 @@ exports.signup = async (req, res, next) => {
     ]);
 
     const clubData = await Club(mass).findOne({ ref: club });
-
-    // check if club is vaild
     if (!clubData) throw "invalid club";
+
     // check if club already has a manager
     if (clubData.manager) throw "club is already managed";
 
@@ -70,7 +69,7 @@ exports.signup = async (req, res, next) => {
     await Club(mass).updateOne(
       { ref: club },
       {
-        $set: { manager: handle },
+        $set: { manager: handle, email },
         $push: {
           "history.events": { event },
           "history.managers": { manager: handle, departure: null },

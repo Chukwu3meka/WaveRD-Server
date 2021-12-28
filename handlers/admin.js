@@ -1,7 +1,7 @@
 const { playerStore, totalPlayers } = require("../source/playerStore.js");
 const { clubStore, totalClubs } = require("../source/clubStore.js");
 const { range, numToText, catchError, shuffleArray, validateRequestBody, getRef, arrayToChunks } = require("../utils/serverFunctions");
-const { Club, Player, Mass } = require("../models/handler");
+const { Club, Player, Mass, Profile } = require("../models/handler");
 
 // to create/refresh new mass ::::::: add tables, calendar and topPlayers, players and clubs for new season
 exports.initializeMass = async (req, res) => {
@@ -11,8 +11,10 @@ exports.initializeMass = async (req, res) => {
 
     const dbMassData = await Mass.findOne({ ref: mass });
 
-    let clubs = [],
-      divisions = {};
+    //  randomize clubs for new mass where 0000 = premium agents, 0001 - 0064 for clubs
+
+    const divisions = {},
+      clubs = dbMassData ? [] : shuffleArray([...Array(64).keys()].map((x) => getRef("club", x + 1)));
 
     // relegation and promotion Handler
     if (dbMassData) {
@@ -20,18 +22,18 @@ exports.initializeMass = async (req, res) => {
         dbMassData[division].table.forEach((x) => clubs.push(x.club));
       }
       const [divisionOne, divisionTwo, divisionThree, divisionFour] = arrayToChunks(clubs, 16);
-      divisions = {
-        divisionOne: [...divisionOne.splice(0, 13), ...divisionTwo.splice(0, 3)],
-        divisionTwo: [...divisionOne.splice(0, 3), ...divisionTwo.splice(0, 10), ...divisionThree.splice(0, 3)],
-        divisionThree: [...divisionTwo.splice(0, 3), ...divisionThree.splice(0, 10), ...divisionFour.splice(0, 3)],
-        divisionFour: [...divisionThree.splice(0, 3), ...divisionFour.splice(0, 13)],
-      };
+      divisions.divisionOne = [...divisionOne.splice(0, 13), ...divisionTwo.splice(0, 3)];
+      divisions.divisionTwo = [...divisionOne.splice(0, 3), ...divisionTwo.splice(0, 10), ...divisionThree.splice(0, 3)];
+      divisions.divisionThree = [...divisionTwo.splice(0, 3), ...divisionThree.splice(0, 10), ...divisionFour.splice(0, 3)];
+      divisions.divisionFour = [...divisionThree.splice(0, 3), ...divisionFour.splice(0, 13)];
     } else {
-      //  randomize clubs for new mass where 0000 = premium agents, 0001 - 0064 for clubs
-      clubs = shuffleArray([...Array(64).keys()].map((x) => getRef("club", x + 1)));
       // select clubs for each division
       const [divisionOne, divisionTwo, divisionThree, divisionFour] = arrayToChunks(clubs, 16);
-      divisions = { divisionOne, divisionTwo, divisionThree, divisionFour };
+
+      divisions.divisionOne = divisionOne;
+      divisions.divisionTwo = divisionTwo;
+      divisions.divisionThree = divisionThree;
+      divisions.divisionFour = divisionFour;
     }
 
     const generateMatches = async (clubs) => {
@@ -234,17 +236,33 @@ exports.initializeMass = async (req, res) => {
       };
 
       const generateLeagueSchedule = async () => {
-        const eligibleClubs = [];
-        for (const [division, clubs] of Object.entries(divisions)) {
-          // fetch eligible clubs: top 8 teams in each divisions
-          eligibleClubs.push(
-            // [...clubs].splice(0, division === "divisionOne" ? 8 : division === "divisionTwo" ? 8 : division === "divisionThree" ? 5 : 3)
-            [...clubs].splice(0, 8)
-          );
+        let eligibleClubs = [];
+
+        //       for (const group of Object.values(massData.league.table)) {
+        //         for (const club of group) {
+        // ["club000000",
+        // "club000001",
+        // "club000063",
+        // "club000064",
+        // "club000065",].includes(club.club)&&
+        //   console.log( club.club)
+
+        // _________ fetch eligible clubs: top 8 teams in each divisions
+
+        while (eligibleClubs.includes(undefined) || !eligibleClubs.length) {
+          for (const clubs of Object.values(divisions)) {
+            eligibleClubs.push(clubs.slice(0, 8));
+          }
+
+          if (eligibleClubs.flat().includes(undefined)) {
+            eligibleClubs = [];
+          } else {
+            eligibleClubs = shuffleArray(eligibleClubs.flat());
+          }
         }
 
-        const clubs = shuffleArray(eligibleClubs.flat()),
-          cupGroups = arrayToChunks(shuffleArray(clubs), 4);
+        const clubs = eligibleClubs,
+          cupGroups = arrayToChunks(clubs, 4);
 
         for (const group of cupGroups) {
           const groupName = `group${numToText(cupGroups.indexOf(group) + 1)}`;
@@ -365,6 +383,14 @@ exports.initializeMass = async (req, res) => {
     const massData = await initMass();
 
     if (dbMassData) {
+      const clubsData = {},
+        clubsDivision = [
+          ...massData.divisionOne.table.map((x) => ({ club: x.club, division: "divisionOne" })),
+          ...massData.divisionTwo.table.map((x) => ({ club: x.club, division: "divisionTwo" })),
+          ...massData.divisionThree.table.map((x) => ({ club: x.club, division: "divisionThree" })),
+          ...massData.divisionFour.table.map((x) => ({ club: x.club, division: "divisionFour" })),
+        ];
+
       await Mass.updateOne(
         { ref: mass },
         {
@@ -388,12 +414,10 @@ exports.initializeMass = async (req, res) => {
         }
       );
 
-      // await Club(mass).collection.drop();
       await Player(mass).collection.drop();
-      // create mass players collection
+      // _______________ create mass players collection
       await Player(mass).insertMany(playersData);
 
-      const clubsData = {};
       for (const x of playersData) {
         const { ref, club } = x;
         if (clubsData[club] === undefined) {
@@ -404,7 +428,16 @@ exports.initializeMass = async (req, res) => {
         }
       }
       for (const [club, players] of Object.entries(clubsData)) {
-        await Club(mass).updateOne({ ref: club }, { "tactics.squad": players });
+        await Club(mass)
+          .findOneAndUpdate({ ref: club }, { "tactics.squad": players }, { new: true })
+          .then(async (x) => {
+            if (x?.email) {
+              await Profile.updateOne({ email: x.email }, { division: clubsDivision.find((y) => y.club === x.ref).division });
+            }
+          })
+          .catch((err) => {
+            throw err;
+          });
       }
     } else {
       // add mass to masses collection

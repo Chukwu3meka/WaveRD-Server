@@ -78,7 +78,10 @@ module.exports = async ({ matchDate, matchType }) => {
             clubData.missingPlayers = clubData.players.slice(18);
           }
 
-          clubData.tacticsPenalty = clubData.invalidSquad + clubData.firstElevenWrongRole;
+          clubData.tacticsPenalty =
+            (clubData.invalidSquad || clubData.firstElevenWrongRole) >= 4
+              ? clubData.invalidSquad + clubData.firstElevenWrongRole + 3
+              : clubData.invalidSquad + clubData.firstElevenWrongRole;
 
           clubData.tacticsRating = Math.round(
             clubData.players
@@ -204,11 +207,9 @@ module.exports = async ({ matchDate, matchType }) => {
           const clubData = club === home ? homeClubData : awayClubData;
           const oppGoal = club === home ? awayScore : homeScore;
 
-          const featuredPlayersRef = [...clubData.players.filter((x, i) => i <= 10), ...matchEvent.sub.map((x) => x.subIn)].map((x) => {
-            console.log(x.ref || x);
-            return x.ref || x;
-          });
-
+          const featuredPlayersRef = [...clubData.players.filter((x, i) => i <= 10), ...matchEvent.sub.map((x) => x.subIn)].map(
+            (x) => x?.ref || x
+          );
           return [
             ...featuredPlayersRef
               .map((x) => clubData.initialPlayers.find((y) => y.ref === x))

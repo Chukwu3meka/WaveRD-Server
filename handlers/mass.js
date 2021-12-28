@@ -44,6 +44,8 @@ exports.fetchHomeData = async (req, res) => {
   try {
     const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
 
+    console.log({ mass, club, division });
+
     const clubData = await Club(mass).findOne({ ref: club });
     if (!clubData) throw "Club not found";
 

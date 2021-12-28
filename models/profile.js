@@ -15,9 +15,6 @@ const ProfileSchema = new Schema({
     gender: { type: String, default: "male" },
     registered: { type: Date, default: Date.now },
     verified: { type: String, default: false },
-    win: { type: Number, default: 0 },
-    lose: { type: Number, default: 0 },
-    draw: { type: Number, default: 0 },
     otp: {
       exp: { type: Date, default: null },
       code: { type: Number, default: null },
