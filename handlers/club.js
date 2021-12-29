@@ -10,11 +10,16 @@ exports.fetchSquad = async (req, res) => {
     const clubData = await Club(mass).findOne({ ref: club });
     if (!clubData) throw "Club not found";
 
-    const {
-      tactics: { squad },
-    } = clubData;
+    const playerData = await Player(mass).find({ ref: { $in: clubData.tactics.squad } });
 
-    res.status(200).json(squad);
+    const clubPlayers = playerData.map((player) => ({
+      ...player.history,
+      ref: player.ref,
+      emotion: player.emotion,
+      listed: player.transfer.listed,
+    }));
+
+    res.status(200).json(clubPlayers);
   } catch (err) {
     return catchError({ res, err, message: "Unable to fetch squad" });
   }

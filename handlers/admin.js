@@ -157,13 +157,12 @@ exports.initializeMass = async (req, res) => {
             for (const fixture of weeklyFixture[i]) {
               const [home, away] = fixture.split("@@@");
               massData.cup.calendar.push({
-                week: i + 1,
+                group: groupName,
                 date,
                 home,
                 hg: null,
                 ag: null,
                 away,
-                data: {},
               });
             }
           }

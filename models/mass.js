@@ -1,15 +1,8 @@
 const mongoose = require("mongoose");
 
-const fixture = {
-    date: { type: Date, required: true },
-    home: { type: String, required: true },
-    hg: { type: Number, required: true },
-    ag: { type: Number, required: true },
-    away: { type: String, required: true },
-  },
-  table = [{ club: String, pld: Number, w: Number, d: Number, l: Number, pts: Number, gf: Number, ga: Number }],
+const table = [{ club: String, pld: Number, w: Number, d: Number, l: Number, pts: Number, gf: Number, ga: Number }],
   players = [{ player: String, club: String, mp: Number, goal: Number, assist: Number, cs: Number, yellow: Number, red: Number }],
-  calendar = [{ week: Number, date: String, home: String, hg: Number, ag: Number, away: String }],
+  calendar = [{ week: Number, date: String, home: String, hg: Number, ag: Number, away: String, group: String }],
   atomFormat = {
     calendar,
     cs: players,
@@ -28,11 +21,11 @@ const fixture = {
       groupEight: table,
     },
     knockOut: {
-      roundOf32: [fixture],
-      roundOf16: [fixture],
-      quarterFinalFixture: [fixture],
-      semiFinalFixture: [fixture],
-      finalFixture: [fixture],
+      roundOf32: [calendar],
+      roundOf16: [calendar],
+      quarterFinalFixture: [calendar],
+      semiFinalFixture: [calendar],
+      finalFixture: [calendar],
     },
   };
 

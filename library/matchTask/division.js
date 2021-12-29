@@ -36,7 +36,7 @@ module.exports = async ({ matchDate, matchType }) => {
               session,
               competition,
               injured: daysLeftToRecovery,
-              name: playerStore(ref).name,
+              // name: playerStore(ref).name,
               roles: playerStore(ref).roles,
               rating: playerStore(ref).rating,
               suspended: competition[matchType].suspended,
@@ -214,22 +214,22 @@ module.exports = async ({ matchDate, matchType }) => {
             ...featuredPlayersRef
               .map((x) => clubData.initialPlayers.find((y) => y.ref === x))
               .map((x, index) => {
-                const yellow = matchEvent.yellow.reduce((total, { yellow }) => (total + (x.ref === yellow) ? 1 : 0), 0);
-                const goal = matchEvent.goal.reduce((total, { goal }) => (total + (x.ref === goal) ? 1 : 0), 0);
-                const assist = matchEvent.goal.reduce((total, { assist }) => (total + (x.ref === assist) ? 1 : 0), 0);
+                const yellow = matchEvent.yellow.reduce((total, { yellow }) => (total + (x?.ref === yellow) ? 1 : 0), 0);
+                const goal = matchEvent.goal.reduce((total, { goal }) => (total + (x?.ref === goal) ? 1 : 0), 0);
+                const assist = matchEvent.goal.reduce((total, { assist }) => (total + (x?.ref === assist) ? 1 : 0), 0);
 
                 const injury =
                   x.energy < 20 ? injuryList[range(0, injuryList.length)] : [x.injury.daysLeftToRecovery, x.injury.injuryType];
 
                 return {
                   club,
-                  ref: x.ref,
+                  ref: x?.ref,
                   // -30 per match
                   energy: process.env.NODE_ENV !== "production" ? x.energy : x.energy - 30,
                   // played in right position emotion +1, worng position 0 else -1
                   session:
                     x.session +
-                    (index > 10 ? 0 : playerStore(x.ref).roles.includes(roleList[clubData.tactics.formation][index]) ? 1 : 0),
+                    (index > 10 ? 0 : playerStore(x?.ref).roles.includes(roleList[clubData.tactics.formation][index]) ? 1 : 0),
 
                   "injury.daysLeftToRecovery": injury[0],
                   "injury.injuryType": injury[1],
@@ -252,10 +252,10 @@ module.exports = async ({ matchDate, matchType }) => {
               }),
 
             ...clubData.initialPlayers
-              .filter((x) => !featuredPlayersRef.includes(x.ref))
+              .filter((x) => !featuredPlayersRef.includes(x?.ref))
               .map((x) => ({
                 club,
-                ref: x.ref,
+                ref: x?.ref,
                 session: x.session - 1,
                 "competition.division.mp": x.competition.division.mp,
                 "competition.division.cs": x.competition.division.cs,
