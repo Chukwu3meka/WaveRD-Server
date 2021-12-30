@@ -109,7 +109,7 @@ module.exports.sessionGenerator = (id, length = 36) => {
 
 module.exports.arrayToChunks = (arr, size) => {
   const arrChunks = [],
-    newArr = [...arr];
+    newArr = Array.from(arr);
 
   while (newArr.length) {
     arrChunks.push(newArr.splice(0, size));

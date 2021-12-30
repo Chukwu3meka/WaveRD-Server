@@ -296,6 +296,15 @@ module.exports = async ({ matchDate, matchType }) => {
         );
       }
 
+      console.log(`\n
+
+
+fsadfsdfasfsfds
+\n
+
+
+sdfadfdf`);
+
       const goal = sortArr(divisionPlayers, "goal").slice(0, 10);
       const assist = sortArr(divisionPlayers, "assist").slice(0, 10);
       const cs = sortArr(divisionPlayers, "cs").slice(0, 10);

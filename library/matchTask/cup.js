@@ -1,7 +1,7 @@
 const { Club, Player, Mass } = require("../../models/handler");
 const { clubStore, totalClubs } = require("../../source/clubStore.js");
 const { playerStore, totalPlayers } = require("../../source/playerStore.js");
-const { massList, roleList, formationList, cupList } = require("../../source/constants");
+const { massList, roleList, formationList, groupList } = require("../../source/constants");
 const { scoreGenerator, range, sortArr } = require("../../utils/serverFunctions");
 
 // redcard not implemented yet
@@ -13,7 +13,7 @@ module.exports = async ({ matchDate, matchType }) => {
 
     const newMassData = {};
 
-    for (const group of cupList) {
+    for (const group of groupList) {
       const cupMatch = [];
       const cupPlayers = [];
 

@@ -2,6 +2,7 @@ const { playerStore, totalPlayers } = require("../source/playerStore.js");
 const { clubStore, totalClubs } = require("../source/clubStore.js");
 const { range, numToText, catchError, shuffleArray, validateRequestBody, getRef, arrayToChunks } = require("../utils/serverFunctions");
 const { Club, Player, Mass, Profile } = require("../models/handler");
+const { divisionList } = require("../source/constants.js");
 
 // to create/refresh new mass ::::::: add tables, calendar and topPlayers, players and clubs for new season
 exports.initializeMass = async (req, res) => {
@@ -14,18 +15,29 @@ exports.initializeMass = async (req, res) => {
     //  randomize clubs for new mass where 0000 = premium agents, 0001 - 0064 for clubs
 
     const divisions = {},
-      clubs = dbMassData ? [] : shuffleArray([...Array(64).keys()].map((x) => getRef("club", x + 1)));
+      clubs = dbMassData
+        ? []
+        : // shuffleArray(
+          Array(64)
+            .fill()
+            .map((x, i) => getRef("club", i + 1));
+    // );
 
     // relegation and promotion Handler
     if (dbMassData) {
-      for (const division of ["divisionOne", "divisionTwo", "divisionThree", "divisionFour"]) {
-        dbMassData[division].table.forEach((x) => clubs.push(x.club));
-      }
+      for (const division of divisionList) dbMassData[division].table.forEach((x) => clubs.push(x.club));
+
       const [divisionOne, divisionTwo, divisionThree, divisionFour] = arrayToChunks(clubs, 16);
-      divisions.divisionOne = [...divisionOne.splice(0, 13), ...divisionTwo.splice(0, 3)];
-      divisions.divisionTwo = [...divisionOne.splice(0, 3), ...divisionTwo.splice(0, 10), ...divisionThree.splice(0, 3)];
-      divisions.divisionThree = [...divisionTwo.splice(0, 3), ...divisionThree.splice(0, 10), ...divisionFour.splice(0, 3)];
-      divisions.divisionFour = [...divisionThree.splice(0, 3), ...divisionFour.splice(0, 13)];
+      return res.status(200).json({
+        clubs,
+
+        a: [...divisionOne.slice(0, 13), ...divisionOne.slice(0, 13)],
+      });
+      // divisions.divisionOne = [...divisionOne.slice(0, 13), ...divisionTwo.slice(0, 3)];
+      // divisions.divisionTwo = [...divisionOne.slice(0, 3), ...divisionTwo.slice(0, 10), ...divisionThree.slice(0, 3)];
+      // divisions.divisionThree = [...divisionTwo.slice(0, 3), ...divisionThree.slice(0, 10), ...divisionFour.slice(0, 3)];
+      // divisions.divisionFour = [...divisionThree.slice(0, 3), ...divisionFour.slice(0, 13)];
+      return res.status(200).json({ clubs, a: divisionOne });
     } else {
       // select clubs for each division
       const [divisionOne, divisionTwo, divisionThree, divisionFour] = arrayToChunks(clubs, 16);
@@ -35,6 +47,14 @@ exports.initializeMass = async (req, res) => {
       divisions.divisionThree = divisionThree;
       divisions.divisionFour = divisionFour;
     }
+
+    // return res.status(200).json({ success: "Sdfasfds" });
+
+    // return res.status(200).json({
+    //   divisions,
+
+    //   a: divisions.divisionOne,
+    // });
 
     const generateMatches = async (clubs) => {
       let uniqueMatches = [];
@@ -125,62 +145,66 @@ exports.initializeMass = async (req, res) => {
         cup: { calendar: [], table: { ...groups }, ...playerStat },
       };
 
+      // top eight in each group
       const generateCupSchedule = async () => {
-        const cupGroups = arrayToChunks(shuffleArray(clubs), 8);
+        const cupGroups = arrayToChunks(
+          shuffleArray([
+            ...divisions.divisionOne.slice(0, 8),
+            ...divisions.divisionTwo.slice(0, 8),
+            ...divisions.divisionThree.slice(0, 8),
+            ...divisions.divisionFour.slice(0, 8),
+          ]),
+          4
+        );
 
         for (const group of cupGroups) {
-          const groupName = `group${numToText(cupGroups.indexOf(group) + 1)}`;
-
-          const weeklyFixture = await generateMatches(group);
-          // generate date for matches
-          const datesArray = [];
-          const currentYear = new Date().getFullYear();
-
-          // populate the date array
-          let date1 = new Date(currentYear, 7, 13); //start date
-          let date2 = new Date(currentYear + 1, 4, 31); //end date
-
-          // Get the first Monday in the month
-          while (date1.getDay() !== 3) {
-            date1.setDate(date1.getDate() + 1);
-          }
-
-          while (date1 < date2) {
-            datesArray.push(date1.toDateString()) && date1.setDate(date1.getDate() + 14);
-          }
-
-          for (let i = 0; i < weeklyFixture.length; i++) {
-            // pull first date in dates array
-            const date = datesArray.shift();
-
-            // loop through each fixture in the week
-            for (const fixture of weeklyFixture[i]) {
-              const [home, away] = fixture.split("@@@");
-              massData.cup.calendar.push({
-                group: groupName,
-                date,
-                home,
-                hg: null,
-                ag: null,
-                away,
-              });
-            }
-          }
-
-          massData.cup.table[groupName] = group.map((club) => ({
-            club,
-            w: 0,
-            d: 0,
-            l: 0,
-            ga: 0,
-            gd: 0,
-            gf: 0,
-            pts: 0,
-            pld: 0,
-          }));
+          console.log(group);
+          // const groupName = `group${numToText(cupGroups.indexOf(group) + 1)}`;
+          // const weeklyFixture = await generateMatches(group);
+          // // generate date for matches
+          // const datesArray = [];
+          // const currentYear = new Date().getFullYear();
+          // // populate the date array
+          // let date1 = new Date(currentYear, 7, 13); //start date
+          // let date2 = new Date(currentYear + 1, 4, 31); //end date
+          // // Get the first Monday in the month
+          // while (date1.getDay() !== 3) {
+          //   date1.setDate(date1.getDate() + 1);
+          // }
+          // while (date1 < date2) {
+          //   datesArray.push(date1.toDateString()) && date1.setDate(date1.getDate() + 14);
+          // }
+          // for (let i = 0; i < weeklyFixture.length; i++) {
+          //   // pull first date in dates array
+          //   const date = datesArray.shift();
+          //   // loop through each fixture in the week
+          //   for (const fixture of weeklyFixture[i]) {
+          //     const [home, away] = fixture.split("@@@");
+          //     massData.cup.calendar.push({
+          //       group: groupName,
+          //       date,
+          //       home,
+          //       hg: null,
+          //       ag: null,
+          //       away,
+          //     });
+          //   }
+          // }
+          // massData.cup.table[groupName] = group.map((club) => ({
+          //   club,
+          //   w: 0,
+          //   d: 0,
+          //   l: 0,
+          //   ga: 0,
+          //   gd: 0,
+          //   gf: 0,
+          //   pts: 0,
+          //   pld: 0,
+          // }));
         }
       };
 
+      //  _____________ all clubs in groups of 8
       const generateDivisionSchedule = async () => {
         for (const [division, clubs] of Object.entries(divisions)) {
           const weeklyFixture = await generateMatches(clubs);
@@ -490,7 +514,7 @@ exports.initializeMass = async (req, res) => {
       await Player(mass).insertMany(playersData);
     }
 
-    return res.json("successfull");
+    res.status(200).json("successful");
   } catch (err) {
     return catchError({ res, err, message: "cannot create  mass right now" });
   }

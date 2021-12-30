@@ -14,17 +14,7 @@ exports.injuryList = [
 
 exports.divisionList = ["divisionOne", "divisionTwo", "divisionThree", "divisionFour"];
 
-exports.cupList = [
-  //
-  "groupOne",
-  "groupTwo",
-  "groupThree",
-  "groupFour",
-  "groupFive",
-  "groupSix",
-  "groupSeven",
-  "groupEight",
-];
+exports.groupList = ["groupOne", "groupTwo", "groupThree", "groupFour", "groupFive", "groupSix", "groupSeven", "groupEight"];
 
 exports.massList = [
   "sm000000001",
