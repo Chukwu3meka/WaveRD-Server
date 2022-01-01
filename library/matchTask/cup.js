@@ -53,21 +53,22 @@ module.exports = async ({ matchDate, matchType }) => {
           );
 
           // if >4 suspected match fixed points, autoSet Formation
-          if (clubData.invalidSquad || clubData.firstElevenWrongRole >= 4) {
+          if (clubData.invalidSquad || clubData.firstElevenWrongRole >= 2) {
             const fullPlayersList = clubData.players
               .filter(({ injured, energy, suspended }) => !injured && energy >= 20 && !suspended)
               .sort((x, y) => y.rating - x.rating);
 
             clubData.players = [
-              ...roleList[clubData.tactics.formation].map((role) => {
-                const index = fullPlayersList.findIndex((player) => player.roles.includes(role));
-
-                const data = index >= 0 ? fullPlayersList[index] : fullPlayersList[fullPlayersList.length - 1];
-
-                fullPlayersList.splice(index, 1);
-
-                return data;
-              }),
+              ...roleList[clubData.tactics.formation]
+                .map((role) => {
+                  const index = fullPlayersList.findIndex((player) => player.roles.includes(role));
+                  if (index >= 0) {
+                    const data = index >= 0 ? fullPlayersList[index] : fullPlayersList[fullPlayersList.length - 1];
+                    fullPlayersList.splice(index, 1);
+                    return data;
+                  }
+                })
+                .filter(Boolean),
               ...fullPlayersList.slice(0, 7),
             ];
           } else {
@@ -76,15 +77,24 @@ module.exports = async ({ matchDate, matchType }) => {
           }
 
           clubData.tacticsPenalty =
-            (clubData.invalidSquad || clubData.firstElevenWrongRole) >= 4
+            clubData.invalidSquad || clubData.firstElevenWrongRole >= 2
               ? clubData.invalidSquad + clubData.firstElevenWrongRole + 3
               : clubData.invalidSquad + clubData.firstElevenWrongRole;
 
-          clubData.tacticsRating = Math.round(
-            clubData.players
-              .slice(0, 11)
-              .reduce((total, curr) => total + curr.rating + (curr.session > 0 ? 3 : 0) - clubData.tacticsPenalty, 0) / 11
-          );
+          clubData.tacticsRating =
+            Math.round(
+              clubData.players
+                .slice(0, 11)
+                .map((x, index) => ({
+                  index,
+                  rating: playerStore(x.ref).rating + (x.session === 0 ? 0 : x.session >= 1 ? 3 : -1),
+                  role: playerStore(x.ref).roles,
+                }))
+                .reduce(
+                  (total, { index, rating, role }) => total + (role.includes(roleList[clubData.tactics.formation][index]) ? rating : 50),
+                  0
+                ) / 11
+            ) - clubData.tacticsPenalty;
 
           if (ref === home) homeClubData = clubData;
           if (ref === away) awayClubData = clubData;

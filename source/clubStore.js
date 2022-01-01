@@ -257,10 +257,9 @@ const clubs = {
   ],
 };
 
-
-
 module.exports.totalClubs = Object.keys(clubs).length;
 
+module.exports.clubList = Object.values(clubs).map((x) => x[0][0]);
 
 module.exports.clubStore = (ref) => {
   const [[title, nickname, founded, stadium, capacity, location], [coach, rivalsList]] = clubs[ref];

@@ -246,16 +246,22 @@ module.exports.sortArr = (arr, sortKey, asc = true) => {
 module.exports.scoreGenerator = ({ diff, clubData }) => {
   const gs =
     diff >= 20
-      ? this.range(4, 7)
+      ? this.range(5, 8)
       : diff >= 15
-      ? this.range(3, 5)
+      ? this.range(4, 7)
+      : diff >= 12
+      ? this.range(3, 6)
       : diff >= 10
+      ? this.range(3, 5)
+      : diff >= 8
+      ? this.range(2, 4)
+      : diff >= 6
       ? this.range(2, 3)
-      : diff >= 5
+      : diff >= 4
       ? this.range(1, 2)
-      : diff >= 3
+      : diff >= 2
       ? this.range(0, 1)
-      : this.range(0, 2);
+      : 0;
 
   const goalPlayers = this.shuffleArray(
     clubData.players
@@ -317,9 +323,12 @@ module.exports.scoreGenerator = ({ diff, clubData }) => {
     )
   );
 
-  const assist = [...new Array(this.range(0, gs))].map(() => goalPlayers[this.range(0, goalPlayers.length - 1)]);
+  const assist = Array(this.range(0, gs))
+    .fill()
+    .map(() => goalPlayers[this.range(0, goalPlayers.length - 1)]);
 
-  const goalEvent = [...new Array(gs)]
+  const goalEvent = Array(gs)
+    .fill()
     .map(() => goalPlayers[this.range(0, goalPlayers.length - 1)])
     .map((goal, index) => ({
       goal,

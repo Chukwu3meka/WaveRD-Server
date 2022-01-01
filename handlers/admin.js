@@ -419,13 +419,10 @@ exports.initializeMass = async (req, res) => {
   }
 };
 
-exports.testFunctionHandler = async (req, res) => {
+exports.matchTask = async (req, res) => {
   try {
     const { mass, password } = validateRequestBody(req.body, ["mass", "password"]);
     if (password !== process.env.OTP) throw "Auth server unable to validate admin";
-
-    // const emotion =    require("../library/dailyTask/emotion");
-    // emotion();
 
     const massData = await Mass.findOne({ ref: mass });
     if (!massData) throw "Club not found";
@@ -434,20 +431,35 @@ exports.testFunctionHandler = async (req, res) => {
       sortArr([...massData.cup.calendar, ...massData.divisionOne.calendar, ...massData.league.calendar], "date").map((x) => x.date)
     );
 
-    // _______________ Daily Task
-    // require("../library/dailyTask/emotion")();
-    // require("../library/dailyTask/energy")();
-    // require("../library/dailyTask/injury")();
-
     // _______________ Match Task
-    require("../library/matchTask/playMatch")({ datesArray, res });
+    require("../library/matchTask")({ datesArray, res });
 
-    // const massData = await Mass.findOne({ ref: mass });
-    // if (!massData) throw "Club not found";
-    // const clubData = await Club(mass).findOne({ ref: club });
-    // if (!clubData) throw "Club not found";
-    // return res.status(200).json({ datesArray });
     res.status(200).json("success");
+  } catch (err) {
+    return catchError({ res, err, message: "error occured" });
+  }
+};
+
+exports.dailyTask = async (req, res) => {
+  try {
+    const { password } = validateRequestBody(req.body, ["password"]);
+    if (password !== process.env.OTP) throw "Auth server unable to validate admin";
+
+    require("../library/dailyTask")();
+
+    res.status(200).json("successful");
+  } catch (err) {
+    return catchError({ res, err, message: "error occured" });
+  }
+};
+exports.weeklyTask = async (req, res) => {
+  try {
+    const { password } = validateRequestBody(req.body, ["password"]);
+    if (password !== process.env.OTP) throw "Auth server unable to validate admin";
+
+    require("../library/weeklyTask")();
+
+    res.status(200).json("successful");
   } catch (err) {
     return catchError({ res, err, message: "error occured" });
   }
