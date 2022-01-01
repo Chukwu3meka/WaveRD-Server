@@ -37,17 +37,18 @@ exports.fetchTactics = async (req, res) => {
     const massData = await Mass.findOne({ ref: mass });
     if (!massData) throw "Mass not found";
 
-    const leagueCal = massData[division].calendar
-      .filter((x) => x.home === club || x.away === club)
-      .map(({ _doc }) => ({ ..._doc, competition: "league" }));
-    const cup = massData.cup.calendar
-      .filter((x) => x.home === club || x.away === club)
-      .map(({ _doc }) => ({ ..._doc, competition: "cup" }));
-    const league = massData.league.calendar
-      .filter((x) => x.home === club || x.away === club)
-      .map(({ _doc }) => ({ ..._doc, competition: "champ" }));
-
-    const calendar = sortArr([...leagueCal, ...cup, ...league], "week");
+    const calendar = sortArr(
+      [
+        ...massData[division].calendar
+          .filter((x) => x.home === club || x.away === club)
+          .map(({ _doc }) => ({ ..._doc, competition: "division" })),
+        ...massData.league.calendar
+          .filter((x) => x.home === club || x.away === club)
+          .map(({ _doc }) => ({ ..._doc, competition: "league" })),
+        ...massData.cup.calendar.filter((x) => x.home === club || x.away === club).map(({ _doc }) => ({ ..._doc, competition: "cup" })),
+      ],
+      "date"
+    );
 
     const nextMatch = { ...calendar.find((x) => x.hg === null && x.hg === null) };
     nextMatch.opponent = nextMatch.home === club ? nextMatch.away : nextMatch.home;

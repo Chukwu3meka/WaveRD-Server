@@ -207,8 +207,8 @@ exports.initializeMass = async (req, res) => {
           let date1 = new Date(currentYear, 8, 13); //start date
           let date2 = new Date(currentYear + 1, 4, 31); //end date
 
-          // _________________  Get the first Wednesday in the month
-          while (date1.getDay() !== 3) date1.setDate(date1.getDate() + 1);
+          // _________________  Get the first Saturday in the month
+          while (date1.getDay() !== 6) date1.setDate(date1.getDate() + 1);
           while (date1 < date2) datesArray.push(date1.toDateString()) && date1.setDate(date1.getDate() + 14);
 
           for (let i = 0; i < weeklyFixture.length; i++) {

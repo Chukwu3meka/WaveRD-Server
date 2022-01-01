@@ -1,7 +1,7 @@
+const { clubStore } = require("../../source/clubStore.js");
 const { Club, Player, Mass } = require("../../models/handler");
-const { clubStore, totalClubs } = require("../../source/clubStore.js");
-const { playerStore, totalPlayers } = require("../../source/playerStore.js");
-const { massList, roleList, formationList, divisionList } = require("../../source/constants");
+const { playerStore } = require("../../source/playerStore.js");
+const { massList, roleList, divisionList } = require("../../source/constants");
 const { scoreGenerator, range, sortArr } = require("../../utils/serverFunctions");
 
 // redcard not implemented yet
@@ -18,7 +18,6 @@ module.exports = async ({ matchDate, matchType }) => {
       const divisionPlayers = [];
 
       const fixture = massData[division].calendar.filter(({ date, home, away }) => date === matchDate && { date, home, away });
-      // const fixture = [{ home: "club000001", away: "club000002" }];
 
       for (const { home, away, date } of fixture) {
         let homeClubData = {};
