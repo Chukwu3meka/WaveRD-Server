@@ -44,6 +44,7 @@ const PlayersSchema = new Schema({
     offers: [String],
     listed: { type: Boolean, required: true, default: false },
     locked: { type: Boolean, required: true, default: false },
+    forcedListed: { type: Boolean, required: true, default: false },
   },
 });
 

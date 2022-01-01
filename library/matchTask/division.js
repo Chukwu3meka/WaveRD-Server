@@ -153,12 +153,9 @@ module.exports = async ({ matchDate, matchType }) => {
             { ref: club },
             {
               $inc: {
-                budget:
-                  process.env.NODE_ENV !== "production"
-                    ? 0
-                    : Math.floor(
-                        ((700 * clubStore(club).capacity) / 13.7 / 1000000) * (myGoal > oppGoal ? 1.5 : myGoal === oppGoal ? 1 : 0.5)
-                      ),
+                budget: Math.floor(
+                  ((700 * clubStore(club).capacity) / 13.7 / 1000000) * (myGoal > oppGoal ? 1.5 : myGoal === oppGoal ? 1 : 0.5)
+                ),
                 "history.match.won": myGoal > oppGoal ? 1 : 0,
                 "history.match.lost": myGoal === oppGoal ? 1 : 0,
                 "history.match.tie": oppGoal > myGoal ? 1 : 0,

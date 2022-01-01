@@ -10,8 +10,7 @@ module.exports = (req, res, next) => {
         res.status(401).json("suspicious token");
       } else {
         const { session, club, mass } = decoded;
-        req.body = { ...req.body, club, mass };
-
+        req.body = { club, mass, ...req.body };
         if (session && mass && club) return next();
         res.status(401).json("suspicious token");
 

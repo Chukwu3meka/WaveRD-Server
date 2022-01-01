@@ -42,7 +42,6 @@ exports.fetchMassData = async (req, res, next) => {
 
 exports.fetchHomeData = async (req, res) => {
   try {
-    console.log("req.body", req.body);
     const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
 
     const clubData = await Club(mass).findOne({ ref: club });
@@ -55,13 +54,13 @@ exports.fetchHomeData = async (req, res) => {
 
     const calendar = sortArr(
       [
-        ...massData[division].calendar
+        massData[division]?.calendar
           .filter((x) => x.home === club || x.away === club)
-          .map(({ _doc }) => ({ ..._doc, competition: "division" })),
-        ...massData.league.calendar
+          ?.map(({ _doc }) => ({ ..._doc, competition: "division" })),
+        massData.league.calendar
           .filter((x) => x.home === club || x.away === club)
-          .map(({ _doc }) => ({ ..._doc, competition: "league" })),
-        ...massData.cup.calendar.filter((x) => x.home === club || x.away === club).map(({ _doc }) => ({ ..._doc, competition: "cup" })),
+          ?.map(({ _doc }) => ({ ..._doc, competition: "league" })),
+        massData.cup.calendar.filter((x) => x.home === club || x.away === club)?.map(({ _doc }) => ({ ..._doc, competition: "cup" })),
       ],
       "date"
     );
@@ -69,18 +68,20 @@ exports.fetchHomeData = async (req, res) => {
     const nextMatchIndex = calendar.indexOf(calendar.find((x) => x.hg === null && x.hg === null));
 
     const myClubCalendar = {
-      curMatch: calendar[nextMatchIndex],
-      nextMatch: calendar[nextMatchIndex + 1],
+      curMatch: nextMatchIndex !== -1 ? calendar[nextMatchIndex] : null,
+      nextMatch: nextMatchIndex !== -1 ? calendar[nextMatchIndex + 1] : null,
       lastFiveMatches: clubData.history.lastFiveMatches,
-      prevMatch: nextMatchIndex === 0 ? null : calendar[nextMatchIndex - 1],
+      prevMatch: nextMatchIndex !== -1 ? (nextMatchIndex === 0 ? null : calendar[nextMatchIndex - 1]) : calendar[0],
     };
 
     const nextDivisionFixtureIndex = massData[division].calendar.indexOf(
       massData[division].calendar.find((x) => x.hg === null && x.hg === null)
     );
-    const nextDivisionFixture = massData[division].calendar.filter(
-      (x) => x.date === massData[division].calendar[nextDivisionFixtureIndex].date
-    );
+
+    const nextDivisionFixture =
+      nextDivisionFixtureIndex === -1
+        ? null
+        : massData[division].calendar.filter((x) => x.date === massData[division].calendar[nextDivisionFixtureIndex].date);
 
     res.status(200).json({
       table: table?.splice(0, 5),

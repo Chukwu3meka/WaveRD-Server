@@ -142,10 +142,9 @@ module.exports.numToText = (no) => {
 };
 
 module.exports.sortArr = (arr, sortKey, asc = true) => {
-  let sortedArray = [...arr];
+  let sortedArray = [...arr].filter(Boolean).flat();
 
   if (sortedArray?.length) {
-    sortedArray = sortedArray.filter((x) => x.sortKey !== null);
     sortedArray.sort((x, y) => {
       if (sortKey === "date") {
         if (new Date(x.date) < new Date(y.date)) return -1;

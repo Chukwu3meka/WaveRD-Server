@@ -17,6 +17,7 @@ exports.fetchSquad = async (req, res) => {
       ref: player.ref,
       emotion: player.emotion,
       listed: player.transfer.listed,
+      forcedListed: player.transfer.forcedListed,
     }));
 
     res.status(200).json(clubPlayers);
@@ -39,22 +40,24 @@ exports.fetchTactics = async (req, res) => {
 
     const calendar = sortArr(
       [
-        ...massData[division].calendar
+        massData[division]?.calendar
           .filter((x) => x.home === club || x.away === club)
-          .map(({ _doc }) => ({ ..._doc, competition: "division" })),
-        ...massData.league.calendar
+          ?.map(({ _doc }) => ({ ..._doc, competition: "division" })),
+        massData.league.calendar
           .filter((x) => x.home === club || x.away === club)
-          .map(({ _doc }) => ({ ..._doc, competition: "league" })),
-        ...massData.cup.calendar.filter((x) => x.home === club || x.away === club).map(({ _doc }) => ({ ..._doc, competition: "cup" })),
+          ?.map(({ _doc }) => ({ ..._doc, competition: "league" })),
+        massData.cup.calendar.filter((x) => x.home === club || x.away === club)?.map(({ _doc }) => ({ ..._doc, competition: "cup" })),
       ],
       "date"
     );
 
     const nextMatch = { ...calendar.find((x) => x.hg === null && x.hg === null) };
+
     nextMatch.opponent = nextMatch.home === club ? nextMatch.away : nextMatch.home;
 
-    const opponentData = await Club(mass).findOne({ ref: nextMatch.opponent });
-    nextMatch.lastFiveMatches = opponentData.history.lastFiveMatches;
+    nextMatch.lastFiveMatches = await Club(mass)
+      .findOne({ ref: nextMatch.opponent })
+      .then((x) => x?.history?.lastFiveMatches);
 
     const playerData = await Player(mass).find({ ref: { $in: clubData.tactics.squad } });
     const clubPlayers = playerData.map((player) => {
@@ -64,8 +67,10 @@ exports.fetchTactics = async (req, res) => {
       return {
         player: player.ref,
         energy: player.energy,
-        suspended: player.competition[nextMatch.competition].suspended
-          ? "Player is serving disciplinary action and should be back soon"
+        suspended: nextMatch.competition
+          ? player.competition[nextMatch.competition].suspended
+            ? "Player is serving disciplinary action and should be back soon"
+            : false
           : false,
         injured: player.injury.daysLeftToRecovery
           ? `Recovering from ${player.injury.injuryType}, expected to resume training on ${injuryReturnDate.toDateString()}`

@@ -9,13 +9,13 @@ module.exports = async ({ res, datesArray }) => {
 
     switch (matchType) {
       case "league":
-        await require("./league")({ matchType, matchDate, res });
+        // await require("./league")({ matchType, matchDate, res });
         break;
       case "cup":
         await require("./cup")({ matchType, matchDate, res });
         break;
       case "division":
-        await require("./division")({ matchType, matchDate, res });
+        // await require("./division")({ matchType, matchDate, res });
         break;
       default:
         break;

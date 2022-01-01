@@ -151,12 +151,9 @@ module.exports = async ({ matchDate, matchType }) => {
             { ref: club },
             {
               $inc: {
-                budget:
-                  process.env.NODE_ENV !== "production"
-                    ? 0
-                    : Math.floor(
-                        ((700 * clubStore(club).capacity) / 13.7 / 1000000) * (myGoal > oppGoal ? 1.5 : myGoal === oppGoal ? 1 : 0.5)
-                      ),
+                budget: Math.floor(
+                  ((700 * clubStore(club).capacity) / 13.7 / 1000000) * (myGoal > oppGoal ? 1.5 : myGoal === oppGoal ? 1 : 0.5)
+                ),
                 "history.match.won": myGoal > oppGoal ? 1 : 0,
                 "history.match.lost": myGoal === oppGoal ? 1 : 0,
                 "history.match.tie": oppGoal > myGoal ? 1 : 0,
@@ -196,8 +193,8 @@ module.exports = async ({ matchDate, matchType }) => {
           );
         };
 
-        // updateClubHandler(home);
-        // updateClubHandler(away);
+        updateClubHandler(home);
+        updateClubHandler(away);
 
         const updatePlayerHandler = (club) => {
           const matchEvent = club === home ? homeMatchEvent : awayMatchEvent;
@@ -275,19 +272,19 @@ module.exports = async ({ matchDate, matchType }) => {
             yellow: player["competition.cup.yellow"],
           });
 
-          // await Player(mass).updateOne({ ref: player.ref }, player);
+          await Player(mass).updateOne({ ref: player.ref }, player);
         }
 
-        //         _____________ update calendar in Mass
-        // await Mass.updateOne(
-        //   { ref: mass, "cup.calendar": { $elemMatch: { home, away, date } } },
-        //   {
-        //     $set: {
-        //       "cup.calendar.$.hg": homeScore,
-        //       "cup.calendar.$.ag": awayScore,
-        //     },
-        //   }
-        // );
+        // _____________ update calendar in Mass
+        await Mass.updateOne(
+          { ref: mass, "cup.calendar": { $elemMatch: { home, away, date } } },
+          {
+            $set: {
+              "cup.calendar.$.hg": homeScore,
+              "cup.calendar.$.ag": awayScore,
+            },
+          }
+        );
       }
 
       const goal = sortArr(cupPlayers, "goal").slice(0, 10);
@@ -330,15 +327,15 @@ module.exports = async ({ matchDate, matchType }) => {
         "table"
       );
 
-      newMassData[`cup.${group}.cs`] = cs;
-      newMassData[`cup.${group}.red`] = red;
-      newMassData[`cup.${group}.goal`] = goal;
+      newMassData[`cup.cs`] = cs;
+      newMassData[`cup.red`] = red;
+      newMassData[`cup.goal`] = goal;
+      newMassData[`cup.assist`] = assist;
+      newMassData[`cup.yellow`] = yellow;
       newMassData[`cup.table.${group}`] = table;
-      newMassData[`cup.${group}.assist`] = assist;
-      newMassData[`cup.${group}.yellow`] = yellow;
     }
 
     // update mass Data
-    // await Mass.updateOne({ ref: mass }, newMassData);
+    await Mass.updateOne({ ref: mass }, newMassData);
   }
 };
