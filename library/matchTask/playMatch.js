@@ -1,5 +1,5 @@
 module.exports = async (res) => {
-  const date = process.env.NODE_ENV === "production" ? new Date() : new Date("Wed Sep 01 2021"),
+  const date = process.env.NODE_ENV === "production" ? new Date() : new Date("Mon Aug 30 2021"),
     day = date.getDay(),
     matchDate = date.toDateString(),
     matchType = day === 1 ? "division" : day === 6 ? "league" : day === 3 ? "cup" : null;

@@ -343,3 +343,55 @@ module.exports.scoreGenerator = ({ diff, clubData }) => {
 
   return { gs, matchEvent };
 };
+
+module.exports.generateMatches = async (clubs) => {
+  let uniqueMatches = [];
+  let unusedClubs = [...clubs];
+
+  // create unique set of matches
+  for (const club of clubs) {
+    for (const opp of unusedClubs.filter((x) => x !== club)) {
+      // to prevent one team from always being the home team week in week out
+      uniqueMatches.push(unusedClubs.filter((x) => x !== club).indexOf(opp) % 2 ? `${club}@@@${opp}` : `${opp}@@@${club}`);
+
+      //   uniqueMatches.push(`${club}@@@${opp}`);
+      unusedClubs = unusedClubs.filter((x) => x !== club);
+    }
+  }
+
+  const oneLegSchedule = [...Array(clubs.length - 1).keys()].map((x) => []);
+
+  const matchDayChecker = (matchDay, fixture) => {
+    if (matchDay.length === 0) return true;
+
+    const [club, opp] = fixture.split("@@@");
+    const clubsInMatchDay = matchDay.flatMap((fixture) => fixture.split("@@@"));
+
+    if (clubsInMatchDay.includes(opp) || clubsInMatchDay.includes(club)) return false;
+
+    return true;
+  };
+
+  for (const matchDay of oneLegSchedule) {
+    for (const fixture of uniqueMatches) {
+      if (matchDayChecker(matchDay, fixture)) {
+        matchDay.push(fixture);
+        uniqueMatches = uniqueMatches.filter((x) => x !== fixture);
+      }
+    }
+  }
+
+  const schedule = [...oneLegSchedule];
+
+  // generateAwayFixtures
+  for (const fixture of oneLegSchedule) {
+    schedule.push(
+      fixture.map((x) => {
+        const [home, away] = x.split("@@@");
+        return `${away}@@@${home}`;
+      })
+    );
+  }
+
+  return schedule;
+};
