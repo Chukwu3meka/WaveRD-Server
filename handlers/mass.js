@@ -44,8 +44,6 @@ exports.fetchHomeData = async (req, res) => {
   try {
     const { mass, club, division } = validateRequestBody(req.body, ["mass", "club", "division"]);
 
-    console.log({ mass, club, division });
-
     const clubData = await Club(mass).findOne({ ref: club });
     if (!clubData) throw "Club not found";
 
@@ -104,8 +102,8 @@ exports.fetchTournament = async (req, res, next) => {
     if (!massData) throw "Mass not found";
 
     const tournament = {
-      cup: massData.cup,
-      league: massData.league,
+      cup: { ...massData.cup, calendar: sortArr(massData.cup.calendar, "date") },
+      league: { ...massData.league, calendar: sortArr(massData.league.calendar, "date") },
       divisionOne: massData.divisionOne,
       divisionTwo: massData.divisionTwo,
       divisionFour: massData.divisionFour,

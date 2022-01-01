@@ -263,13 +263,13 @@ module.exports.scoreGenerator = ({ diff, clubData }) => {
       .filter((x) => !x.roles.includes("GK"))
       .flatMap((x) =>
         x.roles.includes("CF")
-          ? [...new Array(20)].map(() => x.ref)
+          ? [...new Array(40)].map(() => x.ref)
           : x.roles.includes("RF")
-          ? [...new Array(15)].map(() => x.ref)
+          ? [...new Array(20)].map(() => x.ref)
           : x.roles.includes("LF")
-          ? [...new Array(15)].map(() => x.ref)
+          ? [...new Array(20)].map(() => x.ref)
           : x.roles.includes("AM")
-          ? [...new Array(10)].map(() => x.ref)
+          ? [...new Array(15)].map(() => x.ref)
           : x.roles.includes("RM")
           ? [...new Array(10)].map(() => x.ref)
           : x.roles.includes("LM")
@@ -284,8 +284,38 @@ module.exports.scoreGenerator = ({ diff, clubData }) => {
           ? [...new Array(3)].map(() => x.ref)
           : x.roles.includes("CB")
           ? [...new Array(1)].map(() => x.ref)
-          : 10
+          : 1
       )
+  );
+
+  const bookPlayers = this.shuffleArray(
+    clubData.players.flatMap((x) =>
+      x.roles.includes("CF")
+        ? [...new Array(1)].map(() => x.ref)
+        : x.roles.includes("RF")
+        ? [...new Array(1)].map(() => x.ref)
+        : x.roles.includes("LF")
+        ? [...new Array(1)].map(() => x.ref)
+        : x.roles.includes("AM")
+        ? [...new Array(3)].map(() => x.ref)
+        : x.roles.includes("RM")
+        ? [...new Array(5)].map(() => x.ref)
+        : x.roles.includes("LM")
+        ? [...new Array(5)].map(() => x.ref)
+        : x.roles.includes("CM")
+        ? [...new Array(7)].map(() => x.ref)
+        : x.roles.includes("DM")
+        ? [...new Array(10)].map(() => x.ref)
+        : x.roles.includes("LB")
+        ? [...new Array(15)].map(() => x.ref)
+        : x.roles.includes("RB")
+        ? [...new Array(15)].map(() => x.ref)
+        : x.roles.includes("CB")
+        ? [...new Array(20)].map(() => x.ref)
+        : x.roles.includes("GK")
+        ? [...new Array(3)].map(() => x.ref)
+        : 1
+    )
   );
 
   const assist = [...new Array(this.range(0, gs))].map(() => goalPlayers[this.range(0, goalPlayers.length - 1)]);
@@ -299,13 +329,21 @@ module.exports.scoreGenerator = ({ diff, clubData }) => {
     }))
     .sort((x, y) => x.time - y.time);
 
-  // yellow card
-  const yellowEvents = [...new Array(this.range(0, diff >= 10 ? 0 : diff >= 5 ? 1 : diff >= 0 ? 2 : 3))]
-    .map(() => goalPlayers[this.range(0, 10)])
-    .map((yellow, index) => ({
-      yellow,
-      time: this.range(0, 93),
-    }))
+  // ___________ yellow card
+  const yellowBooked = []; // to prevent players receiving card twice
+  const yellowEvents = new Array(this.range(0, diff >= 10 ? 0 : diff >= 5 ? 1 : diff >= 0 ? 2 : 3))
+    .fill()
+    .map(() => bookPlayers[this.range(0, 10)])
+    .map((yellow) => {
+      if (!yellowBooked.includes(yellow)) {
+        yellowBooked.push(yellow);
+        return {
+          yellow,
+          time: this.range(0, 93),
+        };
+      }
+    })
+    .filter(Boolean)
     .sort((x, y) => x.time - y.time);
 
   // get all Players in events and their time
@@ -321,23 +359,30 @@ module.exports.scoreGenerator = ({ diff, clubData }) => {
   const subsInPlayers = clubData.players.filter((x, i) => !x.roles.includes("GK") && i >= 11);
   const subsOutPlayers = clubData.players.filter((x, i) => !x.roles.includes("GK") && i <= 10);
 
-  const subEvent = [...new Array(this.range(2, 5))].map(() => {
-    const subInIndex = this.range(0, subsInPlayers.length - 1);
-    const subOutIndex = this.range(0, subsOutPlayers.length - 1);
-    const subIn = subsInPlayers[subInIndex]?.ref;
-    const subOut = subsOutPlayers[subOutIndex]?.ref;
+  const subbedPlayers = [];
+  const subEvent = new Array(5)
+    .fill()
+    .map(() => {
+      const subInIndex = this.range(0, subsInPlayers.length - 1);
+      const subOutIndex = this.range(0, subsOutPlayers.length - 1);
+      const subIn = subsInPlayers[subInIndex]?.ref;
+      const subOut = subsOutPlayers[subOutIndex]?.ref;
 
-    subsInPlayers.splice(subInIndex, 1);
-    subsOutPlayers.splice(subOutIndex, 1);
+      if (subbedPlayers.includes(subIn) || subbedPlayers.includes(subOut)) return null;
 
-    const eventsWithSubs = eventsPlayers.filter((x) => [subIn, subOut].includes(x.player));
+      subbedPlayers.push(subIn, subOut);
+      subsInPlayers.slice(subInIndex, 1);
+      subsOutPlayers.slice(subOutIndex, 1);
 
-    if (eventsWithSubs.length) {
-      return { subIn, subOut, time: this.range(eventsWithSubs[0].time < 70 ? 70 : eventsWithSubs[0].time, 93) };
-    } else {
-      return { subIn, subOut, time: this.range(40, 93) };
-    }
-  });
+      const eventsWithSubs = eventsPlayers.filter((x) => [subIn, subOut].includes(x.player));
+
+      if (eventsWithSubs.length) {
+        return { subIn, subOut, time: this.range(eventsWithSubs[0].time < 70 ? 70 : eventsWithSubs[0].time, 93) };
+      } else {
+        return { subIn, subOut, time: this.range(40, 93) };
+      }
+    })
+    .filter(Boolean);
 
   const matchEvent = { goal: goalEvent, yellow: yellowEvents, sub: subEvent };
 

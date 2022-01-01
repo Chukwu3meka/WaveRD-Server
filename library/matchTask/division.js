@@ -18,6 +18,7 @@ module.exports = async ({ matchDate, matchType }) => {
       const divisionPlayers = [];
 
       const fixture = massData[division].calendar.filter(({ date, home, away }) => date === matchDate && { date, home, away });
+      // const fixture = [{ home: "club000001", away: "club000002" }];
 
       for (const { home, away, date } of fixture) {
         let homeClubData = {};
@@ -28,7 +29,7 @@ module.exports = async ({ matchDate, matchType }) => {
 
           clubData.initialPlayers = await Player(mass).find({ ref: { $in: clubData.tactics.squad } });
 
-          clubData.players = await clubData.tactics.squad
+          clubData.players = clubData.tactics.squad
             .map((player) => clubData.initialPlayers.find(({ ref }) => ref === player))
             .map(({ ref, energy, session, injury: { daysLeftToRecovery }, competition }) => ({
               ref,
@@ -36,7 +37,6 @@ module.exports = async ({ matchDate, matchType }) => {
               session,
               competition,
               injured: daysLeftToRecovery,
-              // name: playerStore(ref).name,
               roles: playerStore(ref).roles,
               rating: playerStore(ref).rating,
               suspended: competition[matchType].suspended,
@@ -71,10 +71,10 @@ module.exports = async ({ matchDate, matchType }) => {
 
                 return data;
               }),
-              ...fullPlayersList.slice(0, 6),
+              ...fullPlayersList.slice(0, 7),
             ];
           } else {
-            clubData.players = clubData.players.slice(0, 17);
+            clubData.players = clubData.players.slice(0, 18);
             clubData.missingPlayers = clubData.players.slice(18);
           }
 
@@ -160,11 +160,11 @@ module.exports = async ({ matchDate, matchType }) => {
                     : Math.floor(
                         ((700 * clubStore(club).capacity) / 13.7 / 1000000) * (myGoal > oppGoal ? 1.5 : myGoal === oppGoal ? 1 : 0.5)
                       ),
-                "history.match.won": myGoal > oppGoal ? +1 : +0,
-                "history.match.lost": myGoal === oppGoal ? +1 : +0,
-                "history.match.tie": oppGoal > myGoal ? +1 : +0,
-                "history.match.goalFor": +myGoal,
-                "history.match.goalAgainst": +oppGoal,
+                "history.match.won": myGoal > oppGoal ? 1 : 0,
+                "history.match.lost": myGoal === oppGoal ? 1 : 0,
+                "history.match.tie": oppGoal > myGoal ? 1 : 0,
+                "history.match.goalFor": myGoal,
+                "history.match.goalAgainst": oppGoal,
               },
               $push: {
                 lastFiveMatches: {
@@ -207,75 +207,69 @@ module.exports = async ({ matchDate, matchType }) => {
           const clubData = club === home ? homeClubData : awayClubData;
           const oppGoal = club === home ? awayScore : homeScore;
 
-          const featuredPlayersRef = [...clubData.players.filter((x, i) => i <= 10), ...matchEvent.sub.map((x) => x.subIn)].map(
-            (x) => x?.ref || x
-          );
+          const featuredPlayersRef = [
+            ...clubData.players.filter((x, i) => i <= 10).map((x) => x.ref),
+            ...matchEvent.sub.map((x) => x.subIn),
+          ].map((y, index) => {
+            const x = clubData.initialPlayers.find((x) => x.ref === y);
 
-          console.log(featuredPlayersRef);
+            const yellow = matchEvent.yellow?.reduce((total, { yellow }) => (total + (x.ref === yellow) ? 1 : 0), 0);
+            const goal = matchEvent.goal?.reduce((total, { goal }) => (total + (x.ref === goal) ? 1 : 0), 0);
+            const assist = matchEvent.goal?.reduce((total, { assist }) => (total + (x.ref === assist) ? 1 : 0), 0);
+            const injury = x.energy < 20 ? injuryList[range(0, injuryList.length)] : [x.injury.daysLeftToRecovery, x.injury.injuryType];
 
-          return [
-            ...featuredPlayersRef
-              .map((x) => clubData.initialPlayers.find((y) => y.ref === x))
-              .map((x, index) => {
-                const yellow = matchEvent.yellow.reduce((total, { yellow }) => (total + (x.ref === yellow) ? 1 : 0), 0);
-                const goal = matchEvent.goal.reduce((total, { goal }) => (total + (x.ref === goal) ? 1 : 0), 0);
-                const assist = matchEvent.goal.reduce((total, { assist }) => (total + (x.ref === assist) ? 1 : 0), 0);
+            return {
+              club,
+              ref: x.ref,
+              energy: process.env.NODE_ENV !== "production" ? x.energy : x.energy - 30, // -30 per match
+              session:
+                x.session + (index > 10 ? 0 : playerStore(x.ref).roles.includes(roleList[clubData.tactics.formation][index]) ? 1 : 0), // played in right position emotion +1, worng position 0 else -1
 
-                const injury =
-                  x.energy < 20 ? injuryList[range(0, injuryList.length)] : [x.injury.daysLeftToRecovery, x.injury.injuryType];
+              "injury.daysLeftToRecovery": injury[0],
+              "injury.injuryType": injury[1],
 
-                return {
-                  club,
-                  ref: x.ref,
-                  // -30 per match
-                  energy: process.env.NODE_ENV !== "production" ? x.energy : x.energy - 30,
-                  // played in right position emotion +1, worng position 0 else -1
-                  session:
-                    x.session +
-                    (index > 10 ? 0 : playerStore(x.ref).roles.includes(roleList[clubData.tactics.formation][index]) ? 1 : 0),
+              "history.mp": x.history.mp + 1,
+              "history.goal": x.history.goal + goal,
+              "history.yellow": x.history.yellow + yellow,
+              "history.red": 0,
+              "history.assist": x.history.assist + assist,
+              "history.cs": x.history.cs + (oppGoal ? 0 : 1),
 
-                  "injury.daysLeftToRecovery": injury[0],
-                  "injury.injuryType": injury[1],
+              "competition.division.red": 0,
+              "competition.division.mp": x.competition.division.mp + 1,
+              "competition.division.goal": x.competition.division.goal + goal,
+              "competition.division.yellow": x.competition.division.yellow + yellow,
+              "competition.division.assist": x.competition.division.assist + assist,
+              "competition.division.cs": x.competition.division.cs + (oppGoal ? 0 : 1),
+              // 5 yellow card, one match suspension
+              "competition.division.suspended": yellow ? ((x.competition.division.yellow + yellow) % 5 === 0 ? 1 : 0) : 0,
+            };
+          });
 
-                  "history.mp": x.history.mp + 1,
-                  "history.goal": x.history.goal + goal,
-                  "history.yellow": x.history.yellow + yellow,
-                  "history.assist": x.history.assist + assist,
-                  "history.cs": x.history.cs + (oppGoal ? 0 : 1),
-
-                  "competition.division.red": x.competition.division.red,
-                  "competition.division.mp": x.competition.division.mp + 1,
-                  "competition.division.goal": x.competition.division.goal + goal,
-                  "competition.division.yellow": x.competition.division.yellow + yellow,
-                  "competition.division.assist": x.competition.division.assist + assist,
-                  "competition.division.cs": x.competition.division.cs + (oppGoal ? 0 : 1),
-                  // 5 yellow card, one match suspension
-                  "competition.division.suspended": yellow ? ((x.competition.division.yellow + yellow) % 5 === 0 ? 1 : 0) : 0,
-                };
-              }),
-
-            ...clubData.initialPlayers
-              .filter((x) => !featuredPlayersRef.includes(x.ref))
-              .map((x) => ({
+          const nonFeaturedPlayersRef = clubData.initialPlayers
+            .filter((x) => !featuredPlayersRef.map((y) => y.ref).includes(x.ref))
+            .map((x) => {
+              return {
                 club,
                 ref: x.ref,
                 session: x.session - 1,
                 "competition.division.mp": x.competition.division.mp,
                 "competition.division.cs": x.competition.division.cs,
-                "competition.division.red": x.competition.division.red,
+                "competition.division.red": 0,
                 "competition.division.goal": x.competition.division.goal,
                 "competition.division.yellow": x.competition.division.yellow,
                 "competition.division.assist": x.competition.division.assist,
                 "competition.division.suspended": x.competition.division.suspended > 0 ? x.competition.division.suspended - 1 : 0,
-              })),
-          ];
+              };
+            });
+          return [...featuredPlayersRef, ...nonFeaturedPlayersRef];
         };
 
         // for (player of clubsSquad) {
         for (player of [...updatePlayerHandler(home), ...updatePlayerHandler(away)]) {
           divisionPlayers.push({
-            club: player.club,
             player: player.ref,
+            club: player.club,
             mp: player["competition.division.mp"],
             cs: player["competition.division.cs"],
             red: player["competition.division.red"],
@@ -284,19 +278,19 @@ module.exports = async ({ matchDate, matchType }) => {
             yellow: player["competition.division.yellow"],
           });
 
-          // await Player(mass).updateOne({ ref: player.ref }, player);
+          await Player(mass).updateOne({ ref: player.ref }, player);
         }
 
-        // _____________ update calendar in Mass
-        // await Mass.updateOne(
-        //   { ref: mass, [`${division}.calendar`]: { $elemMatch: { home, away, date } } },
-        //   {
-        //     $set: {
-        //       [`${division}.calendar.$.hg`]: homeScore,
-        //       [`${division}.calendar.$.ag`]: awayScore,
-        //     },
-        //   }
-        // );
+        //         _____________ update calendar in Mass
+        await Mass.updateOne(
+          { ref: mass, [`${division}.calendar`]: { $elemMatch: { home, away, date } } },
+          {
+            $set: {
+              [`${division}.calendar.$.hg`]: homeScore,
+              [`${division}.calendar.$.ag`]: awayScore,
+            },
+          }
+        );
       }
 
       const goal = sortArr(divisionPlayers, "goal").slice(0, 10);
@@ -347,6 +341,6 @@ module.exports = async ({ matchDate, matchType }) => {
     }
 
     // update mass Data
-    // await Mass.updateOne({ ref: mass }, newMassData);
+    await Mass.updateOne({ ref: mass }, newMassData);
   }
 };

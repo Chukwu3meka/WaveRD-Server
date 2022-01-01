@@ -207,64 +207,64 @@ module.exports = async ({ matchDate, matchType }) => {
           const clubData = club === home ? homeClubData : awayClubData;
           const oppGoal = club === home ? awayScore : homeScore;
 
-          const featuredPlayersRef = [...clubData.players.filter((x, i) => i <= 10), ...matchEvent.sub.map((x) => x.subIn)].map(
-            (x) => x?.ref || x
-          );
+          const featuredPlayersRef = [
+            ...clubData.players.filter((x, i) => i <= 10).map((x) => x.ref),
+            ...matchEvent.sub.map((x) => x.subIn),
+          ];
+
+          const nonFeaturedPlayersRef = [...clubData.initialPlayers.filter((x) => !featuredPlayersRef.includes(x.ref))];
+
           return [
-            ...featuredPlayersRef
-              .map((x) => clubData.initialPlayers.find((y) => y.ref === x))
-              .map((x, index) => {
-                const yellow = matchEvent.yellow.reduce((total, { yellow }) => (total + (x.ref === yellow) ? 1 : 0), 0);
-                const goal = matchEvent.goal.reduce((total, { goal }) => (total + (x.ref === goal) ? 1 : 0), 0);
-                const assist = matchEvent.goal.reduce((total, { assist }) => (total + (x.ref === assist) ? 1 : 0), 0);
+            ...featuredPlayersRef.map(async (y, index) => {
+              const x = await clubData.initialPlayers.find((x) => x.ref === y);
 
-                const injury =
-                  x.energy < 20 ? injuryList[range(0, injuryList.length)] : [x.injury.daysLeftToRecovery, x.injury.injuryType];
+              const yellow = matchEvent.yellow?.reduce((total, { yellow }) => (total + (x.ref === yellow) ? 1 : 0), 0);
+              const goal = matchEvent.goal?.reduce((total, { goal }) => (total + (x.ref === goal) ? 1 : 0), 0);
+              const assist = matchEvent.goal?.reduce((total, { assist }) => (total + (x.ref === assist) ? 1 : 0), 0);
+              const injury =
+                x.energy < 20 ? injuryList[range(0, injuryList.length)] : [x.injury.daysLeftToRecovery, x.injury.injuryType];
 
-                return {
-                  club,
-                  ref: x.ref,
-                  // -30 per match
-                  energy: process.env.NODE_ENV !== "production" ? x.energy : x.energy - 30,
-                  // played in right position emotion +1, worng position 0 else -1
-                  session:
-                    x.session +
-                    (index > 10 ? 0 : playerStore(x.ref).roles.includes(roleList[clubData.tactics.formation][index]) ? 1 : 0),
-
-                  "injury.daysLeftToRecovery": injury[0],
-                  "injury.injuryType": injury[1],
-
-                  "history.mp": x.history.mp + 1,
-                  "history.goal": x.history.goal + goal,
-                  "history.yellow": x.history.yellow + yellow,
-                  "history.assist": x.history.assist + assist,
-                  "history.cs": x.history.cs + (oppGoal ? 0 : 1),
-
-                  "competition.cup.red": x.competition.cup.red,
-                  "competition.cup.mp": x.competition.cup.mp + 1,
-                  "competition.cup.goal": x.competition.cup.goal + goal,
-                  "competition.cup.yellow": x.competition.cup.yellow + yellow,
-                  "competition.cup.assist": x.competition.cup.assist + assist,
-                  "competition.cup.cs": x.competition.cup.cs + (oppGoal ? 0 : 1),
-                  // 5 yellow card, one match suspension
-                  "competition.cup.suspended": yellow ? ((x.competition.cup.yellow + yellow) % 5 === 0 ? 1 : 0) : 0,
-                };
-              }),
-
-            ...clubData.initialPlayers
-              .filter((x) => !featuredPlayersRef.includes(x.ref))
-              .map((x) => ({
+              return {
                 club,
                 ref: x.ref,
-                session: x.session - 1,
-                "competition.cup.mp": x.competition.cup.mp,
-                "competition.cup.cs": x.competition.cup.cs,
-                "competition.cup.red": x.competition.cup.red,
-                "competition.cup.goal": x.competition.cup.goal,
-                "competition.cup.yellow": x.competition.cup.yellow,
-                "competition.cup.assist": x.competition.cup.assist,
-                "competition.cup.suspended": x.competition.cup.suspended > 0 ? x.competition.cup.suspended - 1 : 0,
-              })),
+                // -30 per match
+                energy: process.env.NODE_ENV !== "production" ? x.energy : x.energy - 30,
+                // played in right position emotion +1, worng position 0 else -1
+                session:
+                  x.session + (index > 10 ? 0 : playerStore(x.ref).roles.includes(roleList[clubData.tactics.formation][index]) ? 1 : 0),
+
+                "injury.daysLeftToRecovery": injury[0],
+                "injury.injuryType": injury[1],
+
+                "history.mp": x.history.mp + 1,
+                "history.goal": x.history.goal + goal,
+                "history.yellow": x.history.yellow + yellow,
+                "history.assist": x.history.assist + assist,
+                "history.cs": x.history.cs + (oppGoal ? 0 : 1),
+
+                "competition.division.red": x.competition.division.red,
+                "competition.division.mp": x.competition.division.mp + 1,
+                "competition.division.goal": x.competition.division.goal + goal,
+                "competition.division.yellow": x.competition.division.yellow + yellow,
+                "competition.division.assist": x.competition.division.assist + assist,
+                "competition.division.cs": x.competition.division.cs + (oppGoal ? 0 : 1),
+                // 5 yellow card, one match suspension
+                "competition.division.suspended": yellow ? ((x.competition.division.yellow + yellow) % 5 === 0 ? 1 : 0) : 0,
+              };
+            }),
+
+            ...nonFeaturedPlayersRef.map((x) => ({
+              club,
+              ref: x.ref,
+              session: x.session - 1,
+              "competition.division.mp": x.competition.division.mp,
+              "competition.division.cs": x.competition.division.cs,
+              "competition.division.red": x.competition.division.red,
+              "competition.division.goal": x.competition.division.goal,
+              "competition.division.yellow": x.competition.division.yellow,
+              "competition.division.assist": x.competition.division.assist,
+              "competition.division.suspended": x.competition.division.suspended > 0 ? x.competition.division.suspended - 1 : 0,
+            })),
           ];
         };
 

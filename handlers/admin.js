@@ -7,8 +7,10 @@ const {
   shuffleArray,
   validateRequestBody,
   getRef,
+  uniqueArray,
   arrayToChunks,
   generateMatches,
+  sortArr,
 } = require("../utils/serverFunctions");
 const { Club, Player, Mass, Profile } = require("../models/handler");
 const { divisionList, groupList } = require("../source/constants.js");
@@ -21,15 +23,14 @@ exports.initializeMass = async (req, res) => {
 
     const initMassData = await Mass.findOne({ ref: mass });
 
-    //  randomize clubs for new mass where 0000 = premium agents, 0001 - 0064 for clubs
-
-    const clubs = initMassData
+    const currentYear = 2021 || new Date().getFullYear(),
+      clubs = initMassData
         ? []
-        : // shuffleArray(
-          Array(64)
-            .fill()
-            .map((x, i) => getRef("club", i + 1)),
-      // ),
+        : shuffleArray(
+            Array(64)
+              .fill()
+              .map((x, i) => getRef("club", i + 1))
+          ), //  randomize clubs for new mass where 0000 = premium agents, 0001 - 0064 for clubs
       cupClubs = [],
       divisionOne = [],
       divisionTwo = [],
@@ -56,9 +57,7 @@ exports.initializeMass = async (req, res) => {
       cupClubs.push(...d1.slice(0, 8), ...d2.slice(0, 8), ...d3.slice(0, 8), ...d4.slice(0, 8));
     }
 
-    // const currentYear = new Date().getFullYear(),
-    const currentYear = 2021,
-      divisions = { divisionOne, divisionTwo, divisionThree, divisionFour };
+    const divisions = { divisionOne, divisionTwo, divisionThree, divisionFour };
 
     const initMass = async () => {
       const groups = {
@@ -108,12 +107,12 @@ exports.initializeMass = async (req, res) => {
           // _________________ generate date for matches
           const datesArray = [];
           // _________________ populate the date array
-          let date1 = new Date(currentYear, 8, 13); //start date
+          let date1 = new Date(currentYear, 9, 13); //start date
           let date2 = new Date(currentYear + 1, 4, 31); //end date
 
           // _________________  Get the first Wednesday in the month
           while (date1.getDay() !== 3) date1.setDate(date1.getDate() + 1);
-          while (date1 < date2) datesArray.push(date1.toDateString()) && date1.setDate(date1.getDate() + 14);
+          while (date1 < date2) datesArray.push(date1.toDateString()) && date1.setDate(date1.getDate() + 21);
 
           for (let i = 0; i < weeklyFixture.length; i++) {
             // ____________________ pull first date in dates array
@@ -154,7 +153,7 @@ exports.initializeMass = async (req, res) => {
           const datesArray = [];
 
           // populate the date array
-          let date1 = new Date(currentYear, 7, 13); //start date
+          let date1 = new Date(currentYear, 7, 20); //start date
           let date2 = new Date(currentYear + 1, 5, 31); //end date
 
           // Get the first Monday in the month
@@ -428,18 +427,26 @@ exports.testFunctionHandler = async (req, res) => {
     // const emotion =    require("../library/dailyTask/emotion");
     // emotion();
 
+    const massData = await Mass.findOne({ ref: mass });
+    if (!massData) throw "Club not found";
+
+    const datesArray = uniqueArray(
+      sortArr([...massData.cup.calendar, ...massData.divisionOne.calendar, ...massData.league.calendar], "date").map((x) => x.date)
+    );
+
     // _______________ Daily Task
     // require("../library/dailyTask/emotion")();
     // require("../library/dailyTask/energy")();
     // require("../library/dailyTask/injury")();
 
     // _______________ Match Task
-    require("../library/matchTask/playMatch")(res);
+    require("../library/matchTask/playMatch")({ datesArray, res });
 
     // const massData = await Mass.findOne({ ref: mass });
     // if (!massData) throw "Club not found";
     // const clubData = await Club(mass).findOne({ ref: club });
     // if (!clubData) throw "Club not found";
+    // return res.status(200).json({ datesArray });
     res.status(200).json("success");
   } catch (err) {
     return catchError({ res, err, message: "error occured" });
