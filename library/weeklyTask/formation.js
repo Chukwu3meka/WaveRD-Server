@@ -3,13 +3,19 @@ const { playerStore } = require("../../source/playerStore.js");
 const { Player, Club, Mass } = require("../../models/handler");
 const { massList, roleList } = require("../../source/constants");
 
-module.exports = async () => {
+module.exports = async ({ all }) => {
   for (const mass of massList) {
     // get next match
     const massData = await Mass.findOne({ ref: mass });
     if (!massData) throw "Mass not found";
 
-    const clubsData = await Club(mass).find({ manager: null });
+    let clubsData;
+    if (all) {
+      clubsData = await Club(mass).find();
+    } else {
+      clubsData = await Club(mass).find({ manager: null });
+    }
+
     if (!clubsData) throw "Club not found";
 
     for (const {

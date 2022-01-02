@@ -15,8 +15,7 @@ module.exports = async ({ matchDate, matchType }) => {
       const leagueMatch = [];
       const leaguePlayers = [];
 
-      // const fixtures = massData.league.calendar.filter((fixture) => fixture.date === matchDate && fixture.group === group);
-      const fixtures = [{ home: "club000001", away: "club000002" }];
+      const fixtures = massData.league.calendar.filter((fixture) => fixture.date === matchDate && fixture.group === group);
 
       for (const { home, away, date } of fixtures) {
         let homeClubData = {};

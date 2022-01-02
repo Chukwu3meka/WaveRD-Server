@@ -333,7 +333,7 @@ module.exports.scoreGenerator = ({ diff, clubData }) => {
 
   // ___________ yellow card
   const yellowBooked = []; // to prevent players receiving card twice
-  const yellowEvents = new Array(this.range(0, diff >= 10 ? 0 : diff >= 5 ? 1 : diff >= 0 ? 2 : 3))
+  const yellowEvents = new Array(this.range(0, diff >= 10 ? 0 : diff >= 5 ? 1 : 2))
     .fill()
     .map(() => bookPlayers[this.range(0, 10)])
     .map((yellow) => {

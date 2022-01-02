@@ -1,5 +1,7 @@
 module.exports = async () => {
-  await require("./emotion")();
-  await require("./formation")();
-  await require("./clubReview")();
+  if (new Date().getDay() === 5) {
+    await require("./emotion")();
+    await require("./formation")();
+    await require("./clubReview")();
+  }
 };

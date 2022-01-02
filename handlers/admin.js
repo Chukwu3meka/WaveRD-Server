@@ -420,6 +420,9 @@ exports.initializeMass = async (req, res) => {
       // create mass players collection
       await Player(mass).insertMany(playersData);
     }
+
+    await require("../library/weeklyTask/formation")({ all: true });
+
     res.status(200).json("successful");
   } catch (err) {
     return catchError({ res, err, message: "cannot create  mass right now" });
@@ -439,7 +442,7 @@ exports.matchTask = async (req, res) => {
     );
 
     // _______________ Match Task
-    require("../library/matchTask")({ datesArray, res });
+    await require("../library/matchTask")({ datesArray, res });
 
     res.status(200).json("success");
   } catch (err) {
