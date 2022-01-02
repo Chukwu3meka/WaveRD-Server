@@ -1,5 +1,5 @@
 module.exports = async () => {
-  // await require("./formation")();
-  // await require("./emotion")();
+  await require("./emotion")();
+  await require("./formation")();
   await require("./clubReview")();
 };

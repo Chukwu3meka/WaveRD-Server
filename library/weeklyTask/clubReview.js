@@ -1,7 +1,5 @@
-const { sortArr } = require("../../utils/serverFunctions");
-const { playerStore } = require("../../source/playerStore.js");
-const { Player, Club, Mass } = require("../../models/handler");
-const { massList, roleList } = require("../../source/constants");
+const { Club } = require("../../models/handler");
+const { massList } = require("../../source/constants");
 
 module.exports = async () => {
   for (const mass of massList) {

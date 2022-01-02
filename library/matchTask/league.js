@@ -54,10 +54,9 @@ module.exports = async ({ matchDate, matchType }) => {
           );
 
           // if >4 suspected match fixed points, autoSet Formation
-          if (clubData.invalidSquad || clubData.firstElevenWrongRole >= 2) {
-            console.log(clubData.email);
-            // gameWarning.matchFixing
-            return;
+          if (clubData.invalidSquad || clubData.firstElevenWrongRole >= 3) {
+            if (clubData.email) await Profile.updateOne({ email: clubData.email }, { $inc: { "gameWarning.matchFixing": 1 } });
+
             const fullPlayersList = clubData.players
               .filter(({ injured, energy, suspended }) => !injured && energy >= 20 && !suspended)
               .sort((x, y) => y.rating - x.rating);
@@ -77,7 +76,6 @@ module.exports = async ({ matchDate, matchType }) => {
             clubData.missingPlayers = clubData.players.slice(18);
           }
 
-          return;
           clubData.tacticsPenalty =
             clubData.invalidSquad || clubData.firstElevenWrongRole >= 2
               ? clubData.invalidSquad + clubData.firstElevenWrongRole + 3
@@ -347,7 +345,6 @@ module.exports = async ({ matchDate, matchType }) => {
       newMassData[`league.table.${group}`] = table;
     }
 
-    return;
     // update mass Data
     await Mass.updateOne({ ref: mass }, newMassData);
   }

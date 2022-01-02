@@ -53,7 +53,9 @@ module.exports = async ({ matchDate, matchType }) => {
           );
 
           // if >4 suspected match fixed points, autoSet Formation
-          if (clubData.invalidSquad || clubData.firstElevenWrongRole >= 2) {
+          if (clubData.invalidSquad || clubData.firstElevenWrongRole >= 3) {
+            if (clubData.email) await Profile.updateOne({ email: clubData.email }, { $inc: { "gameWarning.matchFixing": 1 } });
+
             const fullPlayersList = clubData.players
               .filter(({ injured, energy, suspended }) => !injured && energy >= 20 && !suspended)
               .sort((x, y) => y.rating - x.rating);
