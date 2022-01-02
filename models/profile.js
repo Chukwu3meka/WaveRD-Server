@@ -27,6 +27,9 @@ const ProfileSchema = new Schema({
     moy: { type: Number, default: 0 },
   },
   clubsManaged: [{ club: { type: String, required: true }, date: { type: Date, default: Date.now } }],
+  gameWarning: {
+    matchFixing: { type: Number, default: 0 },
+  },
 });
 
 ProfileSchema.pre("save", async function (next) {

@@ -352,7 +352,14 @@ exports.initializeMass = async (req, res) => {
       }
       for (const [club, players] of Object.entries(clubsData)) {
         await Club(mass)
-          .findOneAndUpdate({ ref: club }, { "tactics.squad": players }, { new: true })
+          .findOneAndUpdate(
+            { ref: club },
+            {
+              "tactics.squad": players,
+              "history.match": { won: 0, lost: 0, tie: 0, goalFor: 0, goalAgainst: 0 },
+            },
+            { new: true }
+          )
           .then(async (x) => {
             if (x?.email) {
               await Profile.updateOne({ email: x.email }, { division: clubsDivision.find((y) => y.club === x.ref).division });
@@ -452,6 +459,7 @@ exports.dailyTask = async (req, res) => {
     return catchError({ res, err, message: "error occured" });
   }
 };
+
 exports.weeklyTask = async (req, res) => {
   try {
     const { password } = validateRequestBody(req.body, ["password"]);

@@ -59,16 +59,13 @@ module.exports = async ({ matchDate, matchType }) => {
               .sort((x, y) => y.rating - x.rating);
 
             clubData.players = [
-              ...roleList[clubData.tactics.formation]
-                .map((role) => {
-                  const index = fullPlayersList.findIndex((player) => player.roles.includes(role));
-                  if (index >= 0) {
-                    const data = index >= 0 ? fullPlayersList[index] : fullPlayersList[fullPlayersList.length - 1];
-                    fullPlayersList.splice(index, 1);
-                    return data;
-                  }
-                })
-                .filter(Boolean),
+              ...roleList[clubData.tactics.formation].map((role) => {
+                const index =
+                  fullPlayersList.findIndex((player) => player.roles.includes(role)) >= 0
+                    ? fullPlayersList.findIndex((player) => player.roles.includes(role))
+                    : fullPlayersList.length - 1;
+                return fullPlayersList.splice(index, 1)[0];
+              }),
               ...fullPlayersList.slice(0, 7),
             ];
           } else {
@@ -171,7 +168,7 @@ module.exports = async ({ matchDate, matchType }) => {
                 "history.match.goalAgainst": oppGoal,
               },
               $push: {
-                lastFiveMatches: {
+                "history.lastFiveMatches": {
                   $each: [myGoal > oppGoal ? "win" : myGoal === oppGoal ? "tie" : "lost"],
                   $slice: -5,
                 },

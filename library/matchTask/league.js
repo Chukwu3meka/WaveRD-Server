@@ -15,7 +15,8 @@ module.exports = async ({ matchDate, matchType }) => {
       const leagueMatch = [];
       const leaguePlayers = [];
 
-      const fixtures = massData.league.calendar.filter((fixture) => fixture.date === matchDate && fixture.group === group);
+      // const fixtures = massData.league.calendar.filter((fixture) => fixture.date === matchDate && fixture.group === group);
+      const fixtures = [{ home: "club000001", away: "club000002" }];
 
       for (const { home, away, date } of fixtures) {
         let homeClubData = {};
@@ -54,6 +55,9 @@ module.exports = async ({ matchDate, matchType }) => {
 
           // if >4 suspected match fixed points, autoSet Formation
           if (clubData.invalidSquad || clubData.firstElevenWrongRole >= 2) {
+            console.log(clubData.email);
+            // gameWarning.matchFixing
+            return;
             const fullPlayersList = clubData.players
               .filter(({ injured, energy, suspended }) => !injured && energy >= 20 && !suspended)
               .sort((x, y) => y.rating - x.rating);
@@ -73,6 +77,7 @@ module.exports = async ({ matchDate, matchType }) => {
             clubData.missingPlayers = clubData.players.slice(18);
           }
 
+          return;
           clubData.tacticsPenalty =
             clubData.invalidSquad || clubData.firstElevenWrongRole >= 2
               ? clubData.invalidSquad + clubData.firstElevenWrongRole + 3
@@ -168,7 +173,7 @@ module.exports = async ({ matchDate, matchType }) => {
                 "history.match.goalAgainst": oppGoal,
               },
               $push: {
-                lastFiveMatches: {
+                "history.lastFiveMatches": {
                   $each: [myGoal > oppGoal ? "win" : myGoal === oppGoal ? "tie" : "lost"],
                   $slice: -5,
                 },
@@ -342,6 +347,7 @@ module.exports = async ({ matchDate, matchType }) => {
       newMassData[`league.table.${group}`] = table;
     }
 
+    return;
     // update mass Data
     await Mass.updateOne({ ref: mass }, newMassData);
   }

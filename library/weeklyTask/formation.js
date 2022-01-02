@@ -1,8 +1,7 @@
-const { clubList } = require("../../source/clubStore");
-const { massList } = require("../../source/constants");
+const { sortArr } = require("../../utils/serverFunctions");
 const { playerStore } = require("../../source/playerStore.js");
 const { Player, Club, Mass } = require("../../models/handler");
-const { scoreGenerator, range, sortArr } = require("../../utils/serverFunctions");
+const { massList, roleList } = require("../../source/constants");
 
 module.exports = async () => {
   for (const mass of massList) {
@@ -10,7 +9,7 @@ module.exports = async () => {
     const massData = await Mass.findOne({ ref: mass });
     if (!massData) throw "Mass not found";
 
-    const clubsData = await Club(mass).find({});
+    const clubsData = await Club(mass).find({ manager: null });
     if (!clubsData) throw "Club not found";
 
     for (const {
@@ -41,48 +40,33 @@ module.exports = async () => {
 
       if (!competition) return; //terminate task,, as season is over
 
-      const fullPlayerList = squad
+      const fullPlayersList = squad
         .map((player) => playerData.find(({ ref }) => ref === player))
         .map(({ ref, energy, session, injury: { daysLeftToRecovery }, competition: c }) => ({
           ref,
           energy,
           session,
-          competition: c,
           injured: daysLeftToRecovery,
           roles: playerStore(ref).roles,
           rating: playerStore(ref).rating,
           suspended: c[competition].suspended,
         }))
-
         .filter(({ injured, energy, suspended }) => !injured && energy >= 20 && !suspended)
         .sort((x, y) => y.rating - x.rating);
 
       const newSquad = [
         ...roleList[formation].map((role) => {
-          const index = fullPlayersList.findIndex((player) => player.roles.includes(role));
-
-          if (index >= 0) {
-            const data = index >= 0 ? fullPlayersList[index] : fullPlayersList[fullPlayersList.length - 1];
-
-            fullPlayersList.splice(index, 1);
-
-            return data;
-          }
+          const index =
+            fullPlayersList.findIndex((player) => player.roles.includes(role)) >= 0
+              ? fullPlayersList.findIndex((player) => player.roles.includes(role))
+              : fullPlayersList.length - 1;
+          return fullPlayersList.splice(index, 1)[0];
         }),
-        ...fullPlayersList.slice(0, 7),
-      ];
+      ].map((x) => x.ref);
 
-      // console.log(ref, squad);
+      newSquad.push(...fullPlayersList.filter((x) => !newSquad.includes(x.ref)).map((x) => x.ref));
 
-      // const clubData = await Club(mass).findOne({});
-      // if (!clubData) throw "Club not found";
-      // console.log({ club });
-      // await Player(mass).updateMany({ session: { $lte: -30 } }, { $set: { emotion: "Miserable" } });
-      // // set injury type to null if days to recovery is 0
-      // await Player(mass).updateMany(
-      //   { emotion: "Miserable", "transfer.forcedListed": { $ne: true } },
-      //   { $set: { "transfer.forcedListed": true } }
-      // );
+      await Club(mass).updateOne({ ref }, { $set: { "tactics.squad": newSquad } });
     }
   }
 };

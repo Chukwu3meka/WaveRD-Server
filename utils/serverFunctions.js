@@ -245,23 +245,17 @@ module.exports.sortArr = (arr, sortKey, asc = true) => {
 
 module.exports.scoreGenerator = ({ diff, clubData }) => {
   const gs =
-    diff >= 20
-      ? this.range(5, 8)
-      : diff >= 15
-      ? this.range(4, 7)
+    diff >= 15
+      ? this.range(4, 6)
       : diff >= 12
-      ? this.range(3, 6)
-      : diff >= 10
       ? this.range(3, 5)
-      : diff >= 8
+      : diff >= 9
       ? this.range(2, 4)
       : diff >= 6
-      ? this.range(2, 3)
-      : diff >= 4
+      ? this.range(1, 3)
+      : diff >= 3
       ? this.range(1, 2)
-      : diff >= 2
-      ? this.range(0, 1)
-      : 0;
+      : this.range(0, 1);
 
   const goalPlayers = this.shuffleArray(
     clubData.players
