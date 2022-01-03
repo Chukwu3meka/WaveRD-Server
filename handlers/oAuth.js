@@ -14,13 +14,21 @@ const oAuthFunc = async (req, res) => {
   const email = validate("email", req.user);
   if (email) {
     const profile = await Profile.findOne({ email });
-    const { handle, session, club, soccermass, division, stat } = profile;
-    const { verified, reputation } = stat;
+    if (!profile) throw "Profile not found";
+
+    const {
+      club,
+      mass,
+      handle,
+      division,
+      session,
+      stat: { verified },
+    } = profile;
 
     if (verified === "verified") {
-      const manager = { handle, club, soccermass, division, session, reputation };
-      const token = jwt.sign(manager, process.env.SECRET, { expiresIn: "30 days" });
-      return res.redirect(`${process.env.CLIENT}auth/signin?token=${token}`);
+      const token = jwt.sign({ session, mass, club }, process.env.SECRET, { expiresIn: "90 days" }),
+        clientToken = jwt.sign({ token, handle, division, mass, club }, process.env.SECRET, { expiresIn: "90 days" });
+      return res.redirect(`${process.env.CLIENT}auth/signin?token=${clientToken}`);
     } else {
       return res.redirect(`${process.env.CLIENT}auth/signin?token=verify&email=${asterickMail(email)}`);
     }

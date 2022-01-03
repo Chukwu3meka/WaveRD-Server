@@ -1,6 +1,6 @@
 module.exports = async ({ res, datesArray }) => {
   // for (const date of datesArray.filter((_, i) => i <= 10)) {
-  for (const date of [...datesArray.splice(0)]) {
+  for (const date of datesArray) {
     const matchDate = new Date(date).toDateString(),
       day = new Date(date).getDay(),
       matchType = day === 1 ? "division" : day === 6 ? "league" : day === 3 ? "cup" : null;

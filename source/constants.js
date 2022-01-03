@@ -16,13 +16,7 @@ exports.divisionList = ["divisionOne", "divisionTwo", "divisionThree", "division
 
 exports.groupList = ["groupOne", "groupTwo", "groupThree", "groupFour", "groupFive", "groupSix", "groupSeven", "groupEight"];
 
-exports.massList = [
-  "sm000000001",
-  // "sm000000002",
-  // "sm000000003",
-  // "sm000000004",
-  // "sm000000005",
-];
+exports.massList = ["sm000000001", "sm000000002", "sm000000003", "sm000000004", "sm000000005"];
 
 exports.formationList = ["352A", "352B", "343", "4141", "433A", "433B", "433C", "442A", "442B", "451A", "451B", "541", "532", "523"];
 
