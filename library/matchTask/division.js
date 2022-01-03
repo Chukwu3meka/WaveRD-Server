@@ -343,7 +343,6 @@ module.exports = async ({ matchDate, matchType }) => {
       newMassData[`${division}.yellow`] = yellow;
     }
 
-    await Player(mass).updateMany({}, { $set: { energy: 100 } });
     // update mass Data
     await Mass.updateOne({ ref: mass }, newMassData);
   }
