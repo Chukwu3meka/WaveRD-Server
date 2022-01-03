@@ -424,6 +424,7 @@ exports.initializeMass = async (req, res) => {
       }
     }
     await require("../library/weeklyTask/formation")({ all: true });
+    console.log(`Server Task at ${new Date().toDateString()} was succesfull`);
     res.status(200).json("successful");
   } catch (err) {
     return catchError({ res, err, message: "cannot create  mass right now" });
@@ -446,7 +447,7 @@ exports.matchTask = async (req, res) => {
 
     // _______________ Match Task
     await require("../library/matchTask")({ datesArray: datesArray.slice(0, datesArray.length - 18), res });
-
+    console.log(`Server Task at ${new Date().toDateString()} was succesfull`);
     res.status(200).json("success");
   } catch (err) {
     return catchError({ res, err, message: "error occured" });
