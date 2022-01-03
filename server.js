@@ -6,12 +6,13 @@ const PORT = process.env.PORT;
 const secret = process.env.SECRET;
 
 const app = require("express")();
-app.use(
-  require("cors")({
-    origin: process.env.CLIENT,
-    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-  })
-);
+app.use(require("cors")());
+// app.use(
+//   require("cors")({
+//     origin: process.env.CLIENT,
+//     optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+//   })
+// );
 
 const routes = require("./routes");
 const server = require("http").Server(app);
