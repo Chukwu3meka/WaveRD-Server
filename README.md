@@ -18,7 +18,8 @@ Use {
 
 3. To init mass run _http://localhost:5000/ or https://soccermass.herokuapp.com/_ admin/initializeMass
 
-4. DB access mongodb+srv://chukwuemeka:sm2018@smcluster1.bj62x.mongodb.net/test
+4. MONGODB_URI = "mongodb://127.0.0.1:27017/soccermass"
+   MONGODB_URI = "mongodb+srv://chukwuemeka:sm2018@smcluster1.bj62x.mongodb.net/SoccerMASS?retryWrites=true&w=majority"
 
 ## Documentation
 

@@ -49,7 +49,7 @@ exports.initializeMass = async (req, res) => {
       divisionFour.push(...[...d3.slice(13, 16), ...d4.slice(3, 16)]);
       cupClubs.push(...d1.slice(0, 8), ...d2.slice(0, 8), ...d3.slice(0, 8), ...d4.slice(0, 8));
     } else {
-      const [d1, d2, d3, d4] = arrayToChunks(shuffleArray(clubs), 16);
+      const [d1, d2, d3, d4] = arrayToChunks(clubs, 16);
       divisionOne.push(...d1);
       divisionTwo.push(...d2);
       divisionThree.push(...d3);
