@@ -245,15 +245,19 @@ module.exports.sortArr = (arr, sortKey, asc = true) => {
 
 module.exports.scoreGenerator = ({ diff, clubData }) => {
   const gs =
-    diff >= 15
-      ? this.range(4, 6)
-      : diff >= 12
-      ? this.range(3, 5)
+    diff >= 11
+      ? this.range(2, 8)
       : diff >= 9
-      ? this.range(2, 4)
-      : diff >= 6
-      ? this.range(1, 3)
+      ? this.range(2, 7)
+      : diff >= 7
+      ? this.range(2, 6)
+      : diff >= 5
+      ? this.range(2, 5)
       : diff >= 3
+      ? this.range(2, 4)
+      : diff >= 2
+      ? this.range(2, 3)
+      : diff >= 1
       ? this.range(1, 2)
       : this.range(0, 1);
 

@@ -14,6 +14,12 @@ Use {
 
 1. _Play Match for today_
 
+2. visit this url to connect witch compassmongodb+srv://ChukwuEmeka:SoccerMASS2018@cluster0.sqy5y.mongodb.net/test?authSource=admin&replicaSet=Cluster0-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true
+
+3. To init mass run _http://localhost:5000/ or https://soccermass.herokuapp.com/_ admin/initializeMass
+
+4. DB access mongodb+srv://chukwuemeka:sm2018@smcluster1.bj62x.mongodb.net/test
+
 ## Documentation
 
 **SoccerMASS is developed/maintained by a team of highly skilled developers**
