@@ -12,10 +12,13 @@ const io = (module.exports.io = require("socket.io")(server));
 const socketManager = require("./handlers/socketManager");
 
 app.use(require("cors")());
+app.options("*", require("cors")());
 app.use(require("cookie-parser")());
 app.use(require("body-parser").urlencoded({ extended: true }));
 app.use(require("body-parser").json({ limit: "50mb" }));
 app.use(require("express-session")({ secret, resave: true, saveUninitialized: true }));
+
+// app.use(cors());
 
 app.use(passport.initialize());
 app.use(passport.session());
