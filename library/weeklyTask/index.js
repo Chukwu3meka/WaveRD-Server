@@ -4,4 +4,6 @@ module.exports = async () => {
     await require("./formation")();
     await require("./clubReview")();
   }
+
+  return "*********************** _ TASK HAS COMPLETED _ *********************";
 };

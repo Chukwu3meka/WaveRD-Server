@@ -39,4 +39,6 @@ module.exports = async () => {
     default:
       break;
   }
+
+  return "*********************** _ TASK HAS COMPLETED _ *********************";
 };
