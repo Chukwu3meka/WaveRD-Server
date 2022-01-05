@@ -490,7 +490,8 @@ exports.starter = async (req, res) => {
     // const clubData = await Club(mass).findOne({ ref: club });
     // if (!clubData) throw "Club not found";
 
-    require("../library/dailyTask/sackManagers")();
+    require("../library/matchTask/cup")({ matchDate: "Wed Jan 05 2022", matchType: "cup" });
+    // require("../library/dailyTask/sackManagers")();
     // require("../library/dailyTask/transfer")();
 
     res.status(200).json("successful");
