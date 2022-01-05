@@ -1,4 +1,5 @@
 module.exports = async () => {
-  await require("./energy")();
-  await require("./injury")();
+  await require("./fitness")();
+  await require("./transfer")();
+  await require("./sackManagers")();
 };

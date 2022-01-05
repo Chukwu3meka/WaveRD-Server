@@ -482,16 +482,18 @@ exports.weeklyTask = async (req, res) => {
 
 exports.starter = async (req, res) => {
   try {
-    const { mass, club } = validateRequestBody(req.body, ["mass", "club"]);
+    const { password } = validateRequestBody(req.body, ["password"]);
+    if (password !== process.env.OTP) throw "Auth server unable to validate admin";
 
-    const massData = await Mass.findOne({ ref: mass });
-    if (!massData) throw "Club not found";
-    const clubData = await Club(mass).findOne({ ref: club });
-    if (!clubData) throw "Club not found";
+    // const massData = await Mass.findOne({ ref: mass });
+    // if (!massData) throw "Club not found";
+    // const clubData = await Club(mass).findOne({ ref: club });
+    // if (!clubData) throw "Club not found";
 
-    console.log(clubData);
+    require("../library/dailyTask/sackManagers")();
+    // require("../library/dailyTask/transfer")();
 
-    res.status(200).json("success");
+    res.status(200).json("successful");
   } catch (err) {
     return catchError({ res, err, message: "error occured" });
   }

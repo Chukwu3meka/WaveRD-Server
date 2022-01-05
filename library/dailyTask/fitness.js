@@ -3,6 +3,8 @@ const { massList } = require("../../source/constants");
 
 module.exports = async () => {
   for (const mass of massList) {
+    await Player(mass).updateMany({ energy: { $lt: 95 } }, { $inc: { energy: 5 } });
+
     // reduce days left to recovery daily
     await Player(mass).updateMany(
       { "injury.daysLeftToRecovery": { $gte: 1 } },

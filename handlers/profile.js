@@ -28,6 +28,8 @@ exports.signup = async (req, res, next) => {
       "gender",
     ]);
 
+    const dateRegistered = new Date();
+
     const clubData = await Club(mass).findOne({ ref: club });
     if (!clubData) throw "invalid club";
 
@@ -72,7 +74,7 @@ exports.signup = async (req, res, next) => {
         $set: { manager: handle, email },
         $push: {
           "history.events": { event },
-          "history.managers": { manager: handle, departure: null },
+          "history.managers": { manager: handle, departure: null, arrival: dateRegistered },
           reports: { $each: [report], $slice: 15, $position: 0 },
         },
       }
@@ -88,7 +90,7 @@ exports.signup = async (req, res, next) => {
       password,
       session,
       handle,
-      stat: { dob, gender },
+      stat: { dob, gender, registered: dateRegistered },
       clubsManaged: [{ club }],
     })
       .then(async ({ _id, stat: { registered } }) => {

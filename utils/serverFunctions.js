@@ -231,6 +231,11 @@ module.exports.sortArr = (arr, sortKey, asc = true) => {
         if (x.d < y.d) return 1;
         if (x.l < y.l) return -1;
         if (x.l > y.l) return 1;
+      } else if (sortKey === "offers") {
+        if (x.fee > y.fee) return -1;
+        if (x.fee < y.fee) return 1;
+        if (x.date > y.date) return asc ? 1 : -1;
+        if (x.date < y.date) return asc ? -1 : 1;
       } else {
         sortedArray.sort((x, y) => {
           if (x[sortKey] > y[sortKey]) return asc ? 1 : -1;

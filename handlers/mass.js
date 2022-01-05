@@ -344,10 +344,10 @@ exports.acceptOffer = async (req, res) => {
       {
         $set: {
           club: clubTo,
-          "transfer.listed": false,
+          "transfer.offers": [],
           "transfer.locked": true,
+          "transfer.listed": false,
         },
-        $pull: { "transfer.offers": { from } },
       }
     );
 
