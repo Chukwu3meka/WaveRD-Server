@@ -1,8 +1,14 @@
-const logger = require("heroku-logger");
+function sayHello() {
+  console.log("Hello 6766676we67we67");
+}
 
-module.exports = async () => {
-  logger.info("message", { key: "direct" });
-};
+sayHello();
+
+// const logger = require("heroku-logger");
+
+// module.exports = async () => {
+//   logger.info("message", { key: "direct" });
+// };
 
 // // module.exports = async ({ res, datesArray }) => {
 // //   // for (const date of datesArray.filter((_, i) => i <= 10)) {
