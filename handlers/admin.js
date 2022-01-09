@@ -437,13 +437,35 @@ exports.matchTask = async (req, res) => {
     if (password !== process.env.OTP) throw "Auth server unable to validate admin";
 
     const massData = await Mass.findOne({ ref: mass });
-    if (!massData) throw "Club not found";
+    if (!massData) throw "Mass not found";
 
     const datesArray = uniqueArray(
-      sortArr([...massData.cup.calendar, ...massData.divisionOne.calendar, ...massData.league.calendar], "date").map((x) => x.date)
-    ).filter((x) => x.hg === null);
+      sortArr([...massData.cup.calendar, ...massData.divisionOne.calendar, ...massData.league.calendar], "date")
+    )
+      .filter((x) => x.hg === null && x.ag === null)
+      .map((x) => x.date);
 
-    console.log(datesArray[0]);
+    const day = new Date(datesArray[0]).getDay(),
+      matchDate = new Date(datesArray[0]).toDateString(),
+      matchType = day === 1 ? "division" : day === 6 ? "league" : day === 3 ? "cup" : null;
+
+    switch (matchType) {
+      case "cup":
+        await require("../library/matchTask/cup")({ matchType, matchDate });
+        break;
+      case "league":
+        await require("../library/matchTask/league")({ matchType, matchDate });
+        break;
+      case "division":
+        await require("../library/matchTask/division")({ matchType, matchDate });
+        break;
+      default:
+        break;
+    }
+
+    console.log({ matchDate, matchType, "task Complete": datesArray[0] });
+
+    // console.log(datesArray[0]);
 
     // datesArray.slice(0, datesArray.length - 18).forEach((x) => console.log(x));
 
