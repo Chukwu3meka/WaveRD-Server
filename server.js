@@ -1,6 +1,7 @@
 require("dotenv").config();
 require("./models");
 
+const logger = require("heroku-logger");
 const passport = require("./middleware/oAuth");
 const PORT = process.env.PORT;
 const secret = process.env.SECRET;
@@ -41,4 +42,5 @@ app.use("/profile/", routes.Profile);
 
 io.on("connection", socketManager);
 
-server.listen(PORT, () => console.log(`SoccerMASS:::listening on port ${PORT}`));
+// server.listen(PORT, () => console.log(`SoccerMASS:::listening on port ${PORT}`));
+server.listen(PORT, () => logger.info("SoccerMASS", { listen: `on port ${PORT}` }));
