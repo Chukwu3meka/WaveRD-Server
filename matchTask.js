@@ -1,3 +1,9 @@
+const logger = require("heroku-logger");
+
+module.exports = async () => {
+  logger.info("message", { key: "direct" });
+};
+
 // // module.exports = async ({ res, datesArray }) => {
 // //   // for (const date of datesArray.filter((_, i) => i <= 10)) {
 // //   for (const date of datesArray) {
@@ -42,9 +48,3 @@
 
 //   return "*********************** _ TASK HAS COMPLETED _ *********************";
 // };
-
-module.exports = async () => {
-  console.log("runnning");
-
-  return "rtas k  fdofdjfdj";
-};
