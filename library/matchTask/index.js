@@ -1,11 +1,23 @@
-// const logger = require("heroku-logger");
+const matchTask = async () => {
+  const day = new Date().getDay(),
+    matchDate = new Date().toDateString(),
+    matchType = day === 1 ? "division" : day === 6 ? "league" : day === 3 ? "cup" : null;
 
-// module.exports = async () => {
-//   logger.info("message", { key: "direct" });
-// };
+  switch (matchType) {
+    case "cup":
+      await require("./cup")({ matchType, matchDate });
+      break;
+    case "league":
+      await require("./league")({ matchType, matchDate });
+      break;
+    case "division":
+      await require("./division")({ matchType, matchDate });
+      break;
+    default:
+      break;
+  }
 
-function sayHello() {
-  console.log("Hello");
-}
+  console.log("*********************** _ TASK HAS COMPLETED _ *********************");
+};
 
-sayHello();
+matchTask();

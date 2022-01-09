@@ -18,9 +18,8 @@ exports.groupList = ["groupOne", "groupTwo", "groupThree", "groupFour", "groupFi
 
 exports.massList = [
   "sm000000001",
-  // "sm000000002",
-  // "sm000000003",
-  //
+  "sm000000002",
+  "sm000000003",
   // "sm000000004",
   // "sm000000005",
 ];

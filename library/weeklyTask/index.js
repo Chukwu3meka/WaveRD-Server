@@ -1,9 +1,11 @@
-module.exports = async () => {
+const weeklyTask = async () => {
   if (new Date().getDay() === 5) {
     await require("./emotion")();
     await require("./formation")();
     await require("./clubReview")();
   }
 
-  return "*********************** _ TASK HAS COMPLETED _ *********************";
+  console.log("*********************** _ TASK HAS COMPLETED _ *********************");
 };
+
+weeklyTask();

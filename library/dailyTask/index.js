@@ -1,7 +1,9 @@
-module.exports = async () => {
+const dailyTask = async () => {
   await require("./fitness")();
   await require("./transfer")();
   await require("./sackManagers")();
 
-  return "*********************** _ TASK HAS COMPLETED _ *********************";
+  console.log("*********************** _ TASK HAS COMPLETED _ *********************");
 };
+
+dailyTask();
