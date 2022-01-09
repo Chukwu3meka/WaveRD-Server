@@ -45,4 +45,6 @@
 
 module.exports = async () => {
   console.log("runnning");
+
+  return "rtas k  fdofdjfdj";
 };
