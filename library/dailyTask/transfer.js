@@ -17,7 +17,6 @@ module.exports = async () => {
 
     // create array of offer each premium player has received
     for (const offer of premiumOffers) {
-      console.log(offer.player);
       if (playerOffers[offer.player]) {
         playerOffers[offer.player].push(offer);
       } else {
