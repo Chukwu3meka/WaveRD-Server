@@ -1,9 +1,10 @@
-const weeklyTask = async () => {
+const weeklyTask = () => {
   try {
     if (new Date().getDay() === 5) {
-      await require("./emotion")();
-      await require("./formation")();
-      await require("./clubReview")();
+      require("./emotion")();
+      require("./formation")();
+      require("./maxBudget")();
+      require("./clubReview")();
     }
 
     console.log("*********************** _ TASK HAS COMPLETED _ *********************");

@@ -1,4 +1,4 @@
-const matchTask = async () => {
+const matchTask = () => {
   try {
     const day = new Date().getDay(),
       matchDate = new Date().toDateString(),
@@ -6,13 +6,13 @@ const matchTask = async () => {
 
     switch (matchType) {
       case "cup":
-        await require("./cup")({ matchType, matchDate });
+        require("./cup")({ matchType, matchDate });
         break;
       case "league":
-        await require("./league")({ matchType, matchDate });
+        require("./league")({ matchType, matchDate });
         break;
       case "division":
-        await require("./division")({ matchType, matchDate });
+        require("./division")({ matchType, matchDate });
         break;
       default:
         break;

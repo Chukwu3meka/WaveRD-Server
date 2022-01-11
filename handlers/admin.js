@@ -451,13 +451,13 @@ exports.matchTask = async (req, res) => {
 
     switch (matchType) {
       case "cup":
-        await require("../library/matchTask/cup")({ matchType, matchDate });
+        require("../library/matchTask/cup")({ matchType, matchDate });
         break;
       case "league":
-        await require("../library/matchTask/league")({ matchType, matchDate });
+        require("../library/matchTask/league")({ matchType, matchDate });
         break;
       case "division":
-        await require("../library/matchTask/division")({ matchType, matchDate });
+        require("../library/matchTask/division")({ matchType, matchDate });
         break;
       default:
         break;
@@ -541,7 +541,7 @@ exports.starter = async (req, res) => {
 
     // require("../library/matchTask/cup")({ matchDate: "Wed Jan 05 2022", matchType: "cup" });
     // require("../library/dailyTask/sackManagers")();
-    // require("../library/dailyTask/transfer")();
+    require("../library/weeklyTask/maxBudget")();
 
     res.status(200).json("successful");
   } catch (err) {

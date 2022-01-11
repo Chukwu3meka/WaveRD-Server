@@ -5,7 +5,7 @@ const ClubsSchema = new Schema({
   manager: { type: String, default: null },
   ref: { type: String, unique: true, required: true },
   email: { type: String, required: false },
-  budget: { type: Number, max: process.env.MAX_BUDGET, default: 200, required: true },
+  budget: { type: Number, default: 200, required: true },
   history: {
     match: {
       won: { type: Number, default: 0 },

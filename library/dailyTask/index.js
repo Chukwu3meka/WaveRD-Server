@@ -1,8 +1,8 @@
-const dailyTask = async () => {
+const dailyTask = () => {
   try {
-    await require("./fitness")();
-    await require("./transfer")();
-    await require("./sackManagers")();
+    require("./fitness")();
+    require("./transfer")();
+    require("./sackManagers")();
 
     console.log("*********************** _ TASK HAS COMPLETED _ *********************");
   } catch (err) {
