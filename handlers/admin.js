@@ -272,7 +272,7 @@ exports.initializeMass = async (req, res) => {
             ref,
             formation: "433A",
             "history.lastFiveMatches": ["win", "win", "win", "win", "win"],
-            budget: Math.round(((200000 - capacity) * 1.5 - capacity) / 1000),
+            budget: Math.round(((200000 - capacity) * 2.3 - capacity) / 1000),
             "nominalAccount.sponsor": Math.round(((200000 - capacity) * 1.5 - capacity) / 1000),
             "tactics.squad": playersData.filter(({ club }) => club === ref).map(({ ref }) => ref),
           });
@@ -357,8 +357,13 @@ exports.initializeMass = async (req, res) => {
             .findOneAndUpdate(
               { ref: club },
               {
-                "tactics.squad": players,
-                "history.match": { won: 0, lost: 0, tie: 0, goalFor: 0, goalAgainst: 0 },
+                $set: {
+                  "tactics.squad": players,
+                  "history.match": { won: 0, lost: 0, tie: 0, goalFor: 0, goalAgainst: 0 },
+                },
+                $inc: {
+                  budget: Math.round(process.env.MAX_BUDGET / (clubsDivision.findIndex((y) => y.club === club) + 1)),
+                },
               },
               { new: true }
             )
@@ -547,7 +552,7 @@ exports.starter = async (req, res) => {
     // console.log(dailyTask, typeof dailyTask);
 
     // await require("../library/dailyTask")();
-    await require("../library/dailyTask");
+    require("../library/dailyTask");
 
     res.status(200).json("successful");
   } catch (err) {
