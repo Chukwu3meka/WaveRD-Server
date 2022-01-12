@@ -1,6 +1,14 @@
 const { Player, Club, Mass } = require("../models/handler");
 const { clubStore, totalClubs } = require("../source/clubStore");
-const { catchError, validateRequestBody, sortArr, shuffleArray, validInputs, getRef } = require("../utils/serverFunctions");
+const {
+  catchError,
+  validateRequestBody,
+  sortArr,
+  shuffleArray,
+  validInputs,
+  getRef,
+  acceptOffer: acceptOfferServerFunc,
+} = require("../utils/serverFunctions");
 const { playerStore, totalPlayers } = require("../source/playerStore.js");
 
 exports.fetchMasses = async (req, res, next) => {
@@ -222,138 +230,25 @@ exports.acceptOffer = async (req, res) => {
     const massData = await Mass.findOne({ ref: mass });
     if (!massData) throw "Mass not found";
 
-    const offerData = massData.offer.find((x) => x.player === player && x.from === from && x.to === to);
-    if (!offerData) throw "Offer not found";
-    const { to: clubFrom, fee, from: clubTo } = offerData;
+    const offerData = massData.offer.filter((x) => x.player === player && x.from === from && x.to === to);
+    if (!offerData[0]) throw "Offer not found";
 
-    const clubToData = await Club(mass).findOne({ ref: clubTo });
-    const clubFromData = await Club(mass).findOne({ ref: clubFrom });
-
-    if (fee > clubToData.budget) throw "Insufficient Funds";
-
-    if (clubToData.tactics.squad.length >= process.env.MAX_SQUAD || clubFromData.tactics.squad.length <= process.env.MIN_SQUAD)
-      throw "Squad limit prevents registeration";
-
-    // const clubsInContact = massData.offer.filter((x) => {
-    //   x.player === player;
-    // });
-
-    // ______________________________________ update mass data
-    await Mass.updateOne(
-      { ref: mass },
-      {
-        $push: {
-          news: {
-            $each: [
-              {
-                title: `@(club,${from},title) Transfer NEWS`,
-                content: `@(club,${from},title) has completed the signing of @(player,${player},name) from @(club,${to},title) for a fee rumored to be in the range of $${fee}m. Our sources tells us that his Medicals will be completed in the next few hours.`,
-                image: `/player/${player}.webp`,
-              },
-            ],
-            $slice: 15,
-            $position: 0,
-          },
-          transfer: {
-            $each: [
-              {
-                to: from,
-                fee: fee,
-                from: to,
-                player,
-              },
-            ],
-            $slice: 50,
-            $position: 0,
-          },
-        },
-        $pull: { offer: { player } },
-      }
-    );
-
-    // _______________________________________ update former club data
-    const {
-      history: {
-        transfer: { priciestDeparture, cheapestDeparture },
-      },
-    } = clubFromData;
-
-    await Club(mass).updateOne(
-      { ref: clubFrom },
-      {
-        $pull: {
-          "tactics.squad": player,
-          transferTarget: player,
-        },
-        $inc: { "nominalAccount.departure": fee },
-        $set: {
-          "history.transfer.priciestDeparture": {
-            club: fee > Number(priciestDeparture.fee) ? clubTo : priciestDeparture.club,
-            fee: fee > Number(priciestDeparture.fee) ? fee : priciestDeparture.fee,
-            player: fee > Number(priciestDeparture.fee) ? player : priciestDeparture.player,
-            date: fee > Number(priciestDeparture.fee) ? new Date() : priciestDeparture.date,
-          },
-          "history.transfer.cheapestDeparture": {
-            club: cheapestDeparture.fee === null || fee < cheapestDeparture.fee ? clubTo : cheapestDeparture.club,
-            fee: cheapestDeparture.fee === null || fee < cheapestDeparture.fee ? fee : cheapestDeparture.fee,
-            player: cheapestDeparture.fee === null || fee < cheapestDeparture.fee ? player : cheapestDeparture.player,
-            date: cheapestDeparture.fee === null || fee < cheapestDeparture.fee ? new Date() : cheapestDeparture.date,
-          },
-        },
-      }
-    );
-
-    // ___________________________________________ update to club data
-    const {
-      history: {
-        transfer: { priciestArrival, cheapestArrival },
-      },
-    } = clubToData;
-
-    await Club(mass).updateOne(
-      { ref: clubTo },
-      {
-        $pull: {
-          transferTarget: player,
-        },
-        $addToSet: {
-          "tactics.squad": player,
-        },
-        $inc: { "nominalAccount.arrival": fee, budget: -fee },
-        $set: {
-          "history.transfer.priciestArrival": {
-            club: fee > Number(priciestArrival.fee) ? clubFrom : priciestArrival.club,
-            fee: fee > Number(priciestArrival.fee) ? fee : priciestArrival.fee,
-            player: fee > Number(priciestArrival.fee) ? player : priciestArrival.player,
-            date: fee > Number(priciestArrival.fee) ? new Date() : priciestArrival.date,
-          },
-          "history.transfer.cheapestArrival": {
-            club: cheapestArrival.fee === null || fee < cheapestArrival.fee ? clubFrom : cheapestArrival.club,
-            fee: cheapestArrival.fee === null || fee < cheapestArrival.fee ? fee : cheapestArrival.fee,
-            player: cheapestArrival.fee === null || fee < cheapestArrival.fee ? player : cheapestArrival.player,
-            date: cheapestArrival.fee === null || fee < cheapestArrival.fee ? new Date() : cheapestArrival.date,
-          },
-        },
-      }
-    );
-
-    // _______________________________________ update player data
-    await Player(mass).updateOne(
-      { ref: player },
-      {
-        $set: {
-          club: clubTo,
-          "transfer.offers": [],
-          "transfer.locked": true,
-          "transfer.listed": false,
-        },
-      }
-    );
+    await acceptOfferServerFunc({
+      mass,
+      Mass,
+      Club,
+      Player,
+      to: offerData[0].to,
+      fee: offerData[0].fee,
+      from: offerData[0].from,
+      player: offerData[0].player,
+      ackMsg: `@(club,${from},title) has completed the signing of @(player,${player},name) from @(club,${to},title) for a fee rumored to be in the range of $${offerData[0].fee}m. Our sources tells us that his Medicals will be completed in the next few hours.`,
+    });
 
     res.status(200).json("success");
   } catch (err) {
-    if (["Squad limit prevents registeration", "Insufficient Funds"].includes(err)) res.status(400).json(err);
-
+    if (["Illegal Transaction", "Insufficient Funds", "Max Squad limit reached", "Min Squad limit reached"].includes(err))
+      return res.status(400).json(err);
     return catchError({ res, err, message: "unable to accept offer" });
   }
 };

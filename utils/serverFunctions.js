@@ -479,3 +479,121 @@ module.exports.generateMatches = async (clubs) => {
 
   return schedule;
 };
+
+module.exports.acceptOffer = async ({ from, to, fee, player, ackMsg, mass, Player, Mass, Club }) => {
+  // fromCLubData
+  const fromClubData = await Club(mass).findOne({ ref: from });
+  const toClubData = to === "club000000" ? "premium" : await Club(mass).findOne({ ref: to });
+  if (!fromClubData || !toClubData) throw "Illegal Transaction";
+
+  if (fee > fromClubData.budget) throw "Insufficient Funds";
+
+  if (fromClubData.tactics.squad.length >= process.env.MAX_SQUAD) throw "Max Squad limit reached";
+
+  if (toClubData !== "premium" && toClubData.tactics.squad.length <= process.env.MIN_SQUAD) throw "Min Squad limit reached";
+
+  // ______________________________________ update mass data
+  await Mass.updateOne(
+    { ref: mass },
+    {
+      $push: {
+        news: {
+          $each: [
+            {
+              content: ackMsg,
+              image: `/player/${player}.webp`,
+              title: `OFFICIAL: @(club,${from},title) Transfer NEWS`,
+            },
+          ],
+          $slice: 15,
+          $position: 0,
+        },
+        transfer: {
+          $each: [{ to: from, fee, from: to, player }],
+          $slice: 50,
+          $position: 0,
+        },
+      },
+      $pull: { offer: { player } },
+    }
+  );
+
+  // _______________________________________ update club data
+  const {
+    history: {
+      transfer: { priciestArrival, cheapestArrival },
+    },
+  } = fromClubData;
+
+  await Club(mass).updateOne(
+    { ref: from },
+    {
+      $pull: {
+        transferTarget: player,
+      },
+      $addToSet: {
+        "tactics.squad": player,
+      },
+      $inc: { "nominalAccount.arrival": fee, budget: -fee },
+      $set: {
+        "history.transfer.priciestArrival": {
+          club: fee > Number(priciestArrival.fee) ? to : priciestArrival.club,
+          fee: fee > Number(priciestArrival.fee) ? fee : priciestArrival.fee,
+          player: fee > Number(priciestArrival.fee) ? player : priciestArrival.player,
+          date: fee > Number(priciestArrival.fee) ? new Date() : priciestArrival.date,
+        },
+        "history.transfer.cheapestArrival": {
+          club: cheapestArrival.fee === null || fee < cheapestArrival.fee ? to : cheapestArrival.club,
+          fee: cheapestArrival.fee === null || fee < cheapestArrival.fee ? fee : cheapestArrival.fee,
+          player: cheapestArrival.fee === null || fee < cheapestArrival.fee ? player : cheapestArrival.player,
+          date: cheapestArrival.fee === null || fee < cheapestArrival.fee ? new Date() : cheapestArrival.date,
+        },
+      },
+    }
+  );
+
+  if (toClubData !== "premium") {
+    const {
+      history: {
+        transfer: { priciestDeparture, cheapestDeparture },
+      },
+    } = toClubData;
+
+    await Club(mass).updateOne(
+      { ref: to },
+      {
+        $pull: {
+          "tactics.squad": player,
+        },
+        $inc: { "nominalAccount.departure": fee },
+        $set: {
+          "history.transfer.priciestDeparture": {
+            club: fee > Number(priciestDeparture.fee) ? to : priciestDeparture.club,
+            fee: fee > Number(priciestDeparture.fee) ? fee : priciestDeparture.fee,
+            player: fee > Number(priciestDeparture.fee) ? player : priciestDeparture.player,
+            date: fee > Number(priciestDeparture.fee) ? new Date() : priciestDeparture.date,
+          },
+          "history.transfer.cheapestDeparture": {
+            club: cheapestDeparture.fee === null || fee < cheapestDeparture.fee ? to : cheapestDeparture.club,
+            fee: cheapestDeparture.fee === null || fee < cheapestDeparture.fee ? fee : cheapestDeparture.fee,
+            player: cheapestDeparture.fee === null || fee < cheapestDeparture.fee ? player : cheapestDeparture.player,
+            date: cheapestDeparture.fee === null || fee < cheapestDeparture.fee ? new Date() : cheapestDeparture.date,
+          },
+        },
+      }
+    );
+  }
+
+  // _______________________________________ update player data
+  await Player(mass).updateOne(
+    { ref: player },
+    {
+      $set: {
+        club: from,
+        "transfer.offers": [],
+        "transfer.locked": true,
+        "transfer.listed": false,
+      },
+    }
+  );
+};

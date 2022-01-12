@@ -552,9 +552,9 @@ exports.starter = async (req, res) => {
     // console.log(dailyTask, typeof dailyTask);
 
     // await require("../library/dailyTask")();
-    require("../library/dailyTask");
 
-    res.status(200).json("successful");
+    res.status(200).json(require("../library/dailyTask/replyUnmanaged")());
+    // res.status(200).json("successful");
   } catch (err) {
     return catchError({ res, err, message: "error occured" });
   }
