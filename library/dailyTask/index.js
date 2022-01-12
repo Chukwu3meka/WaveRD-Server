@@ -1,4 +1,4 @@
-// require("../../models");
+require("../../models");
 
 const dailyTask = () => {
   try {
@@ -15,5 +15,3 @@ const dailyTask = () => {
 };
 
 module.exports = dailyTask();
-
-// dailyTask();

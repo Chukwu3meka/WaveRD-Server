@@ -1,3 +1,5 @@
+require("../../models");
+
 const weeklyTask = () => {
   try {
     if (new Date().getDay() === 5) {
@@ -15,4 +17,4 @@ const weeklyTask = () => {
   }
 };
 
-weeklyTask();
+module.exports = weeklyTask();

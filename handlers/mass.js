@@ -287,7 +287,6 @@ exports.acceptOffer = async (req, res) => {
         },
         $inc: { "nominalAccount.departure": fee },
         $set: {
-          budget: clubFromData.budget + fee > process.env.MAX_BUDGET ? process.env.MAX_BUDGET : clubFromData.budget + fee,
           "history.transfer.priciestDeparture": {
             club: fee > Number(priciestDeparture.fee) ? clubTo : priciestDeparture.club,
             fee: fee > Number(priciestDeparture.fee) ? fee : priciestDeparture.fee,

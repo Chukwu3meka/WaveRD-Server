@@ -1,3 +1,5 @@
+require("../../models");
+
 const matchTask = () => {
   try {
     const day = new Date().getDay(),
@@ -26,4 +28,4 @@ const matchTask = () => {
   }
 };
 
-matchTask();
+module.exports = matchTask();

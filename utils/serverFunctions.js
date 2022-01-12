@@ -266,6 +266,34 @@ module.exports.scoreGenerator = ({ diff, clubData }) => {
       ? this.range(1, 2)
       : this.range(0, 1);
 
+  const assistPlayers = this.shuffleArray(
+    clubData.players.flatMap((x) =>
+      x.roles.includes("CF")
+        ? [...new Array(20)].map(() => x.ref)
+        : x.roles.includes("RF")
+        ? [...new Array(40)].map(() => x.ref)
+        : x.roles.includes("LF")
+        ? [...new Array(40)].map(() => x.ref)
+        : x.roles.includes("AM")
+        ? [...new Array(30)].map(() => x.ref)
+        : x.roles.includes("RM")
+        ? [...new Array(20)].map(() => x.ref)
+        : x.roles.includes("LM")
+        ? [...new Array(20)].map(() => x.ref)
+        : x.roles.includes("CM")
+        ? [...new Array(30)].map(() => x.ref)
+        : x.roles.includes("DM")
+        ? [...new Array(10)].map(() => x.ref)
+        : x.roles.includes("LB")
+        ? [...new Array(5)].map(() => x.ref)
+        : x.roles.includes("RB")
+        ? [...new Array(5)].map(() => x.ref)
+        : x.roles.includes("CB")
+        ? [...new Array(5)].map(() => x.ref)
+        : 1
+    )
+  );
+
   const goalPlayers = this.shuffleArray(
     clubData.players
       .filter((x) => !x.roles.includes("GK"))
@@ -328,7 +356,7 @@ module.exports.scoreGenerator = ({ diff, clubData }) => {
 
   const assist = Array(this.range(0, gs))
     .fill()
-    .map(() => goalPlayers[this.range(0, goalPlayers.length - 1)]);
+    .map(() => assistPlayers[this.range(0, assistPlayers.length - 1)]);
 
   const goalEvent = Array(gs)
     .fill()
