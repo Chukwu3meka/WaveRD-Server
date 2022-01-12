@@ -12,4 +12,6 @@ const dailyTask = () => {
   }
 };
 
-dailyTask();
+module.exports = dailyTask();
+
+// dailyTask();

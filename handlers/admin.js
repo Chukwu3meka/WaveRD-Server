@@ -541,7 +541,13 @@ exports.starter = async (req, res) => {
 
     // require("../library/matchTask/cup")({ matchDate: "Wed Jan 05 2022", matchType: "cup" });
     // require("../library/dailyTask/sackManagers")();
-    require("../library/weeklyTask/maxBudget")();
+
+    // const dailyTask = require("../library/dailyTask");
+
+    // console.log(dailyTask, typeof dailyTask);
+
+    // await require("../library/dailyTask")();
+    await require("../library/dailyTask");
 
     res.status(200).json("successful");
   } catch (err) {
