@@ -642,7 +642,6 @@ exports.starter = async (req, res) => {
         email,
         password: "fake passport",
         session,
-
         "stat.verified": "verified",
         handle,
         stat: { dob: new Date(dob), gender: "male", registered: new Date(registered) },
@@ -656,7 +655,7 @@ exports.starter = async (req, res) => {
       });
     }
 
-    await Mass.updateOne({ ref: mass }, { $inc: { "unmanaged.divisionOne": -6, "unmanaged.total": -6 } });
+    // await Mass.updateOne({ ref: mass }, { $inc: { "unmanaged.divisionOne": -6, "unmanaged.total": -6 } });
 
     res.status(200).json("successful");
   } catch (err) {
