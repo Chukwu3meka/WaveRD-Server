@@ -655,7 +655,7 @@ exports.starter = async (req, res) => {
       });
     }
 
-    // await Mass.updateOne({ ref: mass }, { $set: { "unmanaged.divisionOne": 9, "unmanaged.total": 57 } });
+    await Mass.updateOne({ ref: mass }, { $set: { "unmanaged.divisionOne": 9, "unmanaged.total": 57 } });
 
     res.status(200).json("successful");
   } catch (err) {
