@@ -11,6 +11,7 @@ const {
   arrayToChunks,
   generateMatches,
   sortArr,
+  sessionGenerator,
 } = require("../utils/serverFunctions");
 const { Club, Player, Mass, Profile } = require("../models/handler");
 const { divisionList, groupList } = require("../source/constants.js");
@@ -553,8 +554,119 @@ exports.starter = async (req, res) => {
 
     // await require("../library/dailyTask")();
 
-    res.status(200).json(require("../library/dailyTask/replyUnmanaged")());
-    // res.status(200).json("successful");
+    // res.status(200).json(require("../library/dailyTask/replyUnmanaged")());
+    const mass = "sm000000001";
+    for (const { email, gender, handle, club, dob, registered } of [
+      {
+        email: "jade.idris07@gmail.com",
+        gender: "male",
+        handle: "Jay",
+        club: "club000024",
+        dob: "1995-06-03T23:00:00Z",
+        registered: "2020-07-26T11:28:18.678Z",
+      },
+      {
+        email: "kizito_elvis@ymail.com",
+        gender: "male",
+        handle: "Kizzy",
+        club: "club000025",
+        dob: "1995-05-01T23:00:00Z",
+        registered: "2020-07-28T23:08:43.103Z",
+      },
+      {
+        email: "theolilwizprince@gmail.com",
+        gender: "male",
+        handle: "Lilwizprince",
+        club: "club000011",
+        dob: "1995-05-16T23:00:00Z",
+        registered: "2020-07-26T11:45:05.905Z",
+      },
+      {
+        email: "wfcasper101@gmail.com",
+        gender: "male",
+        handle: "Casper",
+        club: "club000021",
+        dob: "2000-05-04T23:00:00Z",
+        registered: "2020-08-29T11:31:41.652Z",
+      },
+      {
+        email: "chimexhenry855@gmail.com",
+        gender: "male",
+        handle: "Bob",
+        club: "club000012",
+        dob: "2002-09-04T23:00:00Z",
+        registered: "2020-09-05T21:05:02.653Z",
+      },
+      {
+        email: "geogatedprojected303@gmail.com",
+        gender: "male",
+        handle: "vanceoss",
+        club: "club000013",
+        dob: "2002-09-15T16:00:00Z",
+        registered: "2020-09-16T02:03:27.351Z",
+      },
+    ]) {
+      await Club(mass).updateOne(
+        { ref: club },
+        {
+          $set: { manager: handle, email },
+          $push: {
+            "history.events": {
+              date: new Date(registered),
+              event: `${handle} was presented as @(club,${club},title) Head coach and General manager. After an extensive and tiring search`,
+            },
+            "history.managers": { manager: handle, departure: null, arrival: new Date(registered) },
+            reports: {
+              $each: [
+                {
+                  date: new Date(registered),
+                  title: `First training session with @(club,${club},nickname) first team players`,
+                  content: `Head coach ${handle}, has just completed his first training session with @(club,${club},title) senior squad, it was an intense exercise as the new manager gets ready to dip his feet into the sea, his next meeting will be with his technical staff and his assistant, before moving on to youth squad.`,
+                  image: `/club/${club}.webp`,
+                },
+              ],
+              $slice: 15,
+              $position: 0,
+            },
+          },
+        }
+      );
+
+      const session = sessionGenerator();
+
+      await Profile.create({
+        mass,
+        division: "divisionOne",
+        club,
+        email,
+        password: "fake passport",
+        session,
+
+        "stat.verified": "verified",
+        handle,
+        stat: { dob: new Date(dob), gender: "male", registered: new Date(registered) },
+        clubsManaged: [{ club }],
+      });
+
+      // console.log({
+      //   email,
+      //   gender,
+      //   handle,
+      //   club,
+      //   dob,
+      //   registered,
+      // });
+
+      await pushMail({
+        emailAddress: email,
+        emailSubject: "SoccerMASS Update",
+        emailBody: emailTemplates("update", { handle }),
+      });
+    }
+
+    await Mass.updateOne({ ref: mass }, { $inc: { "unmanaged.divisionOne": -6, "unmanaged.total": -6 } });
+
+    res.status(200).json("successful");
   } catch (err) {
     return catchError({ res, err, message: "error occured" });
   }

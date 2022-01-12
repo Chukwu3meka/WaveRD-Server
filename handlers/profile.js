@@ -14,6 +14,7 @@ const { v4 } = require("uuid");
 const { Club, Mass } = require("../models/handler");
 const { clubStore } = require("../source/clubStore");
 const emailTemplates = require("../utils/emailTemplates").emailTemplates;
+const { massList } = require("../source/constants");
 
 exports.signup = async (req, res, next) => {
   try {
@@ -27,6 +28,8 @@ exports.signup = async (req, res, next) => {
       "email",
       "gender",
     ]);
+
+    if (!massList.includes(mass)) throw "invalid mass";
 
     const dateRegistered = new Date();
 
@@ -57,13 +60,10 @@ exports.signup = async (req, res, next) => {
       image: `/club/${club}.webp`,
     };
 
-    const massData = await Mass.findOne({ ref: mass });
-    if (!massData) throw "invalid mass";
-
     await Mass.updateOne(
       { ref: mass },
       {
-        $set: { [`unmanaged.${division}`]: massData.unmanaged[division] - 1, "unmanaged.total": massData.unmanaged.total - 1 },
+        $inc: { [`unmanaged.${division}`]: -1, "unmanaged.total": -1 },
         $push: { news: { $each: [news], $slice: 15, $position: 0 } },
       }
     );

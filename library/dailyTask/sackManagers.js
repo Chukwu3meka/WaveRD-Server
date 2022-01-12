@@ -2,8 +2,9 @@ const { Mass, Club, Profile } = require("../../models/handler");
 
 module.exports = async () => {
   const unverifiedProfiles = await Profile.find({ "stat.verified": { $ne: "verified" } });
+  // update later to one day
   const unverifiedProfilesOver24hrs = unverifiedProfiles.filter(
-    (x) => Math.round((new Date() - new Date(x.stat.registered)) / (1000 * 60 * 60 * 24) - 1) >= 0
+    (x) => Math.round((new Date() - new Date(x.stat.registered)) / (1000 * 60 * 60 * 24) - 1) >= 30
   );
 
   for (const {

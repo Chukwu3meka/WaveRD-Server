@@ -32,6 +32,15 @@ module.exports.emailTemplates = (templateKey, params) => {
     }auth/verify?signupReference=${params.signupReference}&serverStamp=${params.serverStamp}&handle=${
       params.handle
     }">Verify my Account</a>. Ignore this mail, if you didn't signup to SoccerMASS: Football manager`,
+
+    update: `<h2>Platform Update</h2>
+<p>Hi ${params.handle},</p>
+<span>
+We updated our platform recently and added more functionalities to our site
+\n
+<a href=${process.env.CLIENT}auth/signin>Kindly SocceMASS</a>
+</span>`,
+
     templateFornat: `<h2></h2>
                     <p>Hi ${params.handle},</p>
                     <span>
