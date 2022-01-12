@@ -18,6 +18,8 @@ const { divisionList, groupList } = require("../source/constants.js");
 const { massList } = require("../source/constants");
 const pushMail = require("../utils/pushMail").pushMail;
 
+const emailTemplates = require("../utils/emailTemplates").emailTemplates;
+
 // to create/refresh new mass ::::::: add tables, calendar and topPlayers, players and clubs for new season
 exports.initializeMass = async (req, res) => {
   try {
