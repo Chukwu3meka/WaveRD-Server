@@ -648,14 +648,14 @@ exports.starter = async (req, res) => {
         clubsManaged: [{ club }],
       });
 
-      // console.log({
-      //   email,
-      //   gender,
-      //   handle,
-      //   club,
-      //   dob,
-      //   registered,
-      // });
+      console.log({
+        email,
+        gender,
+        handle,
+        club,
+        dob,
+        registered,
+      });
 
       await pushMail({
         emailAddress: email,
