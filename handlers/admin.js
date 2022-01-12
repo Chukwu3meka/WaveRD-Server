@@ -16,6 +16,7 @@ const {
 const { Club, Player, Mass, Profile } = require("../models/handler");
 const { divisionList, groupList } = require("../source/constants.js");
 const { massList } = require("../source/constants");
+const pushMail = require("../utils/pushMail").pushMail;
 
 // to create/refresh new mass ::::::: add tables, calendar and topPlayers, players and clubs for new season
 exports.initializeMass = async (req, res) => {
@@ -646,15 +647,6 @@ exports.starter = async (req, res) => {
         handle,
         stat: { dob: new Date(dob), gender: "male", registered: new Date(registered) },
         clubsManaged: [{ club }],
-      });
-
-      console.log({
-        email,
-        gender,
-        handle,
-        club,
-        dob,
-        registered,
       });
 
       await pushMail({
