@@ -655,10 +655,11 @@ exports.starter = async (req, res) => {
       });
     }
 
-    // await Mass.updateOne({ ref: mass }, { $inc: { "unmanaged.divisionOne": -6, "unmanaged.total": -6 } });
+    // await Mass.updateOne({ ref: mass }, { $set: { "unmanaged.divisionOne": 9, "unmanaged.total": 57 } });
 
     res.status(200).json("successful");
   } catch (err) {
+    console.log(err);
     return catchError({ res, err, message: "error occured" });
   }
 };
