@@ -543,8 +543,6 @@ exports.starter = async (req, res) => {
     const { password } = validateRequestBody(req.body, ["password"]);
     if (password !== process.env.OTP) throw "Auth server unable to validate admin";
 
-    console.log("hdhdhdhdhdhdh");
-
     // const massData = await Mass.findOne({ ref: mass });
     // if (!massData) throw "Club not found";
     // const clubData = await Club(mass).findOne({ ref: club });
@@ -556,7 +554,6 @@ exports.starter = async (req, res) => {
     // const dailyTask = require("../library/dailyTask");
 
     // console.log(dailyTask, typeof dailyTask);
-    return res.status(200).json("successful");
 
     // await require("../library/dailyTask")();
 
