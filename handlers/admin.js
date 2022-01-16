@@ -549,7 +549,8 @@ exports.starter = async (req, res) => {
     // if (!clubData) throw "Club not found";
 
     // require("../library/matchTask/cup")({ matchDate: "Wed Jan 05 2022", matchType: "cup" });
-    // require("../library/dailyTask/sackManagers")();
+
+    require("../library/weeklyTask");
 
     // const dailyTask = require("../library/dailyTask");
 
