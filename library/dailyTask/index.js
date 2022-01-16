@@ -2,9 +2,9 @@ require("../../models");
 
 const dailyTask = () => {
   try {
-    // require("./fitness")();
-    // require("./replyPremium")();
-    // require("./sackManagers")();
+    require("./fitness")();
+    require("./replyPremium")();
+    require("./sackManagers")();
 
     console.log("*********************** _ TASK HAS COMPLETED _ *********************");
     return "*********************** _ TASK HAS COMPLETED _ *********************";
