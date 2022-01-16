@@ -2,7 +2,7 @@ require("../../models");
 
 const weeklyTask = () => {
   try {
-    if (new Date().getDay() === 5) {
+    if (new Date().getDay() === 0) {
       require("./emotion")();
       require("./formation")();
       require("./maxBudget")();
