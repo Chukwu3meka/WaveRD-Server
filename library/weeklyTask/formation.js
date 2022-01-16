@@ -3,7 +3,7 @@ const { playerStore } = require("../../source/playerStore.js");
 const { Player, Club, Mass } = require("../../models/handler");
 const { massList, roleList } = require("../../source/constants");
 
-module.exports = async ({ all }) => {
+module.exports = async (all) => {
   for (const mass of massList) {
     // get next match
     const massData = await Mass.findOne({ ref: mass });
