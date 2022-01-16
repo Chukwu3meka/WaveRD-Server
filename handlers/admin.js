@@ -297,7 +297,7 @@ exports.initializeMass = async (req, res) => {
           massPlayers.push({
             ref,
             energy: range(55, 75),
-            club: rating >= 85 ? "club000000" : parentClub,
+            club: rating >= 87 ? "club000000" : parentClub,
           });
 
           i++;
