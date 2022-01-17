@@ -6,7 +6,7 @@ const matchTask = () => {
       matchDate = new Date().toDateString(),
       matchType = day === 1 ? "division" : day === 6 ? "league" : day === 3 ? "cup" : null;
 
-    // console.log({ matchDate, matchType });
+    console.log({ matchDate, matchType });
 
     switch (matchType) {
       case "cup":
