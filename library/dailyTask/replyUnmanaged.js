@@ -8,7 +8,7 @@ module.exports = async () => {
     if (!massData) throw "Club not found";
     const unmanagedClubs = await Club(mass).find({ manager: null });
     const unmanagedClubsRef = unmanagedClubs.map((x) => x.ref);
-    //get premium offers
+    //get premium offers after 1 day
     const unmanagedClubsOffers = massData.offer.filter(
       (x) => unmanagedClubsRef.includes(x.to) && Math.round((new Date() - new Date(x.date)) / (1000 * 60 * 60 * 24) - 1) >= 0
     );

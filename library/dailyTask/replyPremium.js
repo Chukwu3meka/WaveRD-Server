@@ -7,9 +7,9 @@ module.exports = async () => {
     const massData = await Mass.findOne({ ref: mass });
     if (!massData) throw "Club not found";
 
-    //get premium offers
+    //get premium offers after 3 days
     const premiumOffers = massData.offer.filter(
-      (x) => x.to === "club000000" && Math.round((new Date() - new Date(x.date)) / (1000 * 60 * 60 * 24) - 1) >= 3
+      (x) => x.to === "club000000" && Math.round((new Date() - new Date(x.date)) / (1000 * 60 * 60 * 24) - 1) >= 2
     );
 
     // create object of array for each player

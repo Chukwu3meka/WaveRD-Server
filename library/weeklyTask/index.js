@@ -8,6 +8,8 @@ const weeklyTask = () => {
       require("./formation")();
       require("./maxBudget")();
       require("./clubReview")();
+    } else {
+      throw "Weekly task only run on Fridays";
     }
 
     console.log("*********************** _ TASK HAS COMPLETED _ *********************");
