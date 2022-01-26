@@ -554,8 +554,7 @@ exports.starter = async (req, res) => {
 
     // const dailyTask = require("../library/dailyTask");
 
-    // console.log(dailyTask, typeof dailyTask);
-
+    // console.log(dailyTask, typeof dailyTask);sa
     // await require("../library/dailyTask")();
 
     // res.status(200).json(require("../library/dailyTask/replyUnmanaged")());
