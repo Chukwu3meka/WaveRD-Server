@@ -44,4 +44,4 @@ const matchTask = async (date = Date.now()) => {
   }
 };
 
-module.exports = matchTask("mon jan 24 2022");
+module.exports = matchTask();
