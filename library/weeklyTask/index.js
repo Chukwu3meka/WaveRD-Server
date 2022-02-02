@@ -1,4 +1,4 @@
-// require("../../models");
+require("../../models");
 
 const weeklyTask = () => {
   try {

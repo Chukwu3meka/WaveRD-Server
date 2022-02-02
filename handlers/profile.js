@@ -18,15 +18,13 @@ const { massList } = require("../source/constants");
 
 exports.signup = async (req, res, next) => {
   try {
-    const { mass, division, club, handle, password, dob, email, gender } = validateRequestBody(req.body, [
+    const { mass, division, club, handle, password, email } = validateRequestBody(req.body, [
       "mass",
       "division",
       "club",
       "handle",
       "password",
-      "dob",
       "email",
-      "gender",
     ]);
 
     if (!massList.includes(mass)) throw "invalid mass";
@@ -46,9 +44,7 @@ exports.signup = async (req, res, next) => {
     // @(club,${club},title) where title is get method of club
     const news = {
       title: `@(club,${club},title) has a new manager`,
-      content: `@(club,${club},title) has appointed ${handle} as General Manager and Head Coach, following a convincing and engaging search by @(club,${club},nickname) President and Technical staff, ${handle} will take the hot sit of @(club,${club},title), though inexperienced only time will tell how long ${
-        gender === "male" ? "he" : "she"
-      } can keep ${gender === "male" ? "his" : "her"} job`,
+      content: `@(club,${club},title) has appointed ${handle} as General Manager, following a convincing and engaging search by @(club,${club},nickname) President and Technical staff, ${handle} will take the hot sit of @(club,${club},title), though inexperienced only time will tell how long ${handle} can keep the job`,
       image: `/club/${club}.webp`,
     };
 
@@ -90,7 +86,7 @@ exports.signup = async (req, res, next) => {
       password,
       session,
       handle,
-      stat: { dob, gender, registered: dateRegistered },
+      stat: { registered: dateRegistered },
       clubsManaged: [{ club }],
     })
       .then(async ({ _id, stat: { registered } }) => {

@@ -11,8 +11,6 @@ const ProfileSchema = new Schema({
   handle: { type: String, required: true },
   session: { type: String, required: true, unique: true },
   stat: {
-    dob: { type: Date, required: true },
-    gender: { type: String, default: "male" },
     registered: { type: Date, default: Date.now },
     verified: { type: String, default: false },
     otp: {

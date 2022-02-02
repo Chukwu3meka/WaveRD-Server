@@ -16,7 +16,8 @@ const matchTask = async (date = Date.now()) => {
       );
 
       // prevent match from being played twice
-      if (todaysMatch && todaysMatch[0] && todaysMatch[0].hg === null) {
+      // if (todaysMatch && todaysMatch[0] && todaysMatch[0].hg === null) {
+      if (1) {
         switch (matchType) {
           case "cup":
             require("./cup")({ matchType, matchDate });

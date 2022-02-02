@@ -20,6 +20,8 @@ module.exports.validateRequestBody = (body, arr) => {
           ? "handle"
           : key === "email"
           ? "email"
+          : "date" === key
+          ? "date"
           : ["serverStamp", "fee"].includes(key)
           ? "number"
           : ["list", "target"].includes(key)
@@ -28,8 +30,6 @@ module.exports.validateRequestBody = (body, arr) => {
           ? "textArray"
           : ["age", "value", "rating"].includes(key)
           ? "numberArray"
-          : ["dob", "date"].includes(key)
-          ? "date"
           : "text",
         body[key]
       ) === undefined
