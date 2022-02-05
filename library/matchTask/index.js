@@ -1,7 +1,8 @@
 require("../../models");
+
 const { Mass } = require("../../models/handler");
 
-const matchTask = async (date = Date.now()) => {
+const matchTask = async (date = new Date()) => {
   try {
     const day = new Date(date).getDay(),
       matchDate = new Date(date).toDateString(),
@@ -16,8 +17,7 @@ const matchTask = async (date = Date.now()) => {
       );
 
       // prevent match from being played twice
-      // if (todaysMatch && todaysMatch[0] && todaysMatch[0].hg === null) {
-      if (1) {
+      if (todaysMatch && todaysMatch[0] && todaysMatch[0].hg === null) {
         switch (matchType) {
           case "cup":
             require("./cup")({ matchType, matchDate });
