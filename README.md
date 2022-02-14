@@ -16,6 +16,8 @@ All packages installed are key to this app running smoothly and we graciously th
 
 ## Getting Started
 
+To initialize this app, after cloning run `npm i` to install all packages
+
 ## Authors
 
 - Chukwuemeka Maduekwe [@Twitter](https://www.twitter.com/viewcrunch)
