@@ -1,6 +1,4 @@
-require("../../models");
-
-const { Mass } = require("../../models/handler");
+const { Mass } = require("../../../models/handler");
 
 const matchTask = async (date = new Date()) => {
   try {

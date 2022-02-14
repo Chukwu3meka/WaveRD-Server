@@ -1,5 +1,3 @@
-require("../../models");
-
 const weeklyTask = () => {
   try {
     // task to run every friday

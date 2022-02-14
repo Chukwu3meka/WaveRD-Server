@@ -1,5 +1,3 @@
-require("../../models");
-
 const dailyTask = () => {
   try {
     require("./fitness")();
