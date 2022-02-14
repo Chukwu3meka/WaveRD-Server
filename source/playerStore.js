@@ -1,25 +1,5 @@
 const { uniqueArray } = require("../utils/serverFunctions");
 
-// import { uniqueArray } from "@utils/clientFuncs";
-
-const genericValue = (rating) => {
-  return rating > 95
-    ? 80
-    : rating > 87
-    ? 70
-    : rating > 83
-    ? 60
-    : rating > 77
-    ? 40
-    : rating > 75
-    ? 25
-    : rating > 70
-    ? 15
-    : rating > 60
-    ? 10
-    : 5;
-};
-
 // name, rating, roles, club, dob, nationality;
 const players = {
   // barcelona
@@ -2002,6 +1982,26 @@ const players = {
   player000001915: ["Miguel Reisinho", 60, ["CM"], "club000064", "13 May 1999", "Portugal"],
   player000001916: ["Tomás Reymão", 59, ["CM"], "club000064", "13 May 1998", "Portugal"],
   player000000010: ["Kuku Fidelis", 60, ["LW", "ST"], "club000064", "13 May 1999", "Nigeria"],
+};
+
+// import { uniqueArray } from "@utils/clientFuncs";
+
+const genericValue = (rating) => {
+  return rating > 95
+    ? 80
+    : rating > 87
+    ? 70
+    : rating > 83
+    ? 60
+    : rating > 77
+    ? 40
+    : rating > 75
+    ? 25
+    : rating > 70
+    ? 15
+    : rating > 60
+    ? 10
+    : 5;
 };
 
 module.exports.playerStore = (ref) => {
