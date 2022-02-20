@@ -1,6 +1,6 @@
 const { Mass } = require("../../../models/handler");
 
-const matchTask = async (date = new Date()) => {
+module.exports = async (date = new Date()) => {
   try {
     const day = new Date(date).getDay(),
       matchDate = new Date(date).toDateString(),
@@ -41,5 +41,3 @@ const matchTask = async (date = new Date()) => {
     return `*********************** _ TASK ENDED WITH AN ERROR _ ********************* ${err}`;
   }
 };
-
-module.exports = matchTask();

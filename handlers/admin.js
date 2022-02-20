@@ -550,7 +550,7 @@ exports.starter = async (req, res) => {
 
     // require("../library/matchTask/cup")({ matchDate: "Wed Jan 05 2022", matchType: "cup" });
     // require("../library/matchTask");
-    require("../utils/task/matchTask");
+    require("../utils/task/matchTask")("sat feb 19 2022");
 
     // const dailyTask = require("../library/dailyTask");
 
