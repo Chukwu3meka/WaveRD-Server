@@ -1,8 +1,8 @@
-const { clubStore } = require("../../../source/clubStore.js");
-const { Club, Player, Mass, Profile } = require("../../../models/handler");
-const { playerStore } = require("../../../source/playerStore.js");
-const { massList, roleList, divisionList } = require("../../../source/constants");
-const { scoreGenerator, range, sortArr } = require("../../../utils/serverFunctions");
+const { clubStore } = require("../../source/clubStore.js");
+const { Club, Player, Mass, Profile } = require("../../models/handler");
+const { playerStore } = require("../../source/playerStore.js");
+const { massList, roleList, divisionList } = require("../../source/constants");
+const { scoreGenerator, range, sortArr } = require("../../utils/serverFunctions");
 
 // redcard not implemented yet
 

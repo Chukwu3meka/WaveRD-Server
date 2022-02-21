@@ -1,6 +1,6 @@
 require("dotenv").config(); // enable reading from .env file
 require("./models"); // enable app access database
-require("./utils/task"); // run task
+require("./task"); // run task
 
 const passport = require("./middleware/oAuth");
 const PORT = process.env.PORT;

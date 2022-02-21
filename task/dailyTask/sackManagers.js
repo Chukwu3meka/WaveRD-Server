@@ -1,4 +1,4 @@
-const { Mass, Club, Profile } = require("../../../models/handler");
+const { Mass, Club, Profile } = require("../../models/handler");
 
 module.exports = async () => {
   const unverifiedProfiles = await Profile.find({ "stat.verified": { $ne: "verified" } });

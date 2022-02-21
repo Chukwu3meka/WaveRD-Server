@@ -1,5 +1,5 @@
-const { Player } = require("../../../models/handler");
-const { massList } = require("../../../source/constants");
+const { Player } = require("../../models/handler");
+const { massList } = require("../../source/constants");
 
 module.exports = async () => {
   for (const mass of massList) {

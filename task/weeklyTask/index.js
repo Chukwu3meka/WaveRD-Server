@@ -1,9 +1,14 @@
-const dailyTask = () => {
+const weeklyTask = () => {
   try {
-    require("./fitness")();
-    require("./replyPremium")();
-    require("./sackManagers")();
-    require("./replyUnmanaged")();
+    // task to run every friday
+    if (new Date().getDay() === 5) {
+      require("./emotion")();
+      require("./formation")();
+      require("./maxBudget")();
+      require("./clubReview")();
+    } else {
+      throw "Weekly task only run on Fridays";
+    }
 
     console.log("*********************** _ TASK HAS COMPLETED _ *********************");
     return "*********************** _ TASK HAS COMPLETED _ *********************";
@@ -13,4 +18,4 @@ const dailyTask = () => {
   }
 };
 
-module.exports = dailyTask();
+module.exports = weeklyTask;
