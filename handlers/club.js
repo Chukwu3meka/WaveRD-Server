@@ -3,6 +3,25 @@ const { Player, Club, Mass } = require("../models/handler");
 const { clubStore, totalClubs } = require("../source/clubStore");
 const { playerStore, totalPlayers } = require("../source/playerStore.js");
 
+exports.fetchClubPlayers = async (req, res, next) => {
+  try {
+    const { mass, club } = validateRequestBody(req.body, ["mass", "club"]);
+
+    // get club data
+    const clubData = await Club(mass).findOne({ ref: club });
+    if (!clubData) throw "Club not found";
+
+    const squad = clubData.tactics.squad.map((ref) => {
+      const { name, rating, roles, age } = playerStore(ref);
+      return { name, rating, roles, age };
+    });
+
+    return res.status(200).json(squad);
+  } catch (err) {
+    return catchError({ next, err, message: "unable to locate masses" });
+  }
+};
+
 exports.fetchSquad = async (req, res) => {
   try {
     const { mass, club } = validateRequestBody(req.body, ["mass", "club"]);

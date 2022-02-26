@@ -10,6 +10,7 @@ const {
   acceptOffer: acceptOfferServerFunc,
 } = require("../utils/serverFunctions");
 const { playerStore, totalPlayers } = require("../source/playerStore.js");
+const { massStore } = require("../source/massStore");
 
 exports.fetchMasses = async (req, res, next) => {
   try {
@@ -17,7 +18,7 @@ exports.fetchMasses = async (req, res, next) => {
     const masses = [];
 
     for (const { ref, created, unmanaged, season } of Object.values(response)) {
-      masses.push({ ref, unmanaged, created, season });
+      masses.push({ ref, unmanaged, created, season, sponsor: massStore(ref) });
     }
     return res.status(200).json(masses);
   } catch (err) {
@@ -37,9 +38,21 @@ exports.fetchMassData = async (req, res, next) => {
       const {
         budget,
         manager,
-        tactics: { squad },
+        // tactics: { squad },
       } = await Club(mass).findOne({ ref });
-      clubs.push({ ref, manager, budget, squad });
+
+      clubs.push({
+        ref,
+        manager,
+        budget,
+        // squad: squad.map((player) => {
+        //   const { name, rating, roles, age } = playerStore(player);
+        //   return { name, rating, roles, age };
+        // }),
+        title: clubStore(ref).title,
+        coach: clubStore(ref).coach,
+        location: clubStore(ref).location,
+      });
     }
 
     return res.status(200).json({ divisions, clubs });
