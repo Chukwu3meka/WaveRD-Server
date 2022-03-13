@@ -1,4 +1,7 @@
-const { uniqueArray } = require("../utils/serverFunctions");
+// const uniqueArray = require("../utils/serverFunctions");
+const uniqueArray = (arr) => arr.filter((value, index, self) => self.indexOf(value) === index);
+
+// const { uniqueArray } = require("../utils/serverFunctions");
 
 // name, rating, roles, club, dob, nationality;
 const players = {
@@ -23,7 +26,7 @@ const players = {
   player000000019: ["Coutinho", 83, ["CAM", "LW", "CM"], "club000001", "13 May 1992", "Brazil"],
   player000000020: ["Samuel Umtiti", 81, ["CB"], "club000001", "13 May 1994", "France"],
   player000000021: ["Junior Firpo", 78, ["LB", "LM"], "club000001", "13 May 1997", "Spain"],
-  player000000022: ["Ansu Fati", 76, ["LW", "ST", "RW"], "club000001", "13 May 2003", "Spain"],
+  player000000022: ["Ansu Fati", 78, ["LW", "ST", "RW"], "club000001", "13 May 2003", "Spain"],
   player000000023: ["Riqui Puig", 75, ["CM"], "club000001", "13 May 2000", "Spain"],
   player000000024: ["Rey Manaj", 68, ["ST"], "club000001", "13 May 1997", "Albania"],
   player000000025: ["Hiroki Abe", 68, ["LM"], "club000001", "13 May 1999", "Japan"],
@@ -1984,8 +1987,6 @@ const players = {
   player000000010: ["Kuku Fidelis", 60, ["LW", "ST"], "club000064", "13 May 1999", "Nigeria"],
 };
 
-// import { uniqueArray } from "@utils/clientFuncs";
-
 const genericValue = (rating) => {
   return rating > 95
     ? 80
@@ -2006,6 +2007,27 @@ const genericValue = (rating) => {
 
 module.exports.playerStore = (ref) => {
   const [name, rating, initialRoles, parentClub, dob, country] = players[ref];
+
+  console.log(
+    // uniqueArray(),
+    initialRoles.map((x) =>
+      x === "CDM"
+        ? "DM"
+        : x === "ST"
+        ? "CF"
+        : x === "CAM"
+        ? "AM"
+        : x === "LWB"
+        ? "LB"
+        : x === "RWB"
+        ? "RB"
+        : x === "RW"
+        ? "RF"
+        : x === "LW"
+        ? "LF"
+        : x
+    )
+  );
 
   const roles = uniqueArray(
       initialRoles.map((x) =>

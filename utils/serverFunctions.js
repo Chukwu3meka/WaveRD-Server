@@ -1,3 +1,6 @@
+const { clubStore } = require("../source/clubStore");
+const { massStore } = require("../source/massStore");
+const { playerStore } = require("../source/playerStore");
 const { massList, roleList, formationList, assistProbabilityList, goalProbabilityList } = require("../source/constants");
 
 // catch err in return
@@ -47,7 +50,9 @@ module.exports.validateRequestBody = (body, arr) => {
 module.exports.range = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 
 // make values in an array unique
-module.exports.uniqueArray = (arr) => arr.filter((value, index, self) => self.indexOf(value) === index);
+module.exports.uniqueArray = (arr) => {
+  return arr.filter((value, index, self) => self.indexOf(value) === index);
+};
 
 //to shuffle array
 module.exports.shuffleArray = (arr = []) => {
@@ -581,4 +586,28 @@ module.exports.acceptOffer = async ({ from, to, fee, player, ackMsg, mass, Playe
       },
     }
   );
+};
+
+module.exports.varReplacer = (str = "") => {
+  const regexp = new RegExp(/@\((.*?)\)/, "g");
+  const matches = str.matchAll(regexp);
+
+  for (const x of matches) {
+    const [store, value, property] = x[0].match(/@\((.*?)\)/)[1].split(",");
+
+    switch (store) {
+      case "club":
+        // console.log(matches);
+        str = str.split(x[0]).join(clubStore(value)[property]);
+        break;
+      case "player":
+        str = str.split(x[0]).join(playerStore(value)[property]);
+        break;
+      default:
+        str = str.split(x[0]).join(massStore(value));
+        break;
+    }
+  }
+
+  return str;
 };

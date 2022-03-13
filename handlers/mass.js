@@ -8,6 +8,7 @@ const {
   validInputs,
   getRef,
   acceptOffer: acceptOfferServerFunc,
+  varReplacer,
 } = require("../utils/serverFunctions");
 const { playerStore, totalPlayers } = require("../source/playerStore.js");
 const { massStore } = require("../source/massStore");
@@ -71,9 +72,32 @@ exports.fetchHomeData = async (req, res) => {
     const massData = await Mass.findOne({ ref: mass });
     if (!massData) throw "Mass not found";
 
-    const { table, goal } = massData[division];
+    const clubNews = clubData.reports?.splice(0, 5).map(({ title, image, content }) => ({
+      image,
+      title: varReplacer(title),
+      content: varReplacer(content),
+    }));
 
-    const calendar = sortArr(
+    const massNews = massData.news.map(({ title, image, content, date }) => ({
+      image,
+      title: varReplacer(title),
+      content: varReplacer(content),
+      date: new Date(date).toDateString(),
+    }));
+
+    const { table: homeTable, goal: goalTable } = massData[division];
+
+    const table = homeTable?.splice(0, 5).map(({ club, gf, pts }) => ({ club, gf, pts, title: clubStore(club).title }));
+
+    const goal = goalTable?.splice(0, 3).map(({ player, goal, mp, club }) => ({
+      mp,
+      club,
+      goal,
+      player,
+      name: playerStore(player).name,
+    }));
+
+    const myClubCalendar = sortArr(
       [
         massData[division]?.calendar
           .filter((x) => x.home === club || x.away === club)
@@ -85,15 +109,24 @@ exports.fetchHomeData = async (req, res) => {
       ],
       "date"
     );
+    const nextMatchIndex = myClubCalendar.indexOf(myClubCalendar.find((x) => x.hg === null && x.hg === null));
 
-    const nextMatchIndex = calendar.indexOf(calendar.find((x) => x.hg === null && x.hg === null));
-
-    const myClubCalendar = {
-      curMatch: nextMatchIndex !== -1 ? calendar[nextMatchIndex] : null,
-      nextMatch: nextMatchIndex !== -1 ? calendar[nextMatchIndex + 1] : null,
+    const calendar = {
+      curMatch: nextMatchIndex !== -1 ? myClubCalendar[nextMatchIndex] : null,
+      nextMatch: nextMatchIndex !== -1 ? myClubCalendar[nextMatchIndex + 1] : null,
       lastFiveMatches: clubData.history.lastFiveMatches,
-      prevMatch: nextMatchIndex !== -1 ? (nextMatchIndex === 0 ? null : calendar[nextMatchIndex - 1]) : calendar[0],
+      prevMatch: nextMatchIndex !== -1 ? (nextMatchIndex === 0 ? null : myClubCalendar[nextMatchIndex - 1]) : myClubCalendar[0],
     };
+
+    // reduce size of payload and set title
+    for (const [matchType, match] of Object.entries(calendar)) {
+      if (matchType !== "lastFiveMatches") {
+        const { date, home, hg, ag, away, competition } = match;
+        calendar[matchType] = { hg, ag, away, date, home, competition, stadium: clubStore(home).stadium };
+      } else {
+        calendar[matchType] = match;
+      }
+    }
 
     const nextDivisionFixtureIndex = massData[division].calendar.indexOf(
       massData[division].calendar.find((x) => x.hg === null && x.hg === null)
@@ -102,15 +135,32 @@ exports.fetchHomeData = async (req, res) => {
     const nextDivisionFixture =
       nextDivisionFixtureIndex === -1
         ? null
-        : massData[division].calendar.filter((x) => x.date === massData[division].calendar[nextDivisionFixtureIndex].date);
+        : massData[division].calendar
+            .filter((x) => x.date === massData[division].calendar[nextDivisionFixtureIndex].date)
+            .map(({ home, away }) => ({
+              home,
+              away,
+              homeTitle: clubStore(home).title,
+              awayTitle: clubStore(away).title,
+              stadium: clubStore(home).stadium,
+            }));
+
+    const transfer = massData.transfer.slice(0, 5).map(({ from, to, fee, player }) => ({
+      to,
+      fee,
+      from,
+      player: playerStore(player).name,
+    }));
 
     res.status(200).json({
-      table: table?.splice(0, 5),
-      goal: goal?.splice(0, 3),
-      calendar: myClubCalendar,
+      goal,
+      table,
+      clubNews,
+      massNews,
+      calendar,
+      transfer,
       nextDivisionFixture,
-      transfer: massData.transfer.slice(0, 5),
-      news: massData.news,
+      sponsor: massStore(mass),
     });
   } catch (err) {
     return catchError({ res, err, message: "Issue fetching home calendar" });
