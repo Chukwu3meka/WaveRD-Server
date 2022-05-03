@@ -120,7 +120,8 @@ exports.fetchHomeData = async (req, res) => {
 
     // reduce size of payload and set title
     for (const [matchType, match] of Object.entries(calendar)) {
-      if (matchType !== "lastFiveMatches") {
+      // console.log(match);
+      if (matchType !== "lastFiveMatches" && match) {
         const { date, home, hg, ag, away, competition } = match;
         calendar[matchType] = { hg, ag, away, date, home, competition, stadium: clubStore(home).stadium };
       } else {
@@ -128,6 +129,7 @@ exports.fetchHomeData = async (req, res) => {
       }
     }
 
+    console.log("safe 1");
     const nextDivisionFixtureIndex = massData[division].calendar.indexOf(
       massData[division].calendar.find((x) => x.hg === null && x.hg === null)
     );

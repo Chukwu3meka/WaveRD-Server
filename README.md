@@ -1,4 +1,6 @@
-# SoccerMASS Server
+# SoccerMASS Server ✨
+
+SoccerMASS: No. 1 free online football manager for advanced soccer management. The title of manager is almost exclusively used in British football. In most other European countries in which professional football is played, the person responsible for the direction of a team is awarded the position of coach or "trainer"
 
 ## About SoccerMASS Server
 
@@ -21,3 +23,11 @@ To initialize this app, after cloning run `npm i` to install all packages
 ## Authors
 
 - Chukwuemeka Maduekwe [@Twitter](https://www.twitter.com/viewcrunch)
+
+> To learn more about this project, kindly contact the developer [😎 ChukwuEmeka](https://www.linkedin.com/in/chukwuemeka13):
+
+## 💰 Support Me 👋
+
+<p align="center">
+<a href="https://www.buymeacoffee.com/chukwuemeka" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="70" ></a>
+</p>

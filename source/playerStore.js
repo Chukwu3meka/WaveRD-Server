@@ -2008,26 +2008,26 @@ const genericValue = (rating) => {
 module.exports.playerStore = (ref) => {
   const [name, rating, initialRoles, parentClub, dob, country] = players[ref];
 
-  console.log(
-    // uniqueArray(),
-    initialRoles.map((x) =>
-      x === "CDM"
-        ? "DM"
-        : x === "ST"
-        ? "CF"
-        : x === "CAM"
-        ? "AM"
-        : x === "LWB"
-        ? "LB"
-        : x === "RWB"
-        ? "RB"
-        : x === "RW"
-        ? "RF"
-        : x === "LW"
-        ? "LF"
-        : x
-    )
-  );
+  // console.log(
+  //   // uniqueArray(),
+  //   initialRoles.map((x) =>
+  //     x === "CDM"
+  //       ? "DM"
+  //       : x === "ST"
+  //       ? "CF"
+  //       : x === "CAM"
+  //       ? "AM"
+  //       : x === "LWB"
+  //       ? "LB"
+  //       : x === "RWB"
+  //       ? "RB"
+  //       : x === "RW"
+  //       ? "RF"
+  //       : x === "LW"
+  //       ? "LF"
+  //       : x
+  //   )
+  // );
 
   const roles = uniqueArray(
       initialRoles.map((x) =>
