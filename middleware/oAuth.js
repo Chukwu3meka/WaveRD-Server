@@ -9,8 +9,8 @@ if (process.env.DYNO) trustProxy = true;
 passport.use(
   new FacebookStrategy(
     {
-      clientID: "273567780526584",
-      clientSecret: "7de1a4eebd0709e2860fec3702af607c",
+      clientID: process.env.FACEBOOK_CLIENT_ID,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
       callbackURL: "/auth/facebook/callback",
       profileFields: ["id", "emails", "name"],
       proxy: trustProxy,
@@ -25,8 +25,8 @@ passport.use(
 passport.use(
   new GoogleStrategy(
     {
-      clientID: "701577338758-vr6kg61ta90k8g0jcpgf02a76qapreae.apps.googleusercontent.com",
-      clientSecret: "d5rd3xS8pPYkAlyOgNng8IPV",
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: `/auth/google/callback`,
     },
     (accessToken, refreshToken, profile, cb) => {
@@ -39,8 +39,8 @@ passport.use(
 passport.use(
   new TwitterStrategy(
     {
-      consumerKey: "vmS6tj9qgMBRIpMAqH46yVJOY",
-      consumerSecret: "gc5ZTRZhL5wXYherp1wt7l5mo3Fy3GdYH8LU17pR1PFIkMoUqJ",
+      consumerKey: process.env.TWITTER_CONSUMER_KEY,
+      consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
       userProfileURL: "https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true",
       callbackURL: `/auth/twitter/callback`,
       proxy: trustProxy,
