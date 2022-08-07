@@ -129,7 +129,7 @@ exports.fetchHomeData = async (req, res) => {
       }
     }
 
-    console.log("safe 1");
+    // console.log("safe 1");
     const nextDivisionFixtureIndex = massData[division].calendar.indexOf(
       massData[division].calendar.find((x) => x.hg === null && x.hg === null)
     );

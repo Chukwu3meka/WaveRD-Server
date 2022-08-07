@@ -4,7 +4,7 @@
   "description": "Soccermass API for its Frontend",
   "main": "server.js",
   "scripts": {
-    "multi": "pm2 kill && pm2 start process.json",
+    "server": "pm2 kill && pm2 start process.json",
     "dev": "pm2 kill && pm2 start process.json && pm2 logs"
   },
   "keywords": [
@@ -15,7 +15,7 @@
     "football manager",
     "no. 1 soccer manager"
   ],
-  "author": "PedroMASS",
+  "author": "ViewCrunch",
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -41,6 +41,6 @@
   },
   "engines": {
     "node": "14.17.5",
-    "npm": "6.14.8"
+    "npm": "6.14.14"
   }
 }
