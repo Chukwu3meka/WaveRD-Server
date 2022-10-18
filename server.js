@@ -27,7 +27,7 @@ app.use("/club/", routes.Club);
 app.use("/mass/", routes.Mass);
 app.use("/auth/", routes.oAuth);
 app.use("/trend/", routes.Trend);
-// app.use("/admin/", routes.Admin);
+app.use("/admin/", routes.Admin);
 app.use("/player/", routes.Player);
 app.use("/profile/", routes.Profile);
 
