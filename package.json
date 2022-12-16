@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node source/index.ts"
+    "start": "ts-node source/index.ts",
+    "tsc": "tsc --watch",
+    "dev": "node --watch ./dist/index"
   },
   "repository": {
     "type": "git",
