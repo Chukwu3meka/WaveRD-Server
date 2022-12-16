@@ -22,7 +22,7 @@ All packages installed are key to this app running smoothly and we graciously th
 
 ## Authors
 
-- Chukwuemeka Maduekwe [@Twitter](https://www.twitter.com/Chukwu3meka)
+- Chukwuemeka Maduekwe [@Twitter](https://www.twitter.com/Chukwu3meka) [@GitHub](https://github.com/Chukwu3meka)
 
 > To learn more about this project, kindly contact the developer [😎 ChukwuEmeka Maduekwe](https://www.linkedin.com/in/chukwu3meka/):
 
@@ -38,5 +38,7 @@ All packages installed are key to this app running smoothly and we graciously th
 2. Now clone your remote branch, and run `npm install` or `npm i` for short; to install all packages
 3. If you don't have a gitignore file, create one and [run](https://sigalambigha.home.blog/2020/03/11/how-to-refresh-gitignore/) `git rm -r --cached .` to ensure git is tracking the right file, i.e files not listed in the new _.gitignore_
 4. In development we run a few command to reflect changes on file change, and to keep our app running all the time
-   > `tsc`
-5. dfds
+   > `npm run tsc`: to compile our typescript files in the source folder
+   > `npm run dev`: to start our development server in the dist folder
+5. You don't need to install any project management such as nodemnon or pm2 as Node.js 18 now comes witth and inbuilt watch mode
+6. ...
