@@ -1,18 +1,18 @@
-import express from "express";
 import cors from "cors";
-import cookieParser from "cookie-parser";
+import express from "express";
+import dotenv from "dotenv";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
+import passport from "./middleware/oAuth";
 
-// require("dotenv").config(); // enable reading from .env file
+dotenv.config(); // enable reading from .env file
 // require("./models"); // enable app access database
 // require("./task"); // run task
 
-// const passport = require("./middleware/oAuth");
 const PORT = process.env.PORT || 5000;
-// const secret = process.env.SECRET;
+const secret = process.env.SECRET;
 
-// const app = require("express")();
 const app = express();
 
 app.use(cors());
@@ -25,11 +25,11 @@ const server = require("http").Server(app);
 
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.json({ limit: "7mb" }));
 // app.use(cookieSession({ secret:, resave: true, saveUninitialized: true }));
 
-// app.use(passport.initialize());
-// app.use(passport.session());
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/api/club", function (req, res) {
   res.setHeader("Content-Type", "application/json");
@@ -44,6 +44,7 @@ app.use("/api/club", function (req, res) {
       break;
   }
 });
+
 // app.use("/club/", routes.Club);
 // app.use("/mass/", routes.Mass);
 // app.use("/auth/", routes.oAuth);ff
