@@ -1,10 +1,10 @@
 import cors from "cors";
-import express from "express";
+import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
-import passport from "./middleware/oAuth";
+// import passport from "./middleware/oAuth";
 
 dotenv.config(); // enable reading from .env file
 // require("./models"); // enable app access database
@@ -26,13 +26,14 @@ const server = require("http").Server(app);
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: "7mb" }));
-// app.use(cookieSession({ secret:, resave: true, saveUninitialized: true }));
+// app.use(cookieSession({ secret, resave: true, saveUninitialized: true }));
+app.use(cookieSession({ secret }));
 
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 app.use("/api/club", function (req, res) {
-  res.setHeader("Content-Type", "application/json");
+  // res.setHeader("Content-Type", "application/json");
   switch (req.url) {
     case "/":
       res.writeHead(200);
@@ -44,6 +45,8 @@ app.use("/api/club", function (req, res) {
       break;
   }
 });
+
+console.log("|dsfdsfds");
 
 // app.use("/club/", routes.Club);
 // app.use("/mass/", routes.Mass);

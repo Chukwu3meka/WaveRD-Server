@@ -59,11 +59,12 @@ if (
       (accessToken, refreshToken, profile, cb) => returnEmail(profile, cb)
     )
   );
-} else {
-  throw {
-    errMsg: "Can't find required env for proper ap[p functioning",
-  };
 }
+
+// else {
+//   throw {
+//     errMsg: "Can't find required env for proper ap[p functioning",
+//   };
 
 passport.serializeUser((user, cb) => cb(null, user));
 passport.deserializeUser((user: any, cb) => cb(null, user));
