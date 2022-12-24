@@ -8,7 +8,7 @@
     "initial-start": "ts-node source/index.ts",
     "tsc": "tsc --watch",
     "dev": "node --watch ./dist",
-    "build": "tsc",
+    "build": "npm install && tsc",
     "start": "node ./dist"
   },
   "repository": {
