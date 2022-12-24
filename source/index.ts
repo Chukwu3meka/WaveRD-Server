@@ -33,9 +33,9 @@ app.use(cookieSession({ secret }));
 // app.use(passport.session());
 
 // if homepage is invoked, redirect user to SoccerMASS Web
-app.use("/", (req, res) => res.redirect("https://www.soccermass.com/"));
-app.use("/v1", (req, res) => res.redirect("https://www.soccermass.com/"));
-app.use("/api", (req, res) => res.redirect("https://www.soccermass.com/"));
+app.use("/", (req, res) => res.redirect(301, "https://www.soccermass.com/"));
+app.use("/v1", (req, res) => res.redirect(301, "https://www.soccermass.com/"));
+app.use("/api", (req, res) => res.redirect(301, "https://www.soccermass.com/"));
 
 // app.use("/api/club", function (req, res) {
 //   // res.setHeader("Content-Type", "application/json");
