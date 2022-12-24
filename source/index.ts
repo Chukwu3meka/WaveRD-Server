@@ -33,23 +33,23 @@ app.use(cookieSession({ secret }));
 // app.use(passport.session());
 
 // if homepage is invoked, redirect user to SoccerMASS Web
-app.use("/", (req, res) => res.redirect(301, "https://www.soccermass.com/"));
-app.use("/v1", (req, res) => res.redirect(301, "https://www.soccermass.com/"));
-app.use("/api", (req, res) => res.redirect(301, "https://www.soccermass.com/"));
+app.use("/", (req: Request, res: Response) => res.redirect(301, "https://www.soccermass.com/"));
+app.use("/v1", (req: Request, res: Response) => res.redirect(301, "https://www.soccermass.com/"));
+app.use("/api", (req: Request, res: Response) => res.redirect(301, "https://www.soccermass.com/"));
 
-// app.use("/api/club", function (req, res) {
-//   // res.setHeader("Content-Type", "application/json");
-//   switch (req.url) {
-//     case "/":
-//       res.writeHead(200);
-//       res.end("books");
-//       break;
-//     case "/authors":
-//       res.writeHead(200);
-//       res.end("authors");
-//       break;
-//   }
-// });
+app.use("/api/club", function (req: Request, res: Response) {
+  // res.setHeader("Content-Type", "application/json");
+  switch (req.url) {
+    case "/":
+      res.writeHead(200);
+      res.end("books");
+      break;
+    case "/authors":
+      res.writeHead(200);
+      res.end("authors");
+      break;
+  }
+});
 
 // app.use("/club/", routes.Club);
 // app.use("/mass/", routes.Mass);
