@@ -1,7 +1,7 @@
 import passport from "passport";
+import twitterPassport from "passport-twitter";
 import facebookPassport from "passport-facebook";
 import googlePassport from "passport-google-oauth20";
-import twitterPassport from "passport-twitter";
 
 let trustProxy = false;
 if (process.env.DYNO) trustProxy = true;
@@ -59,12 +59,9 @@ if (
       (accessToken, refreshToken, profile, cb) => returnEmail(profile, cb)
     )
   );
+} else {
+  throw { errMsg: "Can't find required ENV for proper app functioning" };
 }
-
-// else {
-//   throw {
-//     errMsg: "Can't find required env for proper ap[p functioning",
-//   };
 
 passport.serializeUser((user, cb) => cb(null, user));
 passport.deserializeUser((user: any, cb) => cb(null, user));
