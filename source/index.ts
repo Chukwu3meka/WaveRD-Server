@@ -4,11 +4,15 @@ import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
-// import passport from "./middleware/oAuth";
+import passport from "./middleware/oAuth";
+import models from "./models"; // enable app access database
 
 dotenv.config(); // enable reading from .env file
-// require("./models"); // enable app access database
+models(); // enable app access database
 // require("./task"); // run task
+
+console.log("Sadsa");
+console.log("Sadsa");
 
 const PORT = process.env.PORT || 5000;
 const secret = process.env.SECRET;
