@@ -5,22 +5,15 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
 import * as oAuthMiddleware from "./middleware/oAuth";
-import models from "./models"; // enable app access database
+import mongoose from "./utils/mongoose"; // enable app access database
 import envInitialized from "./utils/envInitialized"; // enable app access database
 
 try {
   // oAuthMiddleware.config();
   dotenv.config(); // enable reading from .env file
   envInitialized(); // detect app access env;
-  models.config(); // enable app access database
-
+  mongoose.config(); // enable app access database
   // require("./task"); // run task
-
-  console.log("Sadsa");
-  console.log("Sadsa");
-
-  const PORT = process.env.PORT || 5000;
-  const secret = process.env.SECRET;
 
   const app = express();
 
@@ -35,8 +28,8 @@ try {
   app.use(cookieParser());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json({ limit: "7mb" }));
-  // app.use(cookieSession({ secret, resave: true, saveUninitialized: true }));
-  app.use(cookieSession({ secret }));
+  // app.use(cookieSession({ secret:process.env.SECRET, resave: true, saveUninitialized: true }));
+  app.use(cookieSession({ secret: process.env.SECRET }));
 
   // app.use(passport.initialize());
   // app.use(passport.session());
@@ -56,7 +49,7 @@ try {
 
   // io.on("connection", socketManager);
 
-  server.listen(PORT, () => console.log(`SoccerMASS:::listening on port ${PORT}`));
+  server.listen(process.env.PORT, () => console.log(`SoccerMASS:::listening on port ${process.env.PORT}`));
 } catch (error: any) {
   console.log("SoccerMASS Server Error", (process.env.NODE !== "production" && (error.message as string)) || error);
 }
