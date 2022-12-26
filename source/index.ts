@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
-import * as oAuthMiddleware from "./middleware/oAuth";
+import passport from "./utils/passport";
 import mongoose from "./utils/mongoose"; // enable app access database
 import envInitialized from "./utils/envInitialized"; // enable app access database
 
@@ -31,8 +31,8 @@ try {
   // app.use(cookieSession({ secret:process.env.SECRET, resave: true, saveUninitialized: true }));
   app.use(cookieSession({ secret: process.env.SECRET }));
 
-  // app.use(passport.initialize());
-  // app.use(passport.session());
+  app.use(passport.initialize());
+  app.use(passport.session());
 
   // if homepage is invoked, redirect user to SoccerMASS Web
   app.use("/", (req: Request, res: Response) => res.redirect(301, process.env.CLIENT || ""));
