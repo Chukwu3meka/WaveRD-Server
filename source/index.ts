@@ -4,65 +4,75 @@ import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
-import passport from "./middleware/oAuth";
+import * as oAuthMiddleware from "./middleware/oAuth";
 import models from "./models"; // enable app access database
+import envInitialized from "./utils/envInitialized"; // enable app access database
 
-dotenv.config(); // enable reading from .env file
-models(); // enable app access database
-// require("./task"); // run task
+try {
+  // oAuthMiddleware.config();
 
-console.log("Sadsa");
-console.log("Sadsa");
+  envInitialized(); // detect app access env;
 
-const PORT = process.env.PORT || 5000;
-const secret = process.env.SECRET;
+  dotenv.config(); // enable reading from .env file
+  models.config(); // enable app access database
 
-const app = express();
+  // require("./task"); // run task
 
-app.use(cors());
+  console.log("Sadsa");
+  console.log("Sadsa");
 
-// const routes = require("./routes");
-const server = require("http").Server(app);
-// const io = (module.exports.io = require("socket.io")(server));
+  const PORT = process.env.PORT || 5000;
+  const secret = process.env.SECRET;
 
-// const socketManager = require("./handlers/socketManager");
+  const app = express();
 
-app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json({ limit: "7mb" }));
-// app.use(cookieSession({ secret, resave: true, saveUninitialized: true }));
-app.use(cookieSession({ secret }));
+  app.use(cors());
 
-// app.use(passport.initialize());
-// app.use(passport.session());
+  // const routes = require("./routes");
+  const server = require("http").Server(app);
+  // const io = (module.exports.io = require("socket.io")(server));
 
-// if homepage is invoked, redirect user to SoccerMASS Web
-app.use("/", (req: Request, res: Response) => res.redirect(301, process.env.CLIENT || ""));
-app.use("/v1", (req: Request, res: Response) => res.redirect(301, process.env.CLIENT || ""));
-app.use("/api", (req: Request, res: Response) => res.redirect(301, process.env.CLIENT || ""));
+  // const socketManager = require("./handlers/socketManager");
 
-app.use("/api/club", function (req: Request, res: Response) {
-  // res.setHeader("Content-Type", "application/json");
-  switch (req.url) {
-    case "/":
-      res.writeHead(200);
-      res.end("books");
-      break;
-    case "/authors":
-      res.writeHead(200);
-      res.end("authors");
-      break;
-  }
-});
+  app.use(cookieParser());
+  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(bodyParser.json({ limit: "7mb" }));
+  // app.use(cookieSession({ secret, resave: true, saveUninitialized: true }));
+  app.use(cookieSession({ secret }));
 
-// app.use("/club/", routes.Club);
-// app.use("/mass/", routes.Mass);
-// app.use("/auth/", routes.oAuth);ff
-// app.use("/trend/", routes.Trend);
-// app.use("/admin/", routes.Admin);
-// app.use("/player/", routes.Player);
-// app.use("/profile/", routes.Profile);
+  // app.use(passport.initialize());
+  // app.use(passport.session());
 
-// io.on("connection", socketManager);
+  // if homepage is invoked, redirect user to SoccerMASS Web
+  app.use("/", (req: Request, res: Response) => res.redirect(301, process.env.CLIENT || ""));
+  app.use("/v1", (req: Request, res: Response) => res.redirect(301, process.env.CLIENT || ""));
+  app.use("/api", (req: Request, res: Response) => res.redirect(301, process.env.CLIENT || ""));
 
-server.listen(PORT, () => console.log(`SoccerMASS:::listening on port ${PORT}`));
+  app.use("/api/club", function (req: Request, res: Response) {
+    // res.setHeader("Content-Type", "application/json");
+    switch (req.url) {
+      case "/":
+        res.writeHead(200);
+        res.end("books");
+        break;
+      case "/authors":
+        res.writeHead(200);
+        res.end("authors");
+        break;
+    }
+  });
+
+  // app.use("/club/", routes.Club);
+  // app.use("/mass/", routes.Mass);
+  // app.use("/auth/", routes.oAuth);ff
+  // app.use("/trend/", routes.Trend);
+  // app.use("/admin/", routes.Admin);
+  // app.use("/player/", routes.Player);
+  // app.use("/profile/", routes.Profile);
+
+  // io.on("connection", socketManager);
+
+  server.listen(PORT, () => console.log(`SoccerMASS:::listening on port ${PORT}`));
+} catch (error: any) {
+  console.log("SoccerMASS", error ? error.message : "Server error");
+}
