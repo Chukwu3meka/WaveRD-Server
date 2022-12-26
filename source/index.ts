@@ -10,10 +10,8 @@ import envInitialized from "./utils/envInitialized"; // enable app access databa
 
 try {
   // oAuthMiddleware.config();
-
-  envInitialized(); // detect app access env;
-
   dotenv.config(); // enable reading from .env file
+  envInitialized(); // detect app access env;
   models.config(); // enable app access database
 
   // require("./task"); // run task
@@ -48,20 +46,6 @@ try {
   app.use("/v1", (req: Request, res: Response) => res.redirect(301, process.env.CLIENT || ""));
   app.use("/api", (req: Request, res: Response) => res.redirect(301, process.env.CLIENT || ""));
 
-  app.use("/api/club", function (req: Request, res: Response) {
-    // res.setHeader("Content-Type", "application/json");
-    switch (req.url) {
-      case "/":
-        res.writeHead(200);
-        res.end("books");
-        break;
-      case "/authors":
-        res.writeHead(200);
-        res.end("authors");
-        break;
-    }
-  });
-
   // app.use("/club/", routes.Club);
   // app.use("/mass/", routes.Mass);
   // app.use("/auth/", routes.oAuth);ff
@@ -74,5 +58,5 @@ try {
 
   server.listen(PORT, () => console.log(`SoccerMASS:::listening on port ${PORT}`));
 } catch (error: any) {
-  console.log("SoccerMASS", error ? error.message : "Server error");
+  console.log("SoccerMASS Server Error", (process.env.NODE !== "production" && (error.message as string)) || error);
 }
