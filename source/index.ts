@@ -1,9 +1,11 @@
+import http from "http";
 import cors from "cors";
-import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
+import express, { Request, Response } from "express";
+
 import passport from "./utils/passport";
 import mongoose from "./utils/mongoose"; // enable app access database
 import envInitialized from "./utils/envInitialized"; // enable app access database
@@ -16,28 +18,26 @@ try {
   // require("./task"); // run task
 
   const app = express();
-
-  app.use(cors());
-
-  // const routes = require("./routes");
-  const server = require("http").Server(app);
+  const server = new http.Server(app);
   // const io = (module.exports.io = require("socket.io")(server));
-
   // const socketManager = require("./handlers/socketManager");
 
+  app.use(cors());
   app.use(cookieParser());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json({ limit: "7mb" }));
   // app.use(cookieSession({ secret:process.env.SECRET, resave: true, saveUninitialized: true }));
   app.use(cookieSession({ secret: process.env.SECRET }));
 
-  app.use(passport.initialize());
-  app.use(passport.session());
+  // app.use(passport.initialize());
+  // app.use(passport.session());
 
   // if homepage is invoked, redirect user to SoccerMASS Web
   app.use("/", (req: Request, res: Response) => res.redirect(301, process.env.CLIENT || ""));
   app.use("/v1", (req: Request, res: Response) => res.redirect(301, process.env.CLIENT || ""));
   app.use("/api", (req: Request, res: Response) => res.redirect(301, process.env.CLIENT || ""));
+
+  // const routes = require("./routes");
 
   // app.use("/club/", routes.Club);
   // app.use("/mass/", routes.Mass);
