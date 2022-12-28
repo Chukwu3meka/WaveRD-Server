@@ -20,7 +20,6 @@ const envKeys = [
   "MAX_BUDGET",
   "MAX_SQUAD",
   "MIN_SQUAD",
-  "ADMIN_PASSWORD",
 ];
 
 export default () => {
