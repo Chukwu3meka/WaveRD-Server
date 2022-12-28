@@ -1,6 +1,6 @@
 import express from "express";
 
-import * as handler from "../handlers/redirect";
+import * as handler from "../handlers/redirect/client";
 
 const router = express.Router();
 
