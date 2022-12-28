@@ -6,6 +6,6 @@ import * as handler from "../handlers/v1";
 const router = express.Router();
 
 // router.route("/signup").get(handler.playersInClub);
-router.route("/:club/players").get(handler.playersInClub);
+router.route("/:club/players").get(handler.clubPlayers);
 
 export default router;
