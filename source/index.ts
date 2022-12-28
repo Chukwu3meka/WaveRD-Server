@@ -12,6 +12,7 @@ import mongoose from "./utils/mongoose"; // enable app access database
 import envInitialized from "./utils/envInitialized";
 
 const server = async () => {
+  console.log("deployed app");
   try {
     // oAuthMiddleware.config();
     envInitialized(); // detect app access env;
