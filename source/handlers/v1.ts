@@ -11,3 +11,12 @@ export const playersInClub = async (req: Request, res: Response, next: NextFunct
     return catchError({ res, err, message: "unable to locate masses" });
   }
 };
+
+// res.writeHead(200);
+
+// res.writeHead(200);
+// res.send("authors");
+// res.send("authors");
+// res.end("authors");
+
+// return res.status(200).json("masses");

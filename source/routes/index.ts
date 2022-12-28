@@ -1,4 +1,5 @@
 import v1 from "./v1";
+import redirect from "./redirect";
 // import Club from "./club";
 // import Mass from "./mass";
 // import Admin from "./admin";
@@ -8,6 +9,7 @@ import v1 from "./v1";
 // import Profile from "./profile";
 
 export default (app: any) => {
+  app.use("/api", redirect);
   app.use("/api/v1", v1);
   // app.use("/club/", routes.Club);
   // app.use("/mass/", routes.Mass);
