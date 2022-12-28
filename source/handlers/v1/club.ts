@@ -4,7 +4,7 @@ import { catchError } from "../../utils/serverFunctions";
 export const clubPlayers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { club } = req.params;
-    const {} = req.body;
+    // const {} = req.body;
 
     return res.status(200).json(`"masses", ${club}`);
   } catch (err) {
