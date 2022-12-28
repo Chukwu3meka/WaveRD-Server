@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { catchError } from "../utils/serverFunctions";
+import { catchError } from "../../utils/serverFunctions";
 
 export const clubPlayers = async (req: Request, res: Response, next: NextFunction) => {
   try {
