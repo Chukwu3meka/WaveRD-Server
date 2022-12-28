@@ -1,13 +1,22 @@
+import { NextFunction, Request, Response } from "express";
 // // const { clubStore } = require("../source/clubStore");
 // // const { massStore } = require("../source/massStore");
 // // const { playerStore } = require("../source/playerStore");
 // // const { massList, roleList, formationList, assistProbabilityList, goalProbabilityList } = require("../source/constants");
 
-// // catch err in return
-// export const catchError = ({ res, err, status = 400, message = "Internal Server Error" }) => {
-//   if (process.env.NODE_ENV !== "production") console.log(`${res.req.originalUrl}: ${err}`);
-//   res.status(status).json(message);
-// };
+// catch err in return
+
+interface ICatchError {
+  res: Response;
+  err: any;
+  status?: number;
+  message?: string;
+}
+
+export const catchError = ({ res, err, status = 400, message = "Internal Server Error" }: ICatchError) => {
+  if (process.env.NODE_ENV !== "production") console.log(`${res.req.originalUrl}: ${err}`);
+  res.status(status).json(message);
+};
 
 // export const validateRequestBody = (body, arr) => {
 //   const validate = require("./validator").validate;

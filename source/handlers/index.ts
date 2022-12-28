@@ -1,6 +1,9 @@
 import * as redirect from "./redirect";
+import * as v1 from "./v1";
 
-export { redirect };
+export { redirect, v1 };
+
+// v1
 
 // module.exports = {
 //   ...require("./profile"),

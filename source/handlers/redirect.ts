@@ -14,3 +14,8 @@ export const serverHomePage = async (req: Request, res: Response, next: NextFunc
     // return catchError({ next, err, message: "unable to locate masses" });
   }
 };
+
+// if homepage is invoked, redirect user to SoccerMASS Web
+// app.use("/", (req: Request, res: Response) => res.redirect(301, process.env.CLIENT || ""));
+// app.use("/v1", (req: Request, res: Response) => res.redirect(301, process.env.CLIENT || ""));
+// app.use("/api", (req: Request, res: Response) => res.redirect(301, process.env.CLIENT || ""));
