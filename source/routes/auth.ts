@@ -1,9 +1,9 @@
 import express from "express";
 
-import * as auth from "../handlers/auth";
+import signin from "../handlers/auth/signin";
 
 const router = express.Router();
 
-router.route("/signup").post(auth.signup);
+router.route("/signup").post(signin);
 
 export default router;
