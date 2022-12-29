@@ -12,9 +12,7 @@ import mongoose from "./utils/mongoose"; // enable app access database
 import envInitialized from "./utils/envInitialized";
 
 const server = async () => {
-  console.log("deployed app");
   try {
-    // oAuthMiddleware.config();
     envInitialized(); // detect app access env;
     await mongoose.config(); // enable app access database
 
@@ -26,8 +24,8 @@ const server = async () => {
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(cookieSession({ secret: process.env.SECRET }));
 
-    // app.use(passport.initialize());
-    // app.use(passport.session());
+    app.use(passport.initialize());
+    app.use(passport.session());
 
     appRoutes(app);
 
