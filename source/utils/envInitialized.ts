@@ -8,18 +8,18 @@ const envKeys = [
   "TWITTER_CONSUMER_SECRET",
   // App
   "SECRET",
-  "EMAIL_PASS",
-  "EMAIL_ADDR",
   "CLIENT",
   "SERVER",
-  "PORT",
   "MONGODB_URI",
-  "MONGODB_URI",
-  "OTP",
-  "SALARY_CAP",
-  "MAX_BUDGET",
-  "MAX_SQUAD",
-  "MIN_SQUAD",
+
+  // "EMAIL_PASS",
+  // "EMAIL_ADDR",
+  // "PORT",
+  // "OTP",
+  // "SALARY_CAP",
+  // "MAX_BUDGET",
+  // "MAX_SQUAD",
+  // "MIN_SQUAD",
 ];
 
 export default () => {

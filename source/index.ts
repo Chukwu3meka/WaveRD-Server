@@ -16,7 +16,8 @@ const server = async () => {
     envInitialized(); // detect app access env;
     await mongoose.config(); // enable app access database
 
-    const app = express();
+    const app = express(),
+      port = process.env.PORT || 5000;
 
     app.use(cors());
     app.use(cookieParser());
@@ -29,7 +30,7 @@ const server = async () => {
 
     appRoutes(app);
 
-    app.listen(process.env.PORT, () => console.log(`SoccerMASS:::listening on port ${process.env.PORT}`));
+    app.listen(port, () => console.log(`SoccerMASS:::listening on port ${port}`));
   } catch (error: any) {
     console.log("SoccerMASS Server Error", (process.env.NODE !== "production" && (error.message as string)) || error);
   }
