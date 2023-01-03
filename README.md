@@ -10,7 +10,9 @@ That being said **PERMISSION IN NOT GRANTED TO CLONE THIS APP FOR ANY COMMERCIAL
 
 SoccerMASS Server holds the code neccessary for the backend of [SoccerMASS](https://www.soccermass.com), which is an online Soccer Manager App with the main of building an engaging online soccer game with peoples satisfaction as our goal. What motivated me to build SoccerMASS was the inability for existing Online Manger games to give what we really want in a soccer manager app, after sending mails most platform on how to improve the game, without response, i can accross one post where a user asked 'Do the developers of this game even play it, or are they just there for money'.
 
-Server is hosted on both **api.soccermass.com** and **server.soccermass.com**
+SoccerMass Web is hosted on **[Render](https://render.com/)** and can be found here at [api](https://api.soccermass.com) and [server](https://server.soccermass.com)
+
+Server is hosted on **Render** and can b both **api.soccermass.com** and **server.soccermass.com**
 
 ## NPM Packages && Services
 
