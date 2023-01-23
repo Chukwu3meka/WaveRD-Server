@@ -1,10 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-// // const { clubStore } = require("../source/clubStore");
-// // const { massStore } = require("../source/massStore");
-// // const { playerStore } = require("../source/playerStore");
-// // const { massList, roleList, formationList, assistProbabilityList, goalProbabilityList } = require("../source/constants");
-
-// catch err in return
 
 interface ICatchError {
   res: Response;
@@ -13,9 +7,14 @@ interface ICatchError {
   message?: string;
 }
 
-export const catchError = ({ res, err, status = 400, message = "Internal Server Error" }: ICatchError) => {
+export const catchError = ({ res, err, status = 400, message = "Unable to process request" }: ICatchError) => {
   if (process.env.NODE_ENV !== "production") console.log(`${res.req.originalUrl}: ${err}`);
-  res.status(status).json(message);
+  res.status(status).json({ status: "error", message, payload: null });
+};
+
+export const sleep = async (seconds: number) => {
+  const duration = seconds * 60 * 60;
+  return new Promise((resolve) => setTimeout(resolve, duration));
 };
 
 // export const validateRequestBody = (body, arr) => {
