@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { catchError } from "../../utils/serverFunctions";
+import { catchError } from "../../utils/handlers";
 
 // if homepage is invoked, redirect user to SoccerMASS Web
 
