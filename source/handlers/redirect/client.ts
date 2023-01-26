@@ -5,7 +5,7 @@ import { catchError } from "../../utils/handlers";
 
 export const redirectToClient = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    return res.redirect(301, process.env.CLIENT as string);
+    return res.writeHead(302, { Location: process.env.CLIENT_BASE_URL }).end();
   } catch (err) {
     return catchError({ res, err, message: "unable to locate masses" });
   }

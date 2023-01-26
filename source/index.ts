@@ -5,12 +5,13 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
 
-import passport from "./utils/passport";
+import passport from "./libs/passport";
 import appRoutes from "./routes"; // enable app access database
-import mongoose from "./utils/mongoose"; // enable app access database
+import mongoose from "./libs/mongoose"; // enable app access database
 
-import envInitialized from "./utils/envInitialized";
-import subDomainHandler from "./libs/sub_domain_handler";
+import envInitialized from "./libs/envInitialized";
+import subDomains from "./libs/subDomains";
+// import subDomainHandler from "./middleware/sub_domain_handler";
 
 // import subDomainHandler from "./libs/sub_domain_handler";
 
@@ -31,9 +32,8 @@ const server = async () => {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    subDomainHandler(app);
-
-    appRoutes(app);
+    subDomains(app); // <= handle request redirect from specified sub domain
+    appRoutes(app); // app routes goes here
 
     app.listen(port, () => console.log(`SoccerMASS:::listening on port ${port}`));
   } catch (error: any) {

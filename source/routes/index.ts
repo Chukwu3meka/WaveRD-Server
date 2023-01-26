@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 // import subdomain from "express-subdomain";
 
-import v1 from "./v1";
+import apihub from "./apihub";
 import auth from "./auth";
 import admin from "./admin";
 import redirect from "./redirect";
@@ -14,16 +14,30 @@ import redirect from "./redirect";
 // import Profile from "./profile";
 
 export default (app: any) => {
-  // app.use(subdomain("api", router));
+  app.use("/", redirect); // domain
+  app.use("/v1", redirect); // v1.domain
+  app.use("/api", redirect); // api.domain
 
-  app.use("/api", redirect);
-  app.use("/api/v1", v1);
-  app.use("/api/auth", auth);
-  app.use("/api/admin", admin);
-  app.use("/server/auth/signin", (req: Request, res: Response, next: NextFunction) => {
+  // app.use("/apihub", redirect);
+
+  // app.use("/apihub/api", apihub); // api.domain
+
+  app.use("/api/auth/signin", (req: Request, res: Response, next: NextFunction) => {
     console.log(req.headers.host, req.method);
-    return res.status(200).json("admin successfull signin");
+    return res.status(200).json("api successfull signin");
   });
+
+  // app.use("/api/v1", );
+
+  // app.use("/v1", redirect);
+  // // app.use("/v1/auth", auth);
+  // app.use("/v1/admin", admin);
+  app.use("/v1/auth/signin", (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.headers.host, req.method);
+    return res.status(200).json("v1 successfull signin");
+  });
+
+  // app.use("/server", redirect);
 
   // app.use("/club/", routes.Club);
   // app.use("/mass/", routes.Mass);

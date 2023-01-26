@@ -1,6 +1,6 @@
 import express from "express";
 
-import * as club from "../handlers/v1/club";
+import * as club from "../handlers/apihub/club";
 
 const router = express.Router();
 
