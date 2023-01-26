@@ -28,6 +28,18 @@ const server = async () => {
     app.use(passport.initialize());
     app.use(passport.session());
 
+    app.get("*", function (req, res, next) {
+      console.log(req.headers.host);
+
+      // if (req.headers.host === `` "api.localhost:5000") {
+      //   //Port is important if the url has it
+      //   req.url = "/buyers" + req.url;
+      // } else if (req.headers.host == "sellers.localhost:5000") {
+      //   req.url = "/sellers" + req.url;
+      // }
+      next();
+    });
+
     appRoutes(app);
 
     app.listen(port, () => console.log(`SoccerMASS:::listening on port ${port}`));

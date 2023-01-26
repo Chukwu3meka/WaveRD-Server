@@ -1,3 +1,5 @@
+// import subdomain from "express-subdomain";
+
 import v1 from "./v1";
 import auth from "./auth";
 import admin from "./admin";
@@ -11,6 +13,8 @@ import redirect from "./redirect";
 // import Profile from "./profile";
 
 export default (app: any) => {
+  // app.use(subdomain("api", router));
+
   app.use("/api", redirect);
   app.use("/api/v1", v1);
   app.use("/api/auth", auth);
