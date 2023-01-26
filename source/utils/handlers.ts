@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Response } from "express";
 
 interface ICatchError {
   res: Response;
