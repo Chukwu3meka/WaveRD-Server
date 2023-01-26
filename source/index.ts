@@ -10,6 +10,9 @@ import appRoutes from "./routes"; // enable app access database
 import mongoose from "./utils/mongoose"; // enable app access database
 
 import envInitialized from "./utils/envInitialized";
+import subDomainHandler from "./libs/sub_domain_handler";
+
+// import subDomainHandler from "./libs/sub_domain_handler";
 
 const server = async () => {
   try {
@@ -28,17 +31,7 @@ const server = async () => {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    app.get("*", function (req, res, next) {
-      console.log(req.headers.host);
-
-      // if (req.headers.host === `` "api.localhost:5000") {
-      //   //Port is important if the url has it
-      //   req.url = "/buyers" + req.url;
-      // } else if (req.headers.host == "sellers.localhost:5000") {
-      //   req.url = "/sellers" + req.url;
-      // }
-      next();
-    });
+    subDomainHandler(app);
 
     appRoutes(app);
 

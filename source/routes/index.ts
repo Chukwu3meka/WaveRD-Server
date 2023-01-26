@@ -1,3 +1,4 @@
+import { Request, Response, NextFunction } from "express";
 // import subdomain from "express-subdomain";
 
 import v1 from "./v1";
@@ -19,6 +20,11 @@ export default (app: any) => {
   app.use("/api/v1", v1);
   app.use("/api/auth", auth);
   app.use("/api/admin", admin);
+  app.use("/server/auth/signin", (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.headers.host, req.method);
+    return res.status(200).json("admin successfull signin");
+  });
+
   // app.use("/club/", routes.Club);
   // app.use("/mass/", routes.Mass);
   // app.use("/auth/", routes.oAuth);ff

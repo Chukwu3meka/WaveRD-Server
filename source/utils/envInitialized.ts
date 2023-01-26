@@ -8,8 +8,8 @@ const envKeys = [
   "TWITTER_CONSUMER_SECRET",
   // App
   "SECRET",
-  "CLIENT",
-  "SERVER",
+  "CLIENT_DOMAIN",
+  "SERVER_DOMAIN",
   "MONGODB_URI",
 
   // "EMAIL_PASS",
