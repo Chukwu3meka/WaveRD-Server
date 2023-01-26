@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node source/index.ts",
     "tsc": "tsc --watch",
-    "dev": "node --watch ./dist"
+    "dev": "node --watch --watch-preserve-output ./dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -19,7 +19,7 @@
     "manager",
     "api"
   ],
-  "author": "AlienForest",
+  "author": "SoccerMASS",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Chukwu3meka/SoccerMASS-Server/issues"

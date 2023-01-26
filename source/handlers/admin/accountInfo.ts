@@ -8,9 +8,9 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const account = (acc as string).replaceAll('"', "");
     // console.log(typeof account);
 
-    if (account === "2022199805") {
-      await sleep(2);
+    await sleep(1);
 
+    if (account === "2020671697") {
       const payload = {
         status: "success",
         message: null,

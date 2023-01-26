@@ -8,8 +8,9 @@ interface ICatchError {
 }
 
 export const catchError = ({ res, err, status = 400, message = "Unable to process request" }: ICatchError) => {
-  if (process.env.NODE_ENV !== "production") console.log(`${res.req.originalUrl}: ${err}`);
-  res.status(status).json({ status: "error", message, payload: null });
+  if (process.env.NODE_ENV !== "production") console.log(`${res.req.originalUrl}: ${JSON.stringify(err)}`);
+
+  return res.status(status).json({ status: "error", message, payload: null });
 };
 
 export const sleep = async (seconds: number) => {
