@@ -4,7 +4,6 @@ import * as club from "../handlers/apihub/club";
 
 const router = express.Router();
 
-router.route("/:club/players").get(club.clubPlayers);
 // router.route("/signup").get(handler.playersInClub);
 
 export default router;

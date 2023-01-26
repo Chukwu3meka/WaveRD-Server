@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from "express";
-// import subdomain from "express-subdomain";
+import express from "express";
+const router = express.Router();
 
 import apihub from "./apihub";
 import auth from "./auth";
 import admin from "./admin";
-import redirect from "./redirect";
+// import redirect from "./redirect";
 // import Club from "./club";
 // import Mass from "./mass";
 // import Admin from "./admin";
@@ -13,10 +13,16 @@ import redirect from "./redirect";
 // import Player from "./player";
 // import Profile from "./profile";
 
+import redirectToWeb from "../handlers/others/redirectToWeb";
+
 export default (app: any) => {
-  app.use("/", redirect); // domain
-  app.use("/v1", redirect); // v1.domain
-  app.use("/api", redirect); // api.domain
+  app.use("/", router.route("/").all(redirectToWeb)); // domain
+  app.use("/v1", router.route("/").all(redirectToWeb)); // v1.domain
+  app.use("/api", router.route("/").all(redirectToWeb)); // api.domain
+
+  app.use("/api/players", apihub); // domain
+
+  app.use("/api", apihub); // domain
 
   // app.use("/apihub", redirect);
 
