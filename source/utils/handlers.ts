@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Response } from "express";
 
 interface ICatchError {
   res: Response;
@@ -8,8 +8,9 @@ interface ICatchError {
 }
 
 export const catchError = ({ res, err, status = 400, message = "Unable to process request" }: ICatchError) => {
-  if (process.env.NODE_ENV !== "production") console.log(`${res.req.originalUrl}: ${err}`);
-  res.status(status).json({ status: "error", message, payload: null });
+  if (process.env.NODE_ENV !== "production") console.log(`${res.req.originalUrl}: ${JSON.stringify(err)}`);
+
+  return res.status(status).json({ status: "error", message, payload: null });
 };
 
 export const sleep = async (seconds: number) => {
@@ -17,6 +18,48 @@ export const sleep = async (seconds: number) => {
   return new Promise((resolve) => setTimeout(resolve, duration));
 };
 
+export const requestHasBody = ({ body, required }: { body: { [key: string]: any }; required: string[] }) => {
+  // console.log({ body, required });
+
+  for (const x of required) {
+    if (body[x] === undefined) throw { message: `${x} is not defined` };
+  }
+
+  // const validate = require("./validator").validate;
+  // const newBody = {};
+
+  // // validate all required param
+  // for (const key of required) {
+  //   if (
+  //     validate(
+  //       key === "password"
+  //         ? "password"
+  //         : key === "handle"
+  //         ? "handle"
+  //         : key === "email"
+  //         ? "email"
+  //         : "date" === key
+  //         ? "date"
+  //         : ["serverStamp", "fee"].includes(key)
+  //         ? "number"
+  //         : ["list", "target"].includes(key)
+  //         ? "boolean"
+  //         : ["squad", "roles"].includes(key)
+  //         ? "textArray"
+  //         : ["age", "value", "rating"].includes(key)
+  //         ? "numberArray"
+  //         : "text",
+  //       body[key]
+  //     ) === undefined
+  //   ) {
+  //     throw `${key} parameter not validataed`;
+  //   }
+
+  //   newBody[key] = ["serverStamp", "fee"].includes(key) ? Number(body[key]) : body[key];
+  // }
+
+  // return { ...newBody };
+};
 // export const validateRequestBody = (body, arr) => {
 //   const validate = require("./validator").validate;
 //   const newBody = {};

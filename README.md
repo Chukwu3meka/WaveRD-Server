@@ -14,6 +14,11 @@ SoccerMass Web is hosted on **[Render](https://render.com/)** and can be found h
 
 Server is hosted on **Render** and can b both **api.soccermass.com** and **server.soccermass.com**
 
+Though similar in nature, they perform different duty:
+
+- **api.soccermass.com** >>> Handles all request intended to serve API Hub (Third party request, i.e external calls)
+- **server.soccermass.com** >>> Handles request aimed at SoccerMASS
+
 ## NPM Packages && Services
 
 All packages installed are key to this app running smoothly and we graciously thank the group of developers maintaining those packages. Currently our server is running on a free tier hosted on **RENDER** formerly on _Heroku_ before it's free plan was cancelled and we are working on raisng funds to upgrade our server. The following in no particular order executes a very important task on our server.
