@@ -7,6 +7,8 @@ const subDomains = (app: any) => {
     if (req.headers.host == `v1.${process.env.SERVER_DOMAIN}`) req.url = "/v1" + req.url; // <= direct call from app
     if (req.headers.host == `api.${process.env.SERVER_DOMAIN}`) req.url = "/api" + req.url; // <= external call to apihub
 
+    console.log(req.url, req.originalUrl);
+
     next();
   });
 };
