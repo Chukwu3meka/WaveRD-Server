@@ -1,16 +1,17 @@
 import { NextFunction, Request, Response } from "express";
-import { catchError, sleep } from "../../../utils/handlers";
+import { catchError, requestHasBody, sleep } from "../../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { acc } = req.query;
+    const { email, password } = req.body;
+
+    requestHasBody({ body: req.body, required: ["email", "password"] });
+
+    // const { acc } = req.query;
 
     // const account = (acc as string).replaceAll('"', "");
-    console.log(typeof account);
 
-
-
-
+    console.log({ email, password });
 
     // await sleep(1);
 
@@ -27,10 +28,10 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     //     },
     //   };
 
-      return res.status(200).json("successfull signup");
-    } else {
-      throw { status: 404, message: "Account number not found" };
-    }
+    return res.status(200).json("successfull signup");
+    // } else {
+    //   throw { status: 404, message: "Account number not found" };
+    // }
   } catch (err: any) {
     return catchError({ res, err, status: err.status, message: err.message });
   }
