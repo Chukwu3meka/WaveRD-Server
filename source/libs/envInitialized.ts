@@ -8,7 +8,7 @@ const envKeys = [
   "TWITTER_CONSUMER_SECRET",
   // App
   "SECRET",
-  "MONGODB_URI",
+  // "MONGODB_URI",
 
   "CLIENT_DOMAIN",
   "SERVER_DOMAIN",
@@ -23,6 +23,11 @@ const envKeys = [
   // "MAX_BUDGET",
   // "MAX_SQUAD",
   // "MIN_SQUAD",
+
+  // Mongo DB URI
+  "APP_MONGODB_URI",
+  "HUB_MONGODB_URI",
+  "GAME_MONGODB_URI",
 ];
 
 export default () => {
