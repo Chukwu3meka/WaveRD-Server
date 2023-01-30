@@ -18,7 +18,7 @@ import subDomains from "./libs/subDomains";
 const server = async () => {
   try {
     envInitialized(); // detect app access env;
-    await mongoose.config(); // enable app access database
+    // await mongoose.con; // enable app access database
 
     const app = express(),
       port = process.env.PORT || 5000;
