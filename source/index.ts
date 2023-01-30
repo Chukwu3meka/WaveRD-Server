@@ -19,7 +19,8 @@ import * as models from "./models"; // enable app access da/tabase
 const server = async () => {
   try {
     envInitialized(); // detect app access env;
-    models.config(); // enable app access database
+
+    await import("./models"); // enable app access database
 
     const app = express(),
       port = process.env.PORT || 5000;

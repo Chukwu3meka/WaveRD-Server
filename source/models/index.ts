@@ -53,10 +53,4 @@ const appDB = modelGenerator("app");
 const hubDB = modelGenerator("hub");
 const gameDB = modelGenerator("game");
 
-const config = () => {
-  console.log(appDB.host);
-  console.log(hubDB.host);
-  console.log(gameDB.host);
-};
-
-export { hubDB, appDB, gameDB, config };
+export { hubDB, appDB, gameDB };
