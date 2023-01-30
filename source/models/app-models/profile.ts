@@ -1,3 +1,5 @@
+import { NextFunction } from "express";
+
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
@@ -9,19 +11,19 @@ const ProfileSchema = new Schema({
   // club: { type: String, required: true },
   email: { type: String, unique: true, required: false },
   password: { type: String, required: true },
-  handle: { type: String, required: true },
-  session: { type: String, required: true, unique: true },
-  stat: {
-    registered: { type: Date, default: Date.now },
-    verified: { type: String, default: false },
-    otp: {
-      exp: { type: Date, default: null },
-      code: { type: Number, default: null },
-      data: { type: String, default: null },
-      status: { type: String, default: null },
-    },
-  },
-  v1: { type: {} || null, default: null },
+  // handle: { type: String, required: true },
+  // session: { type: String, required: true, unique: true },
+  // stat: {
+  //   registered: { type: Date, default: Date.now },
+  //   verified: { type: String, default: false },
+  //   otp: {
+  //     exp: { type: Date, default: null },
+  //     code: { type: Number, default: null },
+  //     data: { type: String, default: null },
+  //     status: { type: String, default: null },
+  //   },
+  // },
+  // v1: { type: {} || null, default: null },
   // award: {
   //   mom: { type: Number, default: 0 },
   //   moy: { type: Number, default: 0 },
@@ -40,12 +42,12 @@ ProfileSchema.pre("save", async function (next) {
     const hashed = await bcrypt.hash(this.password, 10);
     this.password = hashed;
     return next();
-  } catch (err) {
+  } catch (err: any) {
     return next(err);
   }
 });
 
-ProfileSchema.methods.hashPassword = async function (password, next) {
+ProfileSchema.methods.hashPassword = async function (password: string, next: NextFunction) {
   try {
     return await bcrypt.hash(password, 10);
   } catch (err) {
@@ -53,7 +55,7 @@ ProfileSchema.methods.hashPassword = async function (password, next) {
   }
 };
 
-ProfileSchema.methods.comparePassword = async function (attempt, next) {
+ProfileSchema.methods.comparePassword = async function (attempt: string, next: NextFunction) {
   try {
     return await bcrypt.compare(attempt, this.password);
   } catch (err) {
@@ -61,4 +63,6 @@ ProfileSchema.methods.comparePassword = async function (attempt, next) {
   }
 };
 
-module.exports = mongoose.model("profile", ProfileSchema, "profile");
+const ProfileModel = mongoose.model("profile", ProfileSchema);
+
+export default ProfileModel;
