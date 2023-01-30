@@ -11,7 +11,7 @@ import appRoutes from "./routes"; // enable app access database
 
 import envInitialized from "./libs/envInitialized";
 import subDomains from "./libs/subDomains";
-import * as models from "./model/index"; // enable app access da/tabase
+import * as models from "./models"; // enable app access da/tabase
 // import subDomainHandler from "./middleware/sub_domain_handler";
 
 // import subDomainHandler from "./libs/sub_domain_handler";
@@ -19,10 +19,7 @@ import * as models from "./model/index"; // enable app access da/tabase
 const server = async () => {
   try {
     envInitialized(); // detect app access env;
-
-    // models.appDB.createCollection("ASds");
-
-    // await mongoose.con; // enable app access database
+    models.config(); // enable app access database
 
     const app = express(),
       port = process.env.PORT || 5000;

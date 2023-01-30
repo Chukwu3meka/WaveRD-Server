@@ -49,11 +49,14 @@ const modelGenerator = (DB_NAME: string) =>
     .on("disconnected", () => logMessage({ label: DB_NAME, event: "disconnected" }))
     .on("disconnecting", () => logMessage({ label: DB_NAME, event: "disconnecting" }));
 
-//   import connectionEvents, { IConnectionEvents } from "./connEvents";
-// import appDB from "./connEvents";
-
 const appDB = modelGenerator("app");
 const hubDB = modelGenerator("hub");
 const gameDB = modelGenerator("game");
 
-export { hubDB, appDB, gameDB };
+const config = () => {
+  console.log(appDB.host);
+  console.log(hubDB.host);
+  console.log(gameDB.host);
+};
+
+export { hubDB, appDB, gameDB, config };
