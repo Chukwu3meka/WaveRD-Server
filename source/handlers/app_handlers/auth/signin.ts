@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from "express";
+import { ProfileModel } from "../../../model/app_schema";
+// import ProfileModel from "../../../model/app_schema/profile";
 import { catchError, requestHasBody, sleep } from "../../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
@@ -11,7 +13,9 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     // const account = (acc as string).replaceAll('"', "");
 
-    console.log({ email, password });
+    console.log({ email, password, ProfileModel });
+
+    await ProfileModel.create({ email, password, handle: "saddsa" });
 
     // await sleep(1);
 

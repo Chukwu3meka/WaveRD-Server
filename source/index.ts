@@ -7,10 +7,11 @@ import cookieSession from "cookie-session";
 
 import passport from "./libs/passport";
 import appRoutes from "./routes"; // enable app access database
-import mongoose from "./libs/mongoose"; // enable app access database
+// import mongoose from "./libs/mongoose"; // enable app access database
 
 import envInitialized from "./libs/envInitialized";
 import subDomains from "./libs/subDomains";
+import * as models from "./model/index"; // enable app access da/tabase
 // import subDomainHandler from "./middleware/sub_domain_handler";
 
 // import subDomainHandler from "./libs/sub_domain_handler";
@@ -18,6 +19,9 @@ import subDomains from "./libs/subDomains";
 const server = async () => {
   try {
     envInitialized(); // detect app access env;
+
+    // models.appDB.createCollection("ASds");
+
     // await mongoose.con; // enable app access database
 
     const app = express(),

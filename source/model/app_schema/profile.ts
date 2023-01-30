@@ -60,4 +60,8 @@ const ProfileSchema = new Schema({
 //   }
 // };
 
-module.exports = appDB.model("profile", ProfileSchema);
+// module.exports = appDB.model("profile", ProfileSchema);
+
+const ProfileModel = appDB.model("profile", ProfileSchema);
+
+export default ProfileModel;
