@@ -1,12 +1,11 @@
 import express from "express";
 
-import signin from "../../handlers/app_handlers/auth/signin";
-// import signup from "../../handlers/v1/auth/signup";
+import * as auth from "../../handlers/app_handlers/auth";
 
 const router = express.Router();
 
-router.route("/signin").post(signin);
-// router.route("/signup").post(signup);
+router.route("/signin").post(auth.signin);
+router.route("/signup").post(auth.signup);
 // router.route("/:club/players").get(club.clubPlayers);
 
 export default router;
