@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Response } from "express";
+import express, { Request, Response } from "express";
 import connectionEvents, { IConnectionEvents } from "../libs/mdbConnEvents";
 
 interface ICatchError {
@@ -91,6 +91,8 @@ export const modelGenerator = (DB_NAME: string) => {
     .on("disconnected", () => logMessage({ label: DB_NAME, event: "disconnected" }))
     .on("disconnecting", () => logMessage({ label: DB_NAME, event: "disconnecting" }));
 };
+
+export const redirectToWeb = (req: Request, res: Response) => res.writeHead(302, { Location: process.env.CLIENT_BASE_URL }).end();
 
 // export const validateRequestBody = (body, arr) => {
 //   const validate = require("./validator").validate;

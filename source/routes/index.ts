@@ -1,20 +1,12 @@
-import v1Auth from "./v1/auth";
+import appRoutes from "./app-routes";
 
-import { Request, Response } from "express";
-const redirectToWeb = (req: Request, res: Response) => res.writeHead(302, { Location: process.env.CLIENT_BASE_URL }).end();
+import { redirectToWeb } from "../utils/handlers";
 
 export default (app: any) => {
   // ? Redirect Calls
-  app.all("/", redirectToWeb); // Server Homepage
-  app.all("/app-api", redirectToWeb); // app Homepage
-  app.all("/hub-api").redirectToWeb; // hub Homepage
-  app.all("/game-api").redirectToWeb; // game Homepage
+  app.all("/", redirectToWeb); // Redirect calls to Server Homepage
 
-  // ? App-API Request
-  app.use("/app-api/auth", v1Auth);
-
-  // ? Hub-API Request
-  // ? Game-API Request
+  appRoutes(app); //  <= App-API Request
 };
 
 //
