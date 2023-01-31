@@ -1,8 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import { catchError, sleep } from "../../../utils/handlers";
+import { catchError, requestHasBody, sleep } from "../../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
+    requestHasBody({ body: req.body, required: ["email", "password"] });
+    const { email, password, name } = req.body;
+
     const { acc } = req.query;
 
     const account = (acc as string).replaceAll('"', "");

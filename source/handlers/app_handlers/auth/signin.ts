@@ -6,9 +6,8 @@ import { catchError, requestHasBody, sleep } from "../../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, password, name } = req.body;
-
     requestHasBody({ body: req.body, required: ["email", "password"] });
+    const { email, password, name } = req.body;
 
     // const { acc } = req.query;
 
