@@ -1,4 +1,5 @@
 import "dotenv/config";
+
 import cors from "cors";
 import express from "express";
 import bodyParser from "body-parser";
@@ -7,18 +8,13 @@ import cookieSession from "cookie-session";
 
 import passport from "./libs/passport";
 import appRoutes from "./routes"; // enable app access database
-import mongoose from "./libs/mongoose"; // enable app access database
 
 import envInitialized from "./libs/envInitialized";
 import subDomains from "./libs/subDomains";
-// import subDomainHandler from "./middleware/sub_domain_handler";
-
-// import subDomainHandler from "./libs/sub_domain_handler";
 
 const server = async () => {
   try {
-    envInitialized(); // detect app access env;
-    await mongoose.config(); // enable app access database
+    envInitialized(); // detect app access to all env;
 
     const app = express(),
       port = process.env.PORT || 5000;

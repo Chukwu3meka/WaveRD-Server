@@ -1,4 +1,6 @@
-import { Response } from "express";
+import mongoose from "mongoose";
+import express, { Request, Response } from "express";
+import connectionEvents, { IConnectionEvents } from "../libs/mdbConnEvents";
 
 interface ICatchError {
   res: Response;
@@ -60,6 +62,38 @@ export const requestHasBody = ({ body, required }: { body: { [key: string]: any 
 
   // return { ...newBody };
 };
+
+// IConnectionEvents, connectionEvents
+
+interface IlogMessage {
+  label: string;
+  event: string;
+}
+const logMessage = ({ label, event }: IlogMessage) => `MongoDB ${label} Database Connection Events} ::: ${connectionEvents[event as keyof IConnectionEvents]}`;
+
+export const modelGenerator = (DB_NAME: string) => {
+  return mongoose
+    .createConnection(<string>process.env[`${DB_NAME}_MONGODB_URI`], {
+      // useNewUrlParser: true,
+      // useFindAndModify: true,
+      // useCreateIndex: true,
+      // useUnifiedTopology: true,
+      // useFindAndModify: false,
+    })
+    .on("all", () => logMessage({ label: DB_NAME, event: "all" }))
+    .on("open", () => logMessage({ label: DB_NAME, event: "open" }))
+    .on("error", () => logMessage({ label: DB_NAME, event: "error" }))
+    .on("close", () => logMessage({ label: DB_NAME, event: "close" }))
+    .on("connected", () => logMessage({ label: DB_NAME, event: "connected" }))
+    .on("fullsetup", () => logMessage({ label: DB_NAME, event: "fullsetup" }))
+    .on("connecting", () => logMessage({ label: DB_NAME, event: "connecting" }))
+    .on("reconnected", () => logMessage({ label: DB_NAME, event: "reconnected" }))
+    .on("disconnected", () => logMessage({ label: DB_NAME, event: "disconnected" }))
+    .on("disconnecting", () => logMessage({ label: DB_NAME, event: "disconnecting" }));
+};
+
+export const redirectToWeb = (req: Request, res: Response) => res.writeHead(302, { Location: process.env.CLIENT_BASE_URL }).end();
+
 // export const validateRequestBody = (body, arr) => {
 //   const validate = require("./validator").validate;
 //   const newBody = {};
