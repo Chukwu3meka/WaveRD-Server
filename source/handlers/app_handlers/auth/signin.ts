@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import { ProfileModel } from "../../../model/app_schema";
+import { appModels } from "../../../models";
+
 // import ProfileModel from "../../../model/app_schema/profile";
 import { catchError, requestHasBody, sleep } from "../../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, name } = req.body;
 
     requestHasBody({ body: req.body, required: ["email", "password"] });
 
@@ -13,9 +14,9 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     // const account = (acc as string).replaceAll('"', "");
 
-    console.log({ email, password, ProfileModel });
+    console.log({ email, password });
 
-    await ProfileModel.create({ email, password, handle: "saddsa" });
+    await appModels.ProfileModel.create({ email, password, name, profile_ID: "saddsa" });
 
     // await sleep(1);
 
