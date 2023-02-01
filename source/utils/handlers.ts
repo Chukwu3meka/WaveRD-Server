@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import express, { Request, Response } from "express";
-import connectionEvents, { IConnectionEvents } from "../libs/mdbConnEvents";
+import connectionEvents, { IConnectionEvents } from "./mdbConnEvents";
 
 interface ICatchError {
   res: Response;

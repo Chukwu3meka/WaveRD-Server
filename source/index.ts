@@ -6,11 +6,11 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
 
-import passport from "./libs/passport";
+import passport from "./utils/passport";
 import appRoutes from "./routes"; // enable app access database
 
-import envInitialized from "./libs/envInitialized";
-import subDomains from "./libs/subDomains";
+import envInitialized from "./utils/envInitialized";
+import subDomains from "./utils/subDomains";
 
 const server = async () => {
   try {
