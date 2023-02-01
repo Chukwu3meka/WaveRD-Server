@@ -1,79 +1,47 @@
-// export default (valueType: string, value: string | number | boolean) => {
-//   if (value === undefined || value === null || `${value}`.length === 0) throw { message: "Value cannot be empty" };
+interface IValidator {
+  value: any;
+  type: "email" | "password" | "handle" | "fullName";
+  label: string;
+}
 
-//   if (!["boolean", "textArray", "numberArray", "roles", "number"].includes(valueType)) value = value && `${value}`.trim();
-//   // console.log(valueType, value);
+const validator = ({ value, type, label }: IValidator) => {
+  if (value === "" || value === undefined) throw { message: `${label} cannot be empty` };
 
-//   switch (valueType) {
-//     case "boolean": {
-//       return value === true || value === false ? value : undefined;
-//     }
-//     case "email": {
-//       value = `${value}`.toLowerCase();
-//       const reg =
-//         /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[A-Z]{2}|com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum)\b/;
-//       const regStatus = reg.test(value) && value.length > 7 && value.length < 30;
-//       return regStatus ? value : undefined;
-//     }
-//     case "password": {
-//       const reg = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d~`!@#$%^&*()_+-=|/ ]{7,30}$/;
-//       const regStatus = reg.test(`${value}`);
-//       return regStatus ? value : undefined;
-//     }
-//     case "text": {
-//       const reg = /^(?!.*\.\.)(?!.*\.$)[^\W][\w\s\-]{2,200}$/gim;
-//       const regStatus = reg.test(`${value}`);
-//       return regStatus ? value : undefined;
-//     }
-//     case "number": {
-//       const reg = /^\s*[+-]?(\d+|\.\d+|\d+\.\d+|\d+\.)(e[+-]?\d+)?\s*$/;
-//       const regStatus = reg.test(value);
-//       return regStatus ? value : undefined;
-//     }
-//     case "handle": {
-//       const reg = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.\s@!~#^$*']{2,39}$/gim;
-//       const regStatus = reg.test(`${value}`);
-//       return regStatus ? value : undefined;
-//     }
-//     case "string": {
-//       const newValue = `${value}`;
-//       const reg = /^(?!.*\.\.)(?!.*\.$)[^\W][\w\W]{2,999}$/gim;
-//       let status = reg.test(newValue) && newValue.length > 0;
-//       if (status === true) return newValue;
-//       return false;
-//     }
-//     case "date": {
-//       const newValue = new Date(`${value}`);
-//       // const status = newValue instanceof Date && !isNaN(newValue);
-//       const status = newValue instanceof Date;
-//       if (status === true) {
-//         const newDateYear = newValue.getFullYear();
-//         const currentYear = new Date().getFullYear();
-//         const yearDiff = currentYear - newDateYear;
-//         if (yearDiff > 12 && yearDiff < 121) return newValue;
-//       }
-//       return false;
-//     }
-//     // case "textArray": {
-//     //   const reg = /^(?!.*\.\.)(?!.*\.$)[^\W][\w\s\-]{0,200}$/gim;
+  switch (type) {
+    case "email": {
+      const reg = /^[\w\d]+[\w\.-]+@\w+([\.-]?\w+)*(\.\w{2,3})+$/g;
+      if (!reg.test(value)) throw { message: `${label} email address that starts with a letter or number` };
+      break;
+    }
+    case "password": {
+      const reg = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
+      if (!reg.test(value))
+        throw {
+          message: `${label} must be between 8 to 15 characters which contain at least one lowercase/uppercase, numeric digit, and special character`,
+        };
+      break;
+    }
+    case "handle": {
+      const reg = /^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)?$/;
+      if (!reg.test(value))
+        throw {
+          message: `${label} must start with a letter or number and can only have underscore in between letters or numbers`,
+        };
+      break;
+    }
+    case "fullName": {
+      const reg = /^[a-zA-Z]+([\ \'\.\-][a-zA-Z]+)*$/;
+      if (!reg.test(value))
+        throw {
+          message: `${label} can have one or more letters, and zero or more occurrences of a dash, dot, space, or hyphen followed by one or more letters.`,
+        };
+      break;
+    }
 
-//     //   const textArray: string[] = [];
+    default:
+      throw { message: "value not validated" };
+  }
+  // return true
+};
 
-//     //   for (const text of value) return reg.test(text) ? textArray.push() : undefined;
-
-//     //   return textArray.length ? textArray : undefined;
-//     // }
-//     // case "numberArray": {
-//     //   const reg = /^\s*[+-]?(\d+|\.\d+|\d+\.\d+|\d+\.)(e[+-]?\d+)?\s*$/;
-
-//     //   const numberArray = [];
-//     //   for (const number of value) return reg.test(number) ? numberArray.push(value) : undefined;
-
-//     //   return numberArray.length ? numberArray : undefined;
-//     // }
-
-//     default:
-//       // return false;
-//       throw { message: "Value could not be validated" };
-//   }
-// };
+export default validator;

@@ -6,10 +6,11 @@ const ProfileSchema = new Schema({
   // mass: { type: String, required: true },
   // division: { type: String, required: true },
   // club: { type: String, required: true },
-  name: { type: String, required: true },
+  handle: { type: String, required: true },
+  fullName: { type: String, required: true },
   password: { type: String, required: true },
   email: { type: String, unique: true, required: false },
-  profile_ID: { type: String, unique: true, required: true },
+  // profile_ID: { type: String, unique: true, required: true },
   // handle: { type: String, required: true },
   // session: { type: String, required: true, unique: true },
   // stat: {
