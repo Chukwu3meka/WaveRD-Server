@@ -1,6 +1,6 @@
 import express from "express";
 
-import * as auth from "../../handlers/app_handlers/auth";
+import * as auth from "../../handlers/appHandlers/auth";
 
 const router = express.Router();
 

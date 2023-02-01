@@ -1,4 +1,4 @@
-import appRoutes from "./app-routes";
+import appRoutes from "./appRoutes";
 
 import { redirectToWeb } from "../utils/handlers";
 

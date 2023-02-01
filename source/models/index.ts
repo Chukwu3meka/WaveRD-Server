@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { modelGenerator } from "../utils/handlers";
-import ProfileSchema from "./app-models/profile";
+import ProfileSchema from "./appModels/profile";
 
 mongoose.set("debug", true);
 mongoose.set("strictQuery", false);
