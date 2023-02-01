@@ -7,8 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node source/index.ts",
     "tsc": "tsc --watch",
-    "dev": "node --watch --watch ./dist/index.js",
-    "dev-logs": "node --watch --watch-preserve-output --trace-warnings ./dist/index.js"
+    "dev": "node --watch --watch-preserve-output --trace-warnings ./dist/index.js"
   },
   "repository": {
     "type": "git",
