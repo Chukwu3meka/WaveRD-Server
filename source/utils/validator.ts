@@ -1,11 +1,13 @@
 interface IValidator {
   value: any;
   type: "email" | "password" | "handle" | "fullName";
-  label: string;
+  label?: string;
 }
 
 const validator = ({ value, type, label }: IValidator) => {
   if (value === "" || value === undefined) throw { message: `${label} cannot be empty` };
+
+  if (!label) label = value.charAt(0).toUpperCase() + value.slice(1);
 
   switch (type) {
     case "email": {
