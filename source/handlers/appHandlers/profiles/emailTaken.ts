@@ -3,39 +3,20 @@ import { appModels } from "../../../models";
 
 // import ProfileModel from "../../../model/app_schema/profile";
 import { catchError, requestHasBody, sleep } from "../../../utils/handlers";
+import validator from "../../../utils/validator";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
     requestHasBody({ body: req.body, required: ["email"] });
     const { email } = req.body;
 
-    // const { acc } = req.query;
+    validator(email);
 
-    // const account = (acc as string).replaceAll('"', "");
+    const dbResponse = await appModels.ProfileModel.findOne({ email });
 
-    const emailTaken = await appModels.ProfileModel.findOne({ email });
+    const data = { success: true, message: null, payload: { emailTaken: !!dbResponse } };
 
-    console.log({ email, emailTaken });
-
-    // await sleep(1);
-
-    // if (account === "2020671697") {
-    //   const payload = {
-    //     status: "success",
-    //     message: null,
-    //     payload: {
-    //       customerName: "Chukwuemeka Maduekwe",
-    //       accountCurrency: "USD - United States Dollars",
-    //       availableBalance: "450,587:84",
-    //       ttBalance: "34,565",
-    //       cashBalance: "367,327:20",
-    //     },
-    //   };
-
-    return res.status(200).json("successfull signup");
-    // } else {
-    //   throw { status: 404, message: "Account number not found" };
-    // }
+    res.status(200).json(data);
   } catch (err: any) {
     return catchError({ res, err, status: err.status, message: err.message });
   }
