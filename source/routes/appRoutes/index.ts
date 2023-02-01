@@ -1,4 +1,5 @@
 import auth from "./auth";
+import profiles from "./profiles";
 
 import { redirectToWeb } from "../../utils/handlers";
 
@@ -8,4 +9,5 @@ export default (app: any) => {
 
   // ? App-API Request
   app.use("/app-api/auth", auth);
+  app.use("/app-api/profiles", profiles);
 };
