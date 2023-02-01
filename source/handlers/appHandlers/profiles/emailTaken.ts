@@ -10,7 +10,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     requestHasBody({ body: req.body, required: ["email"] });
     const { email } = req.body;
 
-    validator(email);
+    validator({ type: "email", value: email });
 
     const dbResponse = await appModels.ProfileModel.findOne({ email });
 
