@@ -8,6 +8,6 @@ export default (app: any) => {
   app.all("/app-api", redirectToWeb);
 
   // ? App-API Request
-  app.use("/app-api/auth", auth);
-  app.use("/app-api/profiles", profiles);
+  app.use("/app-api/api/auth", auth);
+  app.use("/app-api/api/profiles", profiles);
 };
