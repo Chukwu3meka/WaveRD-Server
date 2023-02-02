@@ -20,6 +20,7 @@ const server = async () => {
       port = process.env.PORT || 5000;
 
     app.use(cors());
+    app.options("*", cors()); // include before other routes
     app.use(cookieParser());
     app.use(bodyParser.json({ limit: "7mb" }));
     app.use(bodyParser.urlencoded({ extended: true }));

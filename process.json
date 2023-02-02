@@ -1,0 +1,8 @@
+{
+  "script": "./dist/index.js",
+  "watch": true,
+  "ignore_watch": ["node_modules", ".git"],
+  "watch_options": {
+    "followSymlinks": false
+  }
+}
