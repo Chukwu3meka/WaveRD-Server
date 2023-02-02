@@ -49,7 +49,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     //     throw `Profile creation err: ${err}`;
     //   });
 
-    return res.status(200).json("successfull signin");
+    return res.status(200).json("successfull registered");
   } catch (err: any) {
     return catchError({ res, err, status: err.status, message: err.message });
   }
