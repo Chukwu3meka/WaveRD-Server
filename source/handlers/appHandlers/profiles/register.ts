@@ -1,5 +1,11 @@
 import { NextFunction, Request, Response } from "express";
+
+import { appModels } from "../../../models";
+import { emailExistsFn } from "./emailTaken";
 import { catchError, requestHasBody, sleep } from "../../../utils/handlers";
+
+const SESSION = appModels.appSessionModel;
+const USERS = appModels.appUserModel;
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -9,47 +15,40 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     console.log({ email, password, fullName, handle });
     // const { acc } = req.query;
 
-    // const account = (acc as string).replaceAll('"', "");
-    // console.log(typeof account);
-
-    // // check if email is taken alread
-
-    // const emailTaken = await Profile.findOne({ email });
-    // if (emailTaken) throw "email taken";
+    // ? check if email is taken alread
+    const emailTaken = await emailExistsFn(email);
+    if (emailTaken) throw { message: "Email already in use, Kindly use a different email address" };
 
     // const session = sessionGenerator();
 
-    // await Profile.create({
-    //   mass,
-    //   division,
-    //   club,
-    //   email,
-    //   password,
-    //   session,
-    //   handle,
-    //   stat: { registered: dateRegistered },
-    //   clubsManaged: [{ club }],
-    // })
-    //   .then(async ({ _id, stat: { registered } }) => {
-    //     const signupReference = sessionGenerator(_id),
-    //       serverStamp = new Date(registered).getTime();
+    return await USERS.create({ email, handle, fullName })
+      .then(() => {
+        SESSION.create({
+          email,
+          password,
+        })
+          .then(() => {
+            // await pushMail({
+            //   emailAddress: email,
+            //   emailSubject: "SoccerMASS Account Verification",
+            //   emailBody: emailTemplates("accountVerification", { handle, signupReference, serverStamp }),
+            // });
 
-    //     await Profile.updateOne({ email }, { session, "stat.verified": signupReference });
+            return res.status(201).json("data");
+          })
+          .catch(() => {
+            // delete profile
+            throw { message: `delete Profile ` };
+          });
+      })
+      .catch(() => {
+        throw { message: `Profile creation was unsuccessful` };
+      });
 
-    //     await pushMail({
-    //       emailAddress: email,
-    //       emailSubject: "SoccerMASS Account Verification",
-    //       emailBody: emailTemplates("accountVerification", { handle, signupReference, serverStamp }),
-    //     });
-    //     // console.log(`${process.env.CLIENT}auth/verify?signupReference=${signupReference}&serverStamp=${serverStamp}&handle=${handle}`);
-
-    //     return res.status(201).json("success");
+    //     const data = { success: true, message: null, payload: { email } };
     //   })
     //   .catch((err) => {
-    //     throw `Profile creation err: ${err}`;
     //   });
-
-    return res.status(200).json("successfull registered");
   } catch (err: any) {
     return catchError({ res, err, status: err.status, message: err.message });
   }

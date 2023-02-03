@@ -1,13 +1,16 @@
+import { v4 } from "uuid";
 import { NextFunction, Request, Response } from "express";
 import { appModels } from "../../../models";
 
 import { catchError, requestHasBody } from "../../../utils/handlers";
 import validator from "../../../utils/validator";
 
-const emailExistsFn = async (email: string) => {
+const USERS = appModels.appUserModel;
+
+export const emailExistsFn = async (email: string) => {
   validator({ type: "email", value: email });
 
-  const dbResponse = await appModels.ProfileModel.findOne({ email });
+  const dbResponse = await USERS.findOne({ email });
 
   return !!dbResponse;
 };
