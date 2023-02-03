@@ -1,6 +1,5 @@
-import mongoose from "mongoose";
-import express, { Request, Response } from "express";
-import connectionEvents, { IConnectionEvents } from "../libs/mdbConnEvents";
+import { v4 } from "uuid";
+import { Request, Response } from "express";
 
 interface ICatchError {
   res: Response;
@@ -12,7 +11,7 @@ interface ICatchError {
 export const catchError = ({ res, err, status = 400, message = "Unable to process request" }: ICatchError) => {
   if (process.env.NODE_ENV !== "production") console.log(`${res.req.originalUrl}: ${JSON.stringify(err)}`);
 
-  return res.status(status).json({ status: "error", message, payload: null });
+  return res.status(status).json({ success: false, message, payload: null });
 };
 
 export const sleep = async (seconds: number) => {
@@ -65,34 +64,29 @@ export const requestHasBody = ({ body, required }: { body: { [key: string]: any 
 
 // IConnectionEvents, connectionEvents
 
-interface IlogMessage {
-  label: string;
-  event: string;
-}
-const logMessage = ({ label, event }: IlogMessage) => `MongoDB ${label} Database Connection Events} ::: ${connectionEvents[event as keyof IConnectionEvents]}`;
+export const redirectToWeb = (req: Request, res: Response) => res.writeHead(302, { Location: process.env.CLIENT_BASE_URL }).end();
 
-export const modelGenerator = (DB_NAME: string) => {
-  return mongoose
-    .createConnection(<string>process.env[`${DB_NAME}_MONGODB_URI`], {
-      // useNewUrlParser: true,
-      // useFindAndModify: true,
-      // useCreateIndex: true,
-      // useUnifiedTopology: true,
-      // useFindAndModify: false,
-    })
-    .on("all", () => logMessage({ label: DB_NAME, event: "all" }))
-    .on("open", () => logMessage({ label: DB_NAME, event: "open" }))
-    .on("error", () => logMessage({ label: DB_NAME, event: "error" }))
-    .on("close", () => logMessage({ label: DB_NAME, event: "close" }))
-    .on("connected", () => logMessage({ label: DB_NAME, event: "connected" }))
-    .on("fullsetup", () => logMessage({ label: DB_NAME, event: "fullsetup" }))
-    .on("connecting", () => logMessage({ label: DB_NAME, event: "connecting" }))
-    .on("reconnected", () => logMessage({ label: DB_NAME, event: "reconnected" }))
-    .on("disconnected", () => logMessage({ label: DB_NAME, event: "disconnected" }))
-    .on("disconnecting", () => logMessage({ label: DB_NAME, event: "disconnecting" }));
+// function to generate the date for n  days from now:
+export const nDaysDateFromNowFn = (days: number) => {
+  const today = new Date();
+  const futureDate = new Date();
+  futureDate.setDate(today.getDate() + days);
+  return futureDate;
 };
 
-export const redirectToWeb = (req: Request, res: Response) => res.writeHead(302, { Location: process.env.CLIENT_BASE_URL }).end();
+// export const sessionGenerator = (id?: string, length?: number) => {
+//   number = 36;
+
+//   let session = "";
+//   const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+//   const charactersLength = characters.length;
+
+//   for (let i = 0; i < length; i++) {
+//     session += characters.charAt(Math.floor(Math.random() * charactersLength));
+//   }
+
+//   return id ? `${session}-${id}-${v4()}` : `${session}-${v4()}`;
+// };
 
 // export const validateRequestBody = (body, arr) => {
 //   const validate = require("./validator").validate;

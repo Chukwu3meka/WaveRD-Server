@@ -1,79 +1,67 @@
-// export default (valueType: string, value: string | number | boolean) => {
-//   if (value === undefined || value === null || `${value}`.length === 0) throw { message: "Value cannot be empty" };
+interface IValidator {
+  value: any;
+  type: "email" | "password" | "handle" | "fullName";
+  label?: string | null;
+}
 
-//   if (!["boolean", "textArray", "numberArray", "roles", "number"].includes(valueType)) value = value && `${value}`.trim();
-//   // console.log(valueType, value);
+const validator = ({ value, type, label }: IValidator) => {
+  if (!label) label = type.charAt(0).toUpperCase() + type.slice(1);
 
-//   switch (valueType) {
-//     case "boolean": {
-//       return value === true || value === false ? value : undefined;
-//     }
-//     case "email": {
-//       value = `${value}`.toLowerCase();
-//       const reg =
-//         /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[A-Z]{2}|com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum)\b/;
-//       const regStatus = reg.test(value) && value.length > 7 && value.length < 30;
-//       return regStatus ? value : undefined;
-//     }
-//     case "password": {
-//       const reg = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d~`!@#$%^&*()_+-=|/ ]{7,30}$/;
-//       const regStatus = reg.test(`${value}`);
-//       return regStatus ? value : undefined;
-//     }
-//     case "text": {
-//       const reg = /^(?!.*\.\.)(?!.*\.$)[^\W][\w\s\-]{2,200}$/gim;
-//       const regStatus = reg.test(`${value}`);
-//       return regStatus ? value : undefined;
-//     }
-//     case "number": {
-//       const reg = /^\s*[+-]?(\d+|\.\d+|\d+\.\d+|\d+\.)(e[+-]?\d+)?\s*$/;
-//       const regStatus = reg.test(value);
-//       return regStatus ? value : undefined;
-//     }
-//     case "handle": {
-//       const reg = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.\s@!~#^$*']{2,39}$/gim;
-//       const regStatus = reg.test(`${value}`);
-//       return regStatus ? value : undefined;
-//     }
-//     case "string": {
-//       const newValue = `${value}`;
-//       const reg = /^(?!.*\.\.)(?!.*\.$)[^\W][\w\W]{2,999}$/gim;
-//       let status = reg.test(newValue) && newValue.length > 0;
-//       if (status === true) return newValue;
-//       return false;
-//     }
-//     case "date": {
-//       const newValue = new Date(`${value}`);
-//       // const status = newValue instanceof Date && !isNaN(newValue);
-//       const status = newValue instanceof Date;
-//       if (status === true) {
-//         const newDateYear = newValue.getFullYear();
-//         const currentYear = new Date().getFullYear();
-//         const yearDiff = currentYear - newDateYear;
-//         if (yearDiff > 12 && yearDiff < 121) return newValue;
-//       }
-//       return false;
-//     }
-//     // case "textArray": {
-//     //   const reg = /^(?!.*\.\.)(?!.*\.$)[^\W][\w\s\-]{0,200}$/gim;
+  if (value === "" || value === undefined) throw { message: `${label} cannot be empty` };
 
-//     //   const textArray: string[] = [];
+  const charLengthLimit = (min: number, max: number) => {
+    if (`${value}`.length < min || `${value}`.length > max) throw { message: `${label} must be between ${min} to ${max} characters` };
+  };
 
-//     //   for (const text of value) return reg.test(text) ? textArray.push() : undefined;
+  switch (type) {
+    case "email": {
+      charLengthLimit(6, 254);
 
-//     //   return textArray.length ? textArray : undefined;
-//     // }
-//     // case "numberArray": {
-//     //   const reg = /^\s*[+-]?(\d+|\.\d+|\d+\.\d+|\d+\.)(e[+-]?\d+)?\s*$/;
+      //  The minimum length of an email address is typically 6 characters (e.g. a@b.com) and can be up to 254 characters.
+      // Limiting the total characters would result in an invalid email address and not meet the standards set by the Internet Assigned Numbers Authority (IANA).
+      const reg = /^[\w\d]+(\.[\w\d]+|-[\w\d]+)*@\w+([-]?\w+)*(\.\w{2,3})$/g;
 
-//     //   const numberArray = [];
-//     //   for (const number of value) return reg.test(number) ? numberArray.push(value) : undefined;
+      if (!reg.test(value))
+        throw {
+          message: `${label} must begin with alphanumeric characters and can only contain dots or dashes in between alphanumeric characters, followed by an '@' symbol, then the domain name followed by a 2-3 character top-level domain (TLD); Subdomains are not permitted.`,
+        };
+      break;
+    }
+    case "password": {
+      charLengthLimit(8, 16);
 
-//     //   return numberArray.length ? numberArray : undefined;
-//     // }
+      const reg = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
+      if (!reg.test(value))
+        throw {
+          message: `${label} must have a length of 8 to 16 characters and include at least one lowercase and uppercase letter, one numeric digit, and one special character.`,
+        };
+      break;
+    }
+    case "handle": {
+      charLengthLimit(3, 16);
 
-//     default:
-//       // return false;
-//       throw { message: "Value could not be validated" };
-//   }
-// };
+      const reg = /^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)?$/;
+      if (!reg.test(value))
+        throw {
+          message: `${label} must begin with a letter or number and may only contain an underscore between letters or numbers`,
+        };
+      break;
+    }
+
+    case "fullName": {
+      charLengthLimit(3, 64);
+      const reg = /^[a-zA-Z]+([\ \'\.\-][a-zA-Z]+)*$/;
+      if (!reg.test(value))
+        throw {
+          message: `${label} Can consist of one or more letters, with optional dashes, dots, spaces, or hyphens, as long as they are followed by one or more letters.`,
+        };
+      break;
+    }
+
+    default:
+      throw { message: "Validation failed" };
+  }
+  // return true
+};
+
+export default validator;

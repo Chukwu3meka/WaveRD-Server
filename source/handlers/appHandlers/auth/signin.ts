@@ -4,6 +4,8 @@ import { appModels } from "../../../models";
 // import ProfileModel from "../../../model/app_schema/profile";
 import { catchError, requestHasBody, sleep } from "../../../utils/handlers";
 
+const SESSION = appModels.appSessionModel;
+
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
     requestHasBody({ body: req.body, required: ["email", "password"] });
@@ -15,7 +17,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     console.log({ email, password });
 
-    await appModels.ProfileModel.create({ email, password, name, profile_ID: "saddsa" });
+    await SESSION.create({ email, password, name, profile_ID: "saddsa" });
 
     // await sleep(1);
 

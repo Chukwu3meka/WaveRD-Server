@@ -1,12 +1,11 @@
-import appRoutes from "./app-routes";
+import appRoutes from "./appRoutes";
 
 import { redirectToWeb } from "../utils/handlers";
 
 export default (app: any) => {
-  // ? Redirect Calls
-  app.all("/", redirectToWeb); // Redirect calls to Server Homepage
+  // ?  Redirect calls to Server Homepage
+  app.all("/", redirectToWeb);
+  app.all("/api", redirectToWeb);
 
   appRoutes(app); //  <= App-API Request
 };
-
-//
