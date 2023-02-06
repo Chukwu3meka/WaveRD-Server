@@ -9,7 +9,7 @@ import cookieSession from "cookie-session";
 import passport from "./utils/passport";
 import appRoutes from "./routes"; // enable app access database
 
-import subDomainToRoute from "./middleware/subDomainToPath";
+import subDomainToRoute from "./middleware/path_from_subdomain";
 
 const server = async () => {
   try {
