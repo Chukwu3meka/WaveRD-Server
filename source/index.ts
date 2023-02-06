@@ -6,10 +6,10 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
 
-import passport from "./utils/passport";
 import appRoutes from "./routes"; // enable app access database
 
-import subDomainToRoute from "./middleware/path_from_subdomain";
+import passport from "./utils/passport";
+import path_from_subdomain from "./middleware/path_from_subdomain";
 
 const server = async () => {
   try {
@@ -22,10 +22,14 @@ const server = async () => {
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(cookieSession({ secret: process.env.SECRET }));
 
+    // middleware
     app.use(passport.initialize());
     app.use(passport.session());
 
-    subDomainToRoute(app); // <= handle request redirect from specified sub domain
+    // Apply the middleware to all incoming requests
+    app.use(path_from_subdomain);
+
+    // subDomainToRoute(app); // <= handle request redirect from specified sub domain
     appRoutes(app); // app routes goes here
 
     app.listen(port, () => console.log(`SoccerMASS:::listening on port ${port}`));
