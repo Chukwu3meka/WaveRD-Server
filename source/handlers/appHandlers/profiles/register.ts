@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { appModels } from "../../../models";
 import { emailExistsFn } from "./emailTaken";
 import { catchError, requestHasBody, sleep } from "../../../utils/handlers";
+import pushMail from "../../../utils/pushMail";
 
 const SESSION = appModels.appSessionModel;
 const USERS = appModels.appUserModel;
@@ -12,7 +13,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     requestHasBody({ body: req.body, required: ["email", "password", "fullName", "handle"] });
     const { email, password, fullName, handle } = req.body;
 
-    console.log({ email, password, fullName, handle });
+    // console.log({ email, password, fullName, handle });
     // const { acc } = req.query;
 
     // ? check if email is taken alread
@@ -27,7 +28,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
           email,
           password,
         })
-          .then(() => {
+          .then(async (dbResponse: any) => {
             // await pushMail({
             //   emailAddress: email,
             //   emailSubject: "SoccerMASS Account Verification",
@@ -35,6 +36,22 @@ export default async (req: Request, res: Response, next: NextFunction) => {
             // });
 
             // fullName, handle, activationLink
+
+            // otp: {
+            //   code: { type: String, default: uniqueId() },
+            //   expiry: { type: Date, default: nDaysDateFromNowFn(3) },
+            //   purpose: { type: String, default: "email verification" },
+            // },
+
+            const emailPayload = {
+              fullName,
+              handle,
+              activationLink: `${process.env.CLIENT_BASE_URL}/auth/verify-email?registration-id=${dbResponse.otp.code}`,
+            };
+
+            console.log({ emailPayload });
+
+            await pushMail({ account: "accounts", template: "welcome", address: dbResponse.email, subject: "Welcome to SoccerMASS", payload: emailPayload });
 
             const data = { success: true, message: "Account created successfully", payload: null };
 

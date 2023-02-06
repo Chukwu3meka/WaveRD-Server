@@ -19,7 +19,7 @@ const AuthSchema = new Schema({
     email: { type: Boolean, required: true, default: false },
   },
   otp: {
-    code: { type: String, default: uniqueId() },
+    code: { type: String, default: `${uniqueId()}-${uniqueId()}-${uniqueId()}` },
     expiry: { type: Date, default: nDaysDateFromNowFn(3) },
     purpose: { type: String, default: "email verification" },
   },
@@ -37,8 +37,6 @@ AuthSchema.pre("save", async function (next) {
     const hashedPassword = await bcrypt.hash(this.password, 10);
     this.password = hashedPassword;
 
-    // fullName, handle, activationLink
-    // Welcome to Zoho Mail
     return next();
   } catch (err: any) {
     return next(err);
