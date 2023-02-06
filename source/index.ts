@@ -9,7 +9,7 @@ import cookieSession from "cookie-session";
 import passport from "./utils/passport";
 import appRoutes from "./routes"; // enable app access database
 
-import subDomains from "./utils/subDomains";
+import subDomainToRoute from "./utils/subDomainToRoute";
 
 const server = async () => {
   try {
@@ -25,7 +25,7 @@ const server = async () => {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    subDomains(app); // <= handle request redirect from specified sub domain
+    subDomainToRoute(app); // <= handle request redirect from specified sub domain
     appRoutes(app); // app routes goes here
 
     app.listen(port, () => console.log(`SoccerMASS:::listening on port ${port}`));

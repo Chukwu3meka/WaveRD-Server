@@ -1,12 +1,11 @@
 import bcrypt from "bcryptjs";
-import { ObjectId } from "bson";
 import { NextFunction } from "express";
 import { Schema } from "mongoose";
 
 import { v4 as uniqueId } from "uuid";
-import { nDaysDateFromNowFn } from "../../utils/handlers";
+import { nDaysDateFromNowFn } from "../../../utils/handlers";
 
-const AuthSchema = new Schema({
+const SessionSchema = new Schema({
   lastLogin: { type: Date, default: null },
   locked: { type: Boolean, required: true, default: false },
   password: { type: String, required: true },
@@ -25,7 +24,7 @@ const AuthSchema = new Schema({
   },
 });
 
-AuthSchema.pre("save", async function (next) {
+SessionSchema.pre("save", async function (next) {
   try {
     if (!this.isModified("password")) return next();
 
@@ -43,7 +42,7 @@ AuthSchema.pre("save", async function (next) {
   }
 });
 
-AuthSchema.methods.hashPassword = async function (password: string, next: NextFunction) {
+SessionSchema.methods.hashPassword = async function (password: string, next: NextFunction) {
   try {
     return await bcrypt.hash(password, 10);
   } catch (err) {
@@ -51,7 +50,7 @@ AuthSchema.methods.hashPassword = async function (password: string, next: NextFu
   }
 };
 
-AuthSchema.methods.comparePassword = async function (attempt: string, next: NextFunction) {
+SessionSchema.methods.comparePassword = async function (attempt: string, next: NextFunction) {
   try {
     return await bcrypt.compare(attempt, this.password);
   } catch (err) {
@@ -59,4 +58,4 @@ AuthSchema.methods.comparePassword = async function (attempt: string, next: Next
   }
 };
 
-export default AuthSchema;
+export default SessionSchema;
