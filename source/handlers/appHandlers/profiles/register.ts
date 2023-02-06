@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from "express";
 
 import { appModels } from "../../../models";
 import { emailExistsFn } from "./emailTaken";
-import { catchError, requestHasBody, sleep } from "../../../utils/handlers";
 import pushMail from "../../../utils/pushMail";
+import { catchError, requestHasBody } from "../../../utils/handlers";
 
 const SESSION = appModels.appSessionModel;
 const USERS = appModels.appUserModel;
@@ -13,36 +13,14 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     requestHasBody({ body: req.body, required: ["email", "password", "fullName", "handle"] });
     const { email, password, fullName, handle } = req.body;
 
-    // console.log({ email, password, fullName, handle });
-    // const { acc } = req.query;
-
     // ? check if email is taken alread
     const emailTaken = await emailExistsFn(email);
     if (emailTaken) throw { message: "Email already in use, Kindly use a different email address" };
 
-    // const session = sessionGenerator();
-
     return await USERS.create({ email, handle, fullName })
       .then(() => {
-        SESSION.create({
-          email,
-          password,
-        })
+        SESSION.create({ email, password })
           .then(async (dbResponse: any) => {
-            // await pushMail({
-            //   emailAddress: email,
-            //   emailSubject: "SoccerMASS Account Verification",
-            //   emailBody: emailTemplates("accountVerification", { handle, signupReference, serverStamp }),
-            // });
-
-            // fullName, handle, activationLink
-
-            // otp: {
-            //   code: { type: String, default: uniqueId() },
-            //   expiry: { type: Date, default: nDaysDateFromNowFn(3) },
-            //   purpose: { type: String, default: "email verification" },
-            // },
-
             const emailPayload = {
               fullName,
               handle,
