@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import * as handler from "../../handlers/accounts/personal";
+// import  handler from "../../handlers/accounts/personal";
 
 const router = Router();
 

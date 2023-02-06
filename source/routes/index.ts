@@ -7,5 +7,5 @@ export default (app: any) => {
   app.all("/", redirectToWeb);
   app.all("/api", redirectToWeb);
 
-  accounts(app); //  <= App-API Request
+  // accounts(app); //  <= App-API Request
 };
