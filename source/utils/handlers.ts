@@ -75,19 +75,25 @@ export const nDaysDateFromNowFn = (days: number) => {
   return futureDate;
 };
 
-export const pushMail = async ({ account, template, address, subject }: any) => {
-const emailAccount  = 
+interface IPushMail {
+  subject: string;
+  address: string;
+  template: "welcome" | "signin";
+  account: "noreply" | "accounts" | "contactus";
+}
+export const pushMail = async ({ account, template, address, subject }: IPushMail) => {
+  const emailAccount = account === "noreply" ? "NO_REPLY_EMAIL" : account === "accounts" ? "ACCOUNTS_EMAIL" : "CONTACT_US_EMAIL";
+  const emailPassword = process.env.EMAIL_PASSWORD;
+  const emailAddress = process.env[emailAccount];
 
-  const mailTransporter = nodemailer.createTransport({
-    service: "zoho",
-    auth: { user: process.env[emailAccount], pass: process.env.EMAIL_PASS },
-  });
+  const mailTransporter = nodemailer.createTransport({ service: "zoho", auth: { user: emailAddress, pass: emailPassword } });
 
-  // const mailDetails = {
-  //   from: process.env.EMAIL_ADDR,
-  //   to: emailAddress,
-  //   subject: emailSubject,
-  //   html: `
+  const mailDetails = {
+    from: emailAddress,
+    to: address,
+    subject: subject,
+    html: "",
+  };
 };
 
 // export const sessionGenerator = (id?: string, length?: number) => {
