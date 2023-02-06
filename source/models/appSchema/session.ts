@@ -38,7 +38,7 @@ AuthSchema.pre("save", async function (next) {
     this.password = hashedPassword;
 
     // fullName, handle, activationLink
-
+    // Welcome to Zoho Mail
     return next();
   } catch (err: any) {
     return next(err);

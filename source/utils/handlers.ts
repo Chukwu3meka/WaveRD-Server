@@ -1,5 +1,6 @@
 import { v4 } from "uuid";
 import { Request, Response } from "express";
+import nodemailer from "nodemailer";
 
 interface ICatchError {
   res: Response;
@@ -72,6 +73,21 @@ export const nDaysDateFromNowFn = (days: number) => {
   const futureDate = new Date();
   futureDate.setDate(today.getDate() + days);
   return futureDate;
+};
+
+export const pushMail = async ({ account, template, address, subject }: any) => {
+const emailAccount  = 
+
+  const mailTransporter = nodemailer.createTransport({
+    service: "zoho",
+    auth: { user: process.env[emailAccount], pass: process.env.EMAIL_PASS },
+  });
+
+  // const mailDetails = {
+  //   from: process.env.EMAIL_ADDR,
+  //   to: emailAddress,
+  //   subject: emailSubject,
+  //   html: `
 };
 
 // export const sessionGenerator = (id?: string, length?: number) => {
