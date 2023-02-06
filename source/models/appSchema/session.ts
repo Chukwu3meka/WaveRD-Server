@@ -27,16 +27,12 @@ const AuthSchema = new Schema({
 
 AuthSchema.pre("save", async function (next) {
   try {
-    if (!this.isModified("password")) {
-      return next();
-    }
+    if (!this.isModified("password")) return next();
 
     const hashedId = await bcrypt.hash(this._id.toString(), 10);
 
     // make session longer by replacing special characters
-    const session = `${uniqueId()}-${hashedId}-${uniqueId()}`.replaceAll("/", uniqueId()).replaceAll("$", uniqueId()).replaceAll(".", uniqueId());
-
-    this.session = session;
+    this.session = `${uniqueId()}-${hashedId}-${uniqueId()}`.replaceAll("/", uniqueId()).replaceAll("$", uniqueId()).replaceAll(".", uniqueId());
 
     const hashedPassword = await bcrypt.hash(this.password, 10);
     this.password = hashedPassword;
