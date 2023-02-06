@@ -34,7 +34,11 @@ export default async (req: Request, res: Response, next: NextFunction) => {
             //   emailBody: emailTemplates("accountVerification", { handle, signupReference, serverStamp }),
             // });
 
-            return res.status(201).json("data");
+            // fullName, handle, activationLink
+
+            const data = { success: true, message: "Account created successfully", payload: null };
+
+            return res.status(201).json(data);
           })
           .catch(() => {
             // delete profile

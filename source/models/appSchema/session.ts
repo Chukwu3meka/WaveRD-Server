@@ -36,6 +36,9 @@ AuthSchema.pre("save", async function (next) {
 
     const hashedPassword = await bcrypt.hash(this.password, 10);
     this.password = hashedPassword;
+
+    // fullName, handle, activationLink
+
     return next();
   } catch (err: any) {
     return next(err);
