@@ -1,5 +1,6 @@
+import auth from "./auth";
 import addAccount from "./addAccount";
 import emailExists from "./emailExists";
-import auth from "./auth";
+import handleExists from "./handleExists";
 
-export { emailExists, addAccount, auth };
+export { handleExists, emailExists, addAccount, auth };
