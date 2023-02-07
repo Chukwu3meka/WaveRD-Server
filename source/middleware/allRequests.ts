@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
+import { Aggregate } from "mongoose";
 import AllRequestModel from "../schema/logs/allRequests";
+import DailyStatModel from "../schema/logs/dailyStat";
 import { catchError } from "../utils/handlers";
 
 const allRequests = async (req: Request, res: Response, next: NextFunction) => {
@@ -16,6 +18,21 @@ const allRequests = async (req: Request, res: Response, next: NextFunction) => {
     const endpoint = req.url;
 
     await AllRequestModel.create({ endpoint, subdomain });
+
+    //  ? "Daily Records of Server Stat"
+
+    await DailyStatModel.findOneAndUpdate(
+      { date: new Date().toDateString() },
+      {
+        $inc: {
+          "subdomains.hub": subdomain === "hub" ? 1 : 0,
+          "subdomains.logs": subdomain === "logs" ? 1 : 0,
+          "subdomains.game": subdomain === "game" ? 1 : 0,
+          "subdomains.accounts": subdomain === "accounts" ? 1 : 0,
+        },
+      },
+      { upsert: true }
+    );
 
     next(); //Port is important if the url has it
   } catch (err: any) {
