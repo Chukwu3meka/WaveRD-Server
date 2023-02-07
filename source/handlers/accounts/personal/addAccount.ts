@@ -1,11 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 
-// import { accountsModel } from "../../../utils/models";
 import { emailExistsFn } from "./emailExists";
 import pushMail from "../../../utils/pushMail";
-import { catchError, requestHasBody } from "../../../utils/handlers";
-
 import { PROFILE, SESSION } from "../../../models/accounts";
+import { catchError, requestHasBody } from "../../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -40,11 +38,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       .catch(() => {
         throw { message: `Profile creation was unsuccessful` };
       });
-
-    //     const data = { success: true, message: null, payload: { email } };
-    //   })
-    //   .catch((err) => {
-    //   });
   } catch (err: any) {
     return catchError({ res, err, status: err.status, message: err.message });
   }
