@@ -14,6 +14,10 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const emailTaken = await emailExistsFn(email);
     if (emailTaken) throw { message: "Email already in use, Kindly use a different email address" };
 
+    // ? check if handle is taken alread
+    const handleTaken = await emailExistsFn(handle);
+    if (handleTaken) throw { message: "Handle already in use, Kindly use a different handle" };
+
     return await PROFILE.create({ email, handle, fullName })
       .then(() =>
         SESSION.create({ email, password })
