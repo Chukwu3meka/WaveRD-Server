@@ -9,7 +9,7 @@ import cookieSession from "cookie-session";
 import appRoutes from "./routes"; // enable app access database
 
 import passport from "./middleware/passport";
-import path_from_subdomain from "./middleware/path_from_subdomain";
+import path_from_subdomain from "./middleware/allRequests";
 import request_logger from "./middleware/request_logger";
 
 const server = async () => {
