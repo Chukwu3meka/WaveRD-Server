@@ -28,11 +28,20 @@ const modelGenerator = (DB_NAME: string) => {
 };
 
 const accountsDatabase = modelGenerator("ACCOUNTS"); // ? <= accounts-api
+const logsDatabase = modelGenerator("LOGS"); // ? <= accounts-api
 
 // personal accounts
-const personalProfileModel = accountsDatabase.model("Personal_Profile", accounts.personal.profile, "Personal_Profile");
-const personalSessionModel = accountsDatabase.model("Personal_Session", accounts.personal.session, "Personal_Session");
+// const personalProfileModel = accountsDatabase.model("Personal_Profile", accounts.personal.profile, "Personal_Profile");
+// const personalSessionModel = accountsDatabase.model("Personal_Session", accounts.personal.session, "Personal_Session");
 
-const accountsModel = { personalProfileModel, personalSessionModel };
+// const accountsModel = {
+//   // personalProfileModel,
+//   // personalSessionModel,
+// };
 
-export { accountsModel, mongoose as default };
+// const logsDatabase = modelGenerator("LOGS"); // ? <= accounts-api
+// logs
+// const logsDatabase;
+
+// export { accountsModel, mongoose, accountsDatabase, modelGenerator as default };
+export { accountsDatabase, logsDatabase };

@@ -1,4 +1,5 @@
 import { Schema } from "mongoose";
+import { accountsDatabase } from "../../../utils/models";
 
 const ProfileSchema = new Schema({
   handle: { type: String, required: true },
@@ -9,4 +10,6 @@ const ProfileSchema = new Schema({
   },
 });
 
-export default ProfileSchema;
+const PersonalProfileModel = accountsDatabase.model("Personal_Profile", ProfileSchema, "Personal_Profile");
+
+export default PersonalProfileModel;

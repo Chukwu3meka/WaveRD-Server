@@ -1,12 +1,19 @@
 import { NextFunction, Request, Response } from "express";
 
-import { accountsModel } from "../../../utils/models";
+// import { accountsModel } from "../../../utils/models";
 import { emailExistsFn } from "./emailTaken";
 import pushMail from "../../../utils/pushMail";
 import { catchError, requestHasBody } from "../../../utils/handlers";
 
-const SESSION = accountsModel.personalSessionModel;
-const PROFILE = accountsModel.personalProfileModel;
+import PersonalProfileModel from "../../../schema/accounts/personal/profile";
+import PersonalSessionModel from "../../../schema/accounts/personal/session";
+
+// import ProfileModel
+
+// PersonalProfileModel
+
+// const SESSION = accountsModel.personalSessionModel;
+// const PROFILE = accountsModel.personalProfileModel;
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -17,9 +24,9 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const emailTaken = await emailExistsFn(email);
     if (emailTaken) throw { message: "Email already in use, Kindly use a different email address" };
 
-    return await PROFILE.create({ email, handle, fullName })
+    return await PersonalProfileModel.create({ email, handle, fullName })
       .then(() => {
-        SESSION.create({ email, password })
+        PersonalSessionModel.create({ email, password })
           .then(async (dbResponse: any) => {
             const emailPayload = {
               fullName,

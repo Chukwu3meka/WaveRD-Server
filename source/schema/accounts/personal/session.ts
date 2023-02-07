@@ -2,6 +2,8 @@ import bcrypt from "bcryptjs";
 import { NextFunction } from "express";
 import { Schema } from "mongoose";
 
+import { accountsDatabase } from "../../../utils/models";
+
 import { v4 as uniqueId } from "uuid";
 import { nTimeFromNowFn } from "../../../utils/handlers";
 
@@ -58,4 +60,6 @@ SessionSchema.methods.comparePassword = async function (attempt: string, next: N
   }
 };
 
-export default SessionSchema;
+const PersonalSessionModel = accountsDatabase.model("Personal_Profile", SessionSchema, "Personal_Profile");
+
+export default PersonalSessionModel;

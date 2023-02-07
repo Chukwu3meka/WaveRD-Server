@@ -1,13 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 // import { appModels } from "../../../models";
 
-import { accountsModel } from "../../../utils/models";
+// import { accountsModel } from "../../../utils/models";
 
 // import { catchError, requestHasBody } from "../../../utils/handlers";
 
 // import validator from "../../../utils/validator";
 
-const PROFILE = accountsModel.personalProfileModel;
+import PersonalProfileModel from "../../../schema/accounts/personal/profile";
+import PersonalSessionModel from "../../../schema/accounts/personal/session";
 
 // import ProfileModel from "../../../model/app_schema/profile";
 import { catchError, requestHasBody, sleep } from "../../../utils/handlers";
