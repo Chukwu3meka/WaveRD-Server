@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 
 // import { accountsModel } from "../../../utils/models";
-import { emailExistsFn } from "../accounts/personal/emailTaken";
-import pushMail from "../../utils/pushMail";
-import { catchError, requestHasBody } from "../../utils/handlers";
+import { emailExistsFn } from "./emailTaken";
+import pushMail from "../../../utils/pushMail";
+import { catchError, requestHasBody } from "../../../utils/handlers";
 
-import PersonalProfileModel from "../../schema/accounts/personal/profile";
+import PersonalProfileModel from "../../../../personal/profile";
 import PersonalSessionModel from "../../schema/accounts/personal/session";
 
 // import ProfileModel
