@@ -1,5 +1,5 @@
-import add from "./add";
-import emailTaken from "./emailTaken";
-import login from "./login";
+import addAccount from "./addAccount";
+import emailExists from "./emailExists";
+import auth from "./auth";
 
-export { emailTaken, add, login };
+export { emailExists, addAccount, auth };
