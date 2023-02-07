@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { accountsDatabase } from "../../../utils/database";
+import { accountsDatabase } from "../../database";
 
 const ProfileSchema = new Schema({
   handle: { type: String, required: true },

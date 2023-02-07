@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { logsDatabase } from "../../utils/database";
+import { logsDatabase } from "../database";
 
 const AllRequestsSchema = new Schema({
   time: { type: Date, default: Date.now },

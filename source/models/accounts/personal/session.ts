@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import { NextFunction } from "express";
 import { Schema } from "mongoose";
 
-import { accountsDatabase } from "../../../utils/database";
+import { accountsDatabase } from "../../database";
 
 import { v4 as uniqueId } from "uuid";
 import { nTimeFromNowFn } from "../../../utils/handlers";

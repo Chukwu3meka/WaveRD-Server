@@ -1,3 +1,3 @@
-import allRequest from "./allRequests";
+import ALL_REQUEST from "./allRequests";
 
-export { allRequest };
+export { ALL_REQUEST };

@@ -1,5 +1,5 @@
-import emailTaken from "./email";
-import register from "../../logs/register";
+import add from "./add";
+import emailTaken from "./emailTaken";
 import login from "./login";
 
-export { emailTaken, register, login };
+export { emailTaken, add, login };
