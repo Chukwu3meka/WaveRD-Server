@@ -4,7 +4,6 @@ import { emailExistsFn } from "./emailExists";
 import pushMail from "../../../utils/pushMail";
 import { PROFILE, SESSION } from "../../../models/accounts";
 import { catchError, requestHasBody } from "../../../utils/handlers";
-// import { FAILED_REQUESTS } from "../../../models/logs";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -25,7 +24,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
               activationLink: `${process.env.CLIENT_BASE_URL}/auth/verify-email?registration-id=${dbResponse.otp.code}`,
             };
 
-            throw { message: "Deleted profile due to failed Session creation" };
             await pushMail({ account: "accounts", template: "welcome", address: dbResponse.email, subject: "Welcome to SoccerMASS", payload: emailPayload });
 
             const data = { success: true, message: "Account created successfully", payload: null };

@@ -61,7 +61,7 @@ export default async ({ account, template, address, subject, payload }: IPushMai
                       alt
                       width="80"
                       height="80"
-                      src="${process.env.CLIENT_BASE_URL}/images/layout/soccermass.webp"
+                      src="https://soccermass.com/images/layout/soccermass.webp"
                       style="display: block; border: 0; overflow: hidden; border-radius: 50%; outline: none; text-decoration: none" />
                   </td>
                 </tr>
@@ -75,9 +75,9 @@ export default async ({ account, template, address, subject, payload }: IPushMai
                         -webkit-text-size-adjust: none;
                         -ms-text-size-adjust: none;
                         font-family: arial, 'helvetica neue', helvetica, sans-serif;
-                        line-height: 20px;
+                        line-height: 30px;
                         color: #333333;
-                        font-size: 14px;
+                        font-size: 16px;
                       ">
                       ${templates[template]({ ...payload })}
                     </p>
@@ -231,20 +231,20 @@ export default async ({ account, template, address, subject, payload }: IPushMai
                                           font-family: arial, 'helvetica neue', helvetica, sans-serif;
                                           line-height: 18px;
                                           color: #1d1b1b;
-                                          font-size: 12px;
+                                          font-size: 14px;
                                         ">
                                         This email has been sent to you as a result of your recent visit to our website. If you prefer not to receive any more
-                                        emails from us, kindly unsubscribe.
+                                        emails from us, kindly unsubscribe
                                         <strong
                                           ><a
                                             target="_blank"
-                                            href="${process.env.CLIENT_BASE_URL}/profile/subscriptions"
+                                            href="https://soccermass.com/profile/subscriptions"
                                             style="
+                                              text-decoration: none;
                                               -webkit-text-size-adjust: none;
                                               -ms-text-size-adjust: none;
-                                              text-decoration: underline;
                                               color: rgb(68, 139, 68);
-                                              font-size: 12px;
+                                              font-size: 14px;
                                             "
                                             >here</a
                                           ></strong
@@ -267,22 +267,12 @@ export default async ({ account, template, address, subject, payload }: IPushMai
         </table>
       </div>
     </body>
-  </html>
+  </html>  
   `;
 
   const mailDetails = { from: emailAddress, to: address, subject: subject, html };
 
   mailTransporter.sendMail(mailDetails, function (err, data) {
-    if (err) {
-      if (process.env.NODE_ENV === "development") {
-        console.log("error sending mail", err);
-      }
-      if (process.env.NODE_ENV === "production") {
-        // console.log("error sending mail", err);
-        // add to server logs0
-      }
-    } else {
-      if (process.env.NODE_ENV === "development") console.log("Email sent successfully");
-    }
+    if (err) throw { message: "error sending mail" };
   });
 };
