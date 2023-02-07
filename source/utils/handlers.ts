@@ -1,5 +1,5 @@
-import { v4 } from "uuid";
 import { Request, Response } from "express";
+import { FAILED_REQUESTS } from "../models/logs";
 
 interface ICatchError {
   res: Response;
@@ -8,8 +8,10 @@ interface ICatchError {
   message?: string;
 }
 
-export const catchError = ({ res, err, status = 400, message = "Unable to process request" }: ICatchError) => {
+export const catchError = async ({ res, err, status = 400, message = "Unable to process request" }: ICatchError) => {
   if (process.env.NODE_ENV !== "production") console.log(`${res.req.originalUrl}: ${JSON.stringify(err)}`);
+
+  await FAILED_REQUESTS.create({ endpoint: res.req.originalUrl, message, payload: JSON.stringify(err) });
 
   return res.status(status).json({ success: false, message, payload: null });
 };
@@ -61,8 +63,6 @@ export const requestHasBody = ({ body, required }: { body: { [key: string]: any 
 
   // return { ...newBody };
 };
-
-// IConnectionEvents, connectionEvents
 
 export const redirectToWeb = (req: Request, res: Response) => res.writeHead(302, { Location: process.env.CLIENT_BASE_URL }).end();
 
