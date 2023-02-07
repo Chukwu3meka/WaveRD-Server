@@ -1,5 +1,6 @@
-import emailTaken from "./emailTaken";
-import register from "../../logs/register";
-import login from "./login";
+import auth from "./auth";
+import addAccount from "./addAccount";
+import emailExists from "./emailExists";
+import handleExists from "./handleExists";
 
-export { emailTaken, register, login };
+export { handleExists, emailExists, addAccount, auth };

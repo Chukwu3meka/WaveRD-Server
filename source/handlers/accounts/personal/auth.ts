@@ -7,8 +7,7 @@ import { NextFunction, Request, Response } from "express";
 
 // import validator from "../../../utils/validator";
 
-import PersonalProfileModel from "../../../schema/accounts/personal/profile";
-import PersonalSessionModel from "../../../schema/accounts/personal/session";
+import { PROFILE, SESSION } from "../../../models/accounts";
 
 // import ProfileModel from "../../../model/app_schema/profile";
 import { catchError, requestHasBody, sleep } from "../../../utils/handlers";

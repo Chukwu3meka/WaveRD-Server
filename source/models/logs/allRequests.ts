@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { logsDatabase } from "../../utils/models";
+import { logsDatabase } from "../database";
 
 const AllRequestsSchema = new Schema({
   time: { type: Date, default: Date.now },
@@ -7,6 +7,6 @@ const AllRequestsSchema = new Schema({
   subdomain: { type: String, required: true },
 });
 
-const AllRequestModel = logsDatabase.model("All_Requests", AllRequestsSchema, "All_Requests");
+const AllRequestModel = logsDatabase.model("All_Requests", AllRequestsSchema);
 
 export default AllRequestModel;

@@ -1,30 +1,30 @@
 import { NextFunction, Request, Response } from "express";
 
-// import { accountsModel } from "../../../utils/models";
-import { emailExistsFn } from "../accounts/personal/emailExists";
-import pushMail from "../../utils/pushMail";
-import { catchError, requestHasBody } from "../../utils/handlers";
-
-import { PROFILE, SESSION } from "../../models/accounts";
-
-// import ProfileModel
-
-// PROFILE
-
-// const SESSION = accountsModel.personalSessionModel;
-// const PROFILE = accountsModel.personalProfileModel;
+import { emailExistsFn } from "./emailExists";
+import { handleExistsFn } from "./handleExists";
+import pushMail from "../../../utils/pushMail";
+import { PROFILE, SESSION } from "../../../models/accounts";
+import { catchError, requestHasBody } from "../../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
     requestHasBody({ body: req.body, required: ["email", "password", "fullName", "handle"] });
-    const { email, password, fullName, handle } = req.body;
+    const { email: sensitiveEmail, password, fullName, handle } = req.body;
+
+    const email: string = sensitiveEmail.toLowerCase(); // <= to ensure emails are unique
+
+    console.log(email);
 
     // ? check if email is taken alread
     const emailTaken = await emailExistsFn(email);
     if (emailTaken) throw { message: "Email already in use, Kindly use a different email address" };
 
+    // ? check if handle is taken alread
+    const handleTaken = await handleExistsFn(handle);
+    if (handleTaken) throw { message: "Handle already in use, Kindly use a different handle" };
+
     return await PROFILE.create({ email, handle, fullName })
-      .then(() => {
+      .then(() =>
         SESSION.create({ email, password })
           .then(async (dbResponse: any) => {
             const emailPayload = {
@@ -39,19 +39,17 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
             return res.status(201).json(data);
           })
-          .catch(() => {
-            // delete profile
-            throw { message: `delete Profile ` };
-          });
-      })
-      .catch(() => {
-        throw { message: `Profile creation was unsuccessful` };
-      });
+          .catch(async () => {
+            // delete profile/possibly session if session not created
+            await PROFILE.deleteOne({ email, handle, fullName });
+            await SESSION.deleteOne({ email });
 
-    //     const data = { success: true, message: null, payload: { email } };
-    //   })
-    //   .catch((err) => {
-    //   });
+            throw { message: "Deleted profile due to failed Session creation" };
+          })
+      )
+      .catch(({ message }) => {
+        throw { message: message || `Profile creation was unsuccessful` };
+      });
   } catch (err: any) {
     return catchError({ res, err, status: err.status, message: err.message });
   }

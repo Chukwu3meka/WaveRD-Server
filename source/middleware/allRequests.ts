@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { Aggregate } from "mongoose";
-import AllRequestModel from "../schema/logs/allRequests";
-import DailyStatModel from "../schema/logs/dailyStat";
+
 import { catchError } from "../utils/handlers";
+import { ALL_REQUEST, DAILY_STAT } from "../models/logs";
 
 const allRequests = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -17,11 +16,11 @@ const allRequests = async (req: Request, res: Response, next: NextFunction) => {
     const subdomain = req.headers.host?.split(".")[0];
     const endpoint = req.url;
 
-    await AllRequestModel.create({ endpoint, subdomain });
+    await ALL_REQUEST.create({ endpoint, subdomain });
 
     //  ? "Daily Records of Server Stat"
 
-    await DailyStatModel.findOneAndUpdate(
+    await DAILY_STAT.findOneAndUpdate(
       { date: new Date().toDateString() },
       {
         $inc: {

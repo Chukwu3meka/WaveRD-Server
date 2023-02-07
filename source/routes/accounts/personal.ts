@@ -1,13 +1,13 @@
-import express, { Router } from "express";
+import express from "express";
 
-import * as handler from "../../handlers/accounts/personal";
-// import  handler from "../../handlers/accounts/personal";
+import * as personal from "../../handlers/accounts/personal";
 
 const router = express.Router();
 
-router.route("/emailTaken").post(handler.emailTaken);
-router.route("/register").post(handler.register);
-router.route("/signin").post(handler.login);
+router.route("/email_exists").post(personal.emailExists);
+router.route("/handle_exists").post(personal.handleExists);
+router.route("/add_account").post(personal.addAccount);
+router.route("/auth").post(personal.auth);
 // router.route("/:club/players").get(club.clubPlayers);
 
 export default router;
