@@ -8,7 +8,7 @@ import cookieSession from "cookie-session";
 
 import appRoutes from "./routes"; // enable app access database
 
-import passport from "./utils/passport";
+import passport from "./middleware/passport";
 import path_from_subdomain from "./middleware/path_from_subdomain";
 import request_logger from "./middleware/request_logger";
 

@@ -1,5 +1,3 @@
-import bcrypt from "bcryptjs";
-import { NextFunction } from "express";
 import { Schema } from "mongoose";
 
 const ProfileSchema = new Schema({

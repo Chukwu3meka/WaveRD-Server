@@ -35,9 +35,11 @@ const modelGenerator = (DB_NAME: string) => {
 
 const accountsDatabase = modelGenerator("APP"); // ? <= accounts-api
 // personal accounts
-const personalProfileModel = accountsDatabase.model("Personal_Profile", accounts.personal.profile, "Personal_Profile");
-const personalSessionModel = accountsDatabase.model("Personal_Session", accounts.personal.session, "Personal_Session");
+// const personalProfileModel = accountsDatabase.model("Personal_Profile", accounts.personal.profile, "Personal_Profile");
+// const personalSessionModel = accountsDatabase.model("Personal_Session", accounts.personal.session, "Personal_Session");
+const personalProfileModel = accountsDatabase.model("Personal_Profile", accounts.personal.profile);
+const personalSessionModel = accountsDatabase.model("Personal_Session", accounts.personal.session);
 
 const accountsModel = { personalProfileModel, personalSessionModel };
 
-export { accountsModel };
+export { accountsModel, mongoose as default };

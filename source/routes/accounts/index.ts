@@ -7,7 +7,6 @@ import { redirectToWeb } from "../../utils/handlers";
 export default (app: any) => {
   // ? Redirect Calls
   app.all("/accounts", redirectToWeb);
-
   // ? App-API Request to Personal
-  app.use("/accounts/api/personal", personal);
+  app.use("/api/accounts/personal", personal);
 };

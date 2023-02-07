@@ -1,9 +1,9 @@
-import { Router } from "express";
+import express, { Router } from "express";
 
 import * as handler from "../../handlers/accounts/personal";
 // import  handler from "../../handlers/accounts/personal";
 
-const router = Router();
+const router = express.Router();
 
 router.route("/emailTaken").post(handler.emailTaken);
 router.route("/register").post(handler.register);

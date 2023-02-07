@@ -67,11 +67,23 @@ export const requestHasBody = ({ body, required }: { body: { [key: string]: any 
 export const redirectToWeb = (req: Request, res: Response) => res.writeHead(302, { Location: process.env.CLIENT_BASE_URL }).end();
 
 // function to generate the date for n  days from now:
-export const nDaysDateFromNowFn = (days: number) => {
-  const today = new Date();
-  const futureDate = new Date();
-  futureDate.setDate(today.getDate() + days);
-  return futureDate;
+interface INTimeFromNowFn {
+  context: "days" | "hours";
+  interval: number;
+}
+export const nTimeFromNowFn = ({ interval, context }: INTimeFromNowFn) => {
+  const currentTime = new Date();
+
+  switch (context) {
+    case "days":
+      const futureDate = new Date();
+      futureDate.setDate(currentTime.getDate() + interval);
+      return futureDate;
+    case "hours":
+      return new Date(currentTime.getTime() + interval * 60 * 60 * 1000);
+    default:
+      break;
+  }
 };
 
 // export const sessionGenerator = (id?: string, length?: number) => {

@@ -3,7 +3,7 @@ import { NextFunction } from "express";
 import { Schema } from "mongoose";
 
 import { v4 as uniqueId } from "uuid";
-import { nDaysDateFromNowFn } from "../../../utils/handlers";
+import { nTimeFromNowFn } from "../../../utils/handlers";
 
 const SessionSchema = new Schema({
   lastLogin: { type: Date, default: null },
@@ -18,9 +18,9 @@ const SessionSchema = new Schema({
     email: { type: Boolean, required: true, default: false },
   },
   otp: {
-    code: { type: String, default: `${uniqueId()}-${uniqueId()}-${uniqueId()}` },
-    expiry: { type: Date, default: nDaysDateFromNowFn(3) },
     purpose: { type: String, default: "email verification" },
+    code: { type: String, default: `${uniqueId()}-${uniqueId()}-${uniqueId()}` },
+    expiry: { type: Date, default: nTimeFromNowFn({ context: "hours", interval: 3 }) },
   },
 });
 
