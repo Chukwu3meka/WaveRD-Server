@@ -8,7 +8,9 @@ import { catchError, requestHasBody } from "../../../utils/handlers";
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
     requestHasBody({ body: req.body, required: ["email", "password", "fullName", "handle"] });
-    const { email, password, fullName, handle } = req.body;
+    const { email: sensitiveEmail, password, fullName, handle } = req.body;
+
+    const email: string = sensitiveEmail.toLowerCase(); // <= to ensure emails are unique
 
     // ? check if email is taken alread
     const emailTaken = await emailExistsFn(email);
