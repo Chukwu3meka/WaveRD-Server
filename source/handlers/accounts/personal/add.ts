@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 // import { accountsModel } from "../../../utils/models";
-import { emailExistsFn } from "./emailTaken";
+import { emailExistsFn } from "./email";
 import pushMail from "../../../utils/pushMail";
 import { catchError, requestHasBody } from "../../../utils/handlers";
 

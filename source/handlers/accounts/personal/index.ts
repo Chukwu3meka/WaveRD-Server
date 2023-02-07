@@ -1,4 +1,4 @@
-import emailTaken from "./emailTaken";
+import emailTaken from "./email";
 import register from "../../logs/register";
 import login from "./login";
 
