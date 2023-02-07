@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { Aggregate } from "mongoose";
-import AllRequestModel from "../schema/logs/allRequests";
-import DailyStatModel from "../schema/logs/dailyStat";
+import AllRequestModel from "../models/logs/allRequests";
+import DailyStatModel from "../models/logs/dailyStat";
 import { catchError } from "../utils/handlers";
 
 const allRequests = async (req: Request, res: Response, next: NextFunction) => {

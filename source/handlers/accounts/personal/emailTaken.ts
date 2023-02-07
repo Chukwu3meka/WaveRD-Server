@@ -1,14 +1,10 @@
 import { v4 } from "uuid";
 import { NextFunction, Request, Response } from "express";
-// import { accountsModel } from "../../../utils/models";
 
 import { catchError, requestHasBody } from "../../../utils/handlers";
 import validator from "../../../utils/validator";
 
-// const PROFILE = accountsModel.personalProfileModel;
-
-import PersonalProfileModel from "../../../schema/accounts/personal/profile";
-import PersonalSessionModel from "../../../schema/accounts/personal/session";
+import PersonalProfileModel from "../../../models/accounts/personal/profile";
 
 export const emailExistsFn = async (email: string) => {
   validator({ type: "email", value: email });

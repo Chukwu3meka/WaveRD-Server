@@ -55,9 +55,9 @@ const modelGenerator = (DB_NAME: string) => {
     .on("disconnecting", () => logMessage({ label: DB_NAME, event: "disconnecting" }));
 };
 
-const hubsDatabase = modelGenerator("HUBS"); // ? <= API Hub Database
+const hubDatabase = modelGenerator("HUB"); // ? <= API Hub Database
 const logsDatabase = modelGenerator("LOGS"); // ? <= Server Logs Database
 const gameDatabase = modelGenerator("GAME"); // ? <= Soccer Manager Database
 const accountsDatabase = modelGenerator("ACCOUNTS"); // ? <= Accounts  Database
 
-export { accountsDatabase, logsDatabase, hubsDatabase, gameDatabase };
+export { accountsDatabase, logsDatabase, hubDatabase, gameDatabase };

@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { logsDatabase } from "../../utils/models";
+import { logsDatabase } from "../../utils/database";
 
 const DailyStatSchema = new Schema({
   date: { type: String, default: new Date().toDateString(), unique: true },

@@ -1,4 +1,4 @@
-import profile from "./profile";
-import session from "./session";
+import PersonalProfileModel from "./profile";
+import PersonalSessionModel from "./session";
 
-export { profile, session };
+export { PersonalProfileModel, PersonalSessionModel };

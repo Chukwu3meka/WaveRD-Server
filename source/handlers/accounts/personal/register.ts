@@ -5,8 +5,8 @@ import { emailExistsFn } from "./emailTaken";
 import pushMail from "../../../utils/pushMail";
 import { catchError, requestHasBody } from "../../../utils/handlers";
 
-import PersonalProfileModel from "../../../../personal/profile";
-import PersonalSessionModel from "../../schema/accounts/personal/session";
+import { accounts } from "../../../models";
+const { PersonalProfileModel, PersonalSessionModel } = accounts;
 
 // import ProfileModel
 
