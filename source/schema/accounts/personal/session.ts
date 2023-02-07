@@ -60,6 +60,6 @@ SessionSchema.methods.comparePassword = async function (attempt: string, next: N
   }
 };
 
-const PersonalSessionModel = accountsDatabase.model("Personal_Profile", SessionSchema, "Personal_Profile");
+const PersonalSessionModel = accountsDatabase.model("Personal_Session", SessionSchema, "Personal_Session");
 
 export default PersonalSessionModel;

@@ -10,6 +10,6 @@ const ProfileSchema = new Schema({
   },
 });
 
-const PersonalProfileModel = accountsDatabase.model("Personal_Profile", ProfileSchema, "Personal_Profile");
+const PersonalProfileModel = accountsDatabase.model("Personal_Profiles", ProfileSchema, "Personal_Profiles");
 
 export default PersonalProfileModel;
