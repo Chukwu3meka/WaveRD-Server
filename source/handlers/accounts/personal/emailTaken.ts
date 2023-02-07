@@ -1,16 +1,19 @@
 import { v4 } from "uuid";
 import { NextFunction, Request, Response } from "express";
-import { appModels } from "../../../models";
+// import { accountsModel } from "../../../utils/models";
 
 import { catchError, requestHasBody } from "../../../utils/handlers";
 import validator from "../../../utils/validator";
 
-const USERS = appModels.appUserModel;
+// const PROFILE = accountsModel.personalProfileModel;
+
+import PersonalProfileModel from "../../../schema/accounts/personal/profile";
+import PersonalSessionModel from "../../../schema/accounts/personal/session";
 
 export const emailExistsFn = async (email: string) => {
   validator({ type: "email", value: email });
 
-  const dbResponse = await USERS.findOne({ email });
+  const dbResponse = await PersonalProfileModel.findOne({ email });
 
   return !!dbResponse;
 };

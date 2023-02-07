@@ -1,4 +1,4 @@
-import appRoutes from "./appRoutes";
+import accounts from "./accounts/index";
 
 import { redirectToWeb } from "../utils/handlers";
 
@@ -7,5 +7,5 @@ export default (app: any) => {
   app.all("/", redirectToWeb);
   app.all("/api", redirectToWeb);
 
-  appRoutes(app); //  <= App-API Request
+  accounts(app); //  <= App-API Request
 };

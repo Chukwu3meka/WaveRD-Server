@@ -1,6 +1,5 @@
-import bcrypt from "bcryptjs";
-import { NextFunction } from "express";
 import { Schema } from "mongoose";
+import { accountsDatabase } from "../../../utils/models";
 
 const ProfileSchema = new Schema({
   handle: { type: String, required: true },
@@ -11,4 +10,6 @@ const ProfileSchema = new Schema({
   },
 });
 
-export default ProfileSchema;
+const PersonalProfileModel = accountsDatabase.model("Personal_Profiles", ProfileSchema, "Personal_Profiles");
+
+export default PersonalProfileModel;

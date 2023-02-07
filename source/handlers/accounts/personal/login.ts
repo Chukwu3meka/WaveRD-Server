@@ -1,10 +1,19 @@
 import { NextFunction, Request, Response } from "express";
-import { appModels } from "../../../models";
+// import { appModels } from "../../../models";
+
+// import { accountsModel } from "../../../utils/models";
+
+// import { catchError, requestHasBody } from "../../../utils/handlers";
+
+// import validator from "../../../utils/validator";
+
+import PersonalProfileModel from "../../../schema/accounts/personal/profile";
+import PersonalSessionModel from "../../../schema/accounts/personal/session";
 
 // import ProfileModel from "../../../model/app_schema/profile";
 import { catchError, requestHasBody, sleep } from "../../../utils/handlers";
 
-const SESSION = appModels.appSessionModel;
+// const SESSION = appModels.appSessionModel;
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -17,7 +26,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     console.log({ email, password });
 
-    await SESSION.create({ email, password, name, profile_ID: "saddsa" });
+    // await SESSION.create({ email, password, name, profile_ID: "saddsa" });
 
     // await sleep(1);
 
