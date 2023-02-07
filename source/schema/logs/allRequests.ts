@@ -7,6 +7,6 @@ const AllRequestsSchema = new Schema({
   subdomain: { type: String, required: true },
 });
 
-const AllRequestModel = logsDatabase.model("All_Requests", AllRequestsSchema, "All_Requesta");
+const AllRequestModel = logsDatabase.model("All_Requests", AllRequestsSchema, "All_Requests");
 
 export default AllRequestModel;
