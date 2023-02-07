@@ -14,13 +14,7 @@ const logMessage = ({ label, event }: IlogMessage) => `MongoDB ${label} Database
 
 const modelGenerator = (DB_NAME: string) => {
   return mongoose
-    .createConnection(<string>process.env[`${DB_NAME}_MONGODB_URI`], {
-      // useNewUrlParser: true,
-      // useFindAndModify: true,
-      // useCreateIndex: true,
-      // useUnifiedTopology: true,
-      // useFindAndModify: false,
-    })
+    .createConnection(<string>process.env[`${DB_NAME}_MONGODB_URI`], {})
     .on("all", () => logMessage({ label: DB_NAME, event: "all" }))
     .on("open", () => logMessage({ label: DB_NAME, event: "open" }))
     .on("error", () => logMessage({ label: DB_NAME, event: "error" }))
@@ -33,12 +27,11 @@ const modelGenerator = (DB_NAME: string) => {
     .on("disconnecting", () => logMessage({ label: DB_NAME, event: "disconnecting" }));
 };
 
-const accountsDatabase = modelGenerator("APP"); // ? <= accounts-api
+const accountsDatabase = modelGenerator("ACCOUNTS"); // ? <= accounts-api
+
 // personal accounts
-// const personalProfileModel = accountsDatabase.model("Personal_Profile", accounts.personal.profile, "Personal_Profile");
-// const personalSessionModel = accountsDatabase.model("Personal_Session", accounts.personal.session, "Personal_Session");
-const personalProfileModel = accountsDatabase.model("Personal_Profile", accounts.personal.profile);
-const personalSessionModel = accountsDatabase.model("Personal_Session", accounts.personal.session);
+const personalProfileModel = accountsDatabase.model("Personal_Profile", accounts.personal.profile, "Personal_Profile");
+const personalSessionModel = accountsDatabase.model("Personal_Session", accounts.personal.session, "Personal_Session");
 
 const accountsModel = { personalProfileModel, personalSessionModel };
 
