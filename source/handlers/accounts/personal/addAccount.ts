@@ -30,9 +30,11 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
             return res.status(201).json(data);
           })
-          .catch(() => {
-            // delete profile
-            throw { message: `delete Profile ` };
+          .catch(async () => {
+            // delete profile if session not created
+            await PROFILE.deleteOne({ email, handle, fullName });
+
+            throw { message: `Session creation was unsuccessful` };
           });
       })
       .catch(() => {
