@@ -61,7 +61,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         template: "reVerifyEmail",
         address: email,
         subject: "Verify Your Email to Keep Your SoccerMASS Account Active",
-        payload: { activationLink: `${process.env.CLIENT_BASE_URL}/auth/verify-email?registration-id=${otp.code}` },
+        payload: { activationLink: `https://www.soccermass.com/auth/verify-email?registration-id=${otp.code}` },
       });
 
       throw { message: "Unlock access to our services by verifying your account now. Check your inbox for our latest verification email." };
