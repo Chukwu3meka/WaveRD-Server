@@ -1,18 +1,17 @@
 export default ({ fullName }: any) => `
-    Hi ${fullName},
+    Dear ${fullName},
     <br />
     <br />
-    We wanted to inform you that there was a failed login attempt to your SoccerMASS account. Our security systems have detected this activity after some failed attempts and we wanted to ensure your account is secure.    
+    We'd like to inform you that a successful login was made to your SoccerMASS account on ${new Date().toDateString()} at ${
+  new Date().toLocaleString().split(",")[1]
+}.
+<br />
+<br />
+    If this was not you, please take immediate action to secure your account by changing your password.
     <br />
-    <br />
-    If you did not initiate this login attempt, we recommend you reset your password immediately. To reset your password, please follow the instructions in our password reset link <a href="https://www.soccermass.com/auth/reset">here</a>.
-    <br />
-    <br />
-    If you did initiate the login attempt and are still having trouble accessing your account, please contact our support team <a href="https://www.soccermass.com/info/contact">here</a> for further assistance.
-    <br />
-    <br />
-    Thank you for your attention to this matter.
+    <br />    
+    If you have any questions or concerns, please don't hesitate to reach out to us <a href="https://www.soccermass.com/info/contact">here</a>.
     <br />
     <br />
     Best regards
-`;
+    `;

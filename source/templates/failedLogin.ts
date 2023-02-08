@@ -2,7 +2,7 @@ export default ({ fullName }: any) => `
     Hi ${fullName},
     <br />
     <br />
-    We wanted to inform you that there was a failed login attempt to your SoccerMASS account. Our security systems have detected this activity after some failed attempts and we wanted to ensure your account is secure.    
+    We'd like to inform you that there was a failed login attempt to your SoccerMASS account. Our security systems have detected this activity after some failed attempts and We'd like to ensure your account is secure.    
     <br />
     <br />
     If you did not initiate this login attempt, we recommend you reset your password immediately. To reset your password, please follow the instructions in our password reset link <a href="https://www.soccermass.com/auth/reset">here</a>.

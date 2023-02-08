@@ -18,7 +18,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const profileData = await PROFILE.findOne({ email: authEmail });
 
     const { fullName, handle } = profileData;
-
     const { _id, locked, status, failedAttempts, role, email, session, verification } = sessionData;
 
     if (status !== "active") throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation" };
@@ -73,7 +72,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     }
 
     await SESSION.findByIdAndUpdate({ _id }, { $set: { lastLogin: new Date() } });
-    await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Failed Login Attempt - SoccerMASS", payload: { fullName } });
+    await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", payload: { fullName } });
 
     // const token = jwt.sign(
     //   {
