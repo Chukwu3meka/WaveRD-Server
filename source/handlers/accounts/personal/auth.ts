@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { PROFILE, SESSION } from "../../../models/accounts";
 
-import { catchError, requestHasBody, sleep } from "../../../utils/handlers";
+import { catchError, differenceInHour, requestHasBody, sleep } from "../../../utils/handlers";
 import pushMail from "../../../utils/pushMail";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
@@ -13,18 +13,31 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const profileData = await SESSION.findOne({ email: authEmail });
     if (!profileData) throw { message: "Invalid Email/Password" };
 
-    const { _id, lastLogin, locked, status, failedAttempts, role, email, password, session, verification, otp } = profileData;
+    const { _id, lastLogin, locked, status, failedAttempts: initialFailedAttempts, role, email, password, session, verification, otp } = profileData;
+    const failedAttempts = initialFailedAttempts + 1;
 
     // ? will throw error if passwords does not match
     const matchPassword = await profileData.comparePassword(authPassword);
 
     if (!matchPassword) {
-      // if (failedAttempts === 5)
-      await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt to your SoccerMASS Account" });
+      if (failedAttempts === 5) await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Account Lock Notice - SoccerMASS" });
 
-      await SESSION.findByIdAndUpdate({ _id }, { $inc: { failedAttempts: 1 }, $set: { locked: new Date() } });
+      if (failedAttempts % 5 === 0)
+        await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt to your SoccerMASS Account" });
+
+      if (failedAttempts >= 5) {
+        await SESSION.findByIdAndUpdate({ _id }, { $inc: { failedAttempts: 1 }, $set: { locked: new Date() } });
+      } else {
+        await SESSION.findByIdAndUpdate({ _id }, { $inc: { failedAttempts: 1 } });
+      }
+
       throw { message: "Invalid Email/Password" };
     }
+
+    // check if account has been locked for 3 hours
+    const lockDuration = differenceInHour(locked) <= 3;
+
+    if (lockDuration) throw { label: "Account is temporarily locked, Please try again later" };
 
     console.log(`
     

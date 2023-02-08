@@ -2,8 +2,8 @@ interface IPushMail {
   subject: string;
   address: string;
   payload?: object;
-  template: "welcome" | "failedLogin";
   account: "noreply" | "accounts" | "contactus";
+  template: "welcome" | "failedLogin" | "lockNotice";
 }
 
 import nodemailer from "nodemailer";
