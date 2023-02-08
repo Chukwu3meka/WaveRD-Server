@@ -14,5 +14,5 @@ export default ({ fullName, activationLink }: any) => `
     We are excited to have you as a part of our community!
     <br />
     <br />
-    Best regards
+    Warm regards
 `;

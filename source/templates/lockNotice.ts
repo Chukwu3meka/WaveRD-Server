@@ -11,5 +11,5 @@ export default ({ fullName }: any) => `
     We apologize for any inconvenience this may have caused and thank you for your understanding.
     <br />
     <br />
-    Best regards
+    Kind regards
 `;

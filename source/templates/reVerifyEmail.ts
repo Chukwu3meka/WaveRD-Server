@@ -15,5 +15,5 @@ export default ({ fullName, activationLink }: any) => `
     If you have any questions or need assistance, please don't hesitate to reach out to us <a href="https://www.soccermass.com/info/contact">here</a>.
     <br />
     <br />
-    Best Regards,
+    Warm Regards,
     `;
