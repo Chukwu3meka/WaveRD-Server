@@ -87,7 +87,7 @@ export const nTimeFromNowFn = ({ interval, context }: INTimeFromNowFn) => {
 };
 
 // difference in hours between date
-export const differenceInHour = (date) => {
-  const diff = Math.round((new Date() - new Date(date)) / (1000 * 60 * 60));
+export const differenceInHour = (date: Date) => {
+  const diff = Math.round((new Date().valueOf() - new Date(date).valueOf()) / (1000 * 60 * 60));
   return diff;
 };

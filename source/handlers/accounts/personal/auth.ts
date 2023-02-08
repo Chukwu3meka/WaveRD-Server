@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { PROFILE, SESSION } from "../../../models/accounts";
 
-import { catchError, differenceInHour, requestHasBody, sleep } from "../../../utils/handlers";
+import { catchError, differenceInHour, nTimeFromNowFn, requestHasBody, sleep } from "../../../utils/handlers";
 import pushMail from "../../../utils/pushMail";
+import { v4 as uniqueId } from "uuid";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -13,31 +14,57 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const profileData = await SESSION.findOne({ email: authEmail });
     if (!profileData) throw { message: "Invalid Email/Password" };
 
-    const { _id, lastLogin, locked, status, failedAttempts: initialFailedAttempts, role, email, password, session, verification, otp } = profileData;
-    const failedAttempts = initialFailedAttempts + 1;
+    const { _id, lastLogin, locked, status, failedAttempts, role, email, password, session, verification, otp } = profileData;
+
+    if (status !== "active") throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation" };
 
     // ? will throw error if passwords does not match
     const matchPassword = await profileData.comparePassword(authPassword);
 
     if (!matchPassword) {
-      if (failedAttempts === 5) await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Account Lock Notice - SoccerMASS" });
+      const currentFailedAttempts = failedAttempts + 1;
+      if (currentFailedAttempts) await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt - SoccerMASS" });
 
-      if (failedAttempts % 5 === 0)
-        await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt to your SoccerMASS Account" });
+      if (currentFailedAttempts === 5)
+        await pushMail({ account: "accounts", template: "lockNotice", address: email, subject: "Account Lock Notice - SoccerMASS" });
 
-      if (failedAttempts >= 5) {
-        await SESSION.findByIdAndUpdate({ _id }, { $inc: { failedAttempts: 1 }, $set: { locked: new Date() } });
+      if (currentFailedAttempts >= 5) {
+        await SESSION.findByIdAndUpdate({ _id }, { $inc: { currentFailedAttempts: 1 }, $set: { locked: new Date() } });
       } else {
-        await SESSION.findByIdAndUpdate({ _id }, { $inc: { failedAttempts: 1 } });
+        await SESSION.findByIdAndUpdate({ _id }, { $inc: { currentFailedAttempts: 1 } });
       }
 
       throw { message: "Invalid Email/Password" };
     }
 
-    // check if account has been locked for 3 hours
-    const lockDuration = differenceInHour(locked) <= 3;
+    if (locked) {
+      const lockDuration = differenceInHour(locked) <= 3; // ? <= check if account has been locked for 3 hours
+      if (lockDuration) throw { message: "Account is temporarily locked, Please try again later" };
 
-    if (lockDuration) throw { label: "Account is temporarily locked, Please try again later" };
+      await SESSION.findByIdAndUpdate({ _id }, { $set: { locked: null } });
+    }
+
+    if (failedAttempts) await SESSION.findByIdAndUpdate({ _id }, { $set: { failedAttempts: 0 } });
+
+    if (!verification?.email) {
+      const otp = {
+        purpose: "email verification",
+        code: `${uniqueId()}-${uniqueId()}-${uniqueId()}`,
+        expiry: nTimeFromNowFn({ context: "hours", interval: 3 }),
+      };
+
+      await SESSION.findByIdAndUpdate({ _id }, { $set: { otp } });
+
+      await pushMail({
+        account: "accounts",
+        template: "reVerifyEmail",
+        address: email,
+        subject: "Verify Your Email to Keep Your SoccerMASS Account Active",
+        payload: { activationLink: `${process.env.CLIENT_BASE_URL}/auth/verify-email?registration-id=${otp.code}` },
+      });
+
+      throw { message: "Unlock access to our services by verifying your account now. Check your inbox for our latest verification email." };
+    }
 
     console.log(`
     

@@ -10,8 +10,8 @@ const SessionSchema = new Schema(
     lastLogin: { type: Date, default: null },
     locked: { type: Date, default: null },
     password: { type: String, required: true },
-    // ? status: { "active", "email-verification", "suspended" }
-    status: { type: String, default: "email-verification" },
+    // ? status: { "active",  "suspended" }
+    status: { type: String, default: "active" },
     failedAttempts: { type: Number, default: 0 },
     email: { type: String, unique: true, required: true },
     role: { type: String, required: true, default: "user" },

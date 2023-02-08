@@ -3,7 +3,7 @@ interface IPushMail {
   address: string;
   payload?: object;
   account: "noreply" | "accounts" | "contactus";
-  template: "welcome" | "failedLogin" | "lockNotice";
+  template: "welcome" | "failedLogin" | "lockNotice" | "reVerifyEmail";
 }
 
 import nodemailer from "nodemailer";
