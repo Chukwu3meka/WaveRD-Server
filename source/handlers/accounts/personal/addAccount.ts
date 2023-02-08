@@ -28,7 +28,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
             const emailPayload = {
               fullName,
               handle,
-              activationLink: `${process.env.CLIENT_BASE_URL}/auth/verify-email?registration-id=${dbResponse.otp.code}`,
+              activationLink: `https://soccermass.com/auth/verify-email?registration-id=${dbResponse.otp.code}`,
             };
 
             await pushMail({ account: "accounts", template: "welcome", address: dbResponse.email, subject: "Welcome to SoccerMASS", payload: emailPayload });

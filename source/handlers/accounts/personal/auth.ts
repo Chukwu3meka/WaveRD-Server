@@ -4,6 +4,7 @@ import { PROFILE, SESSION } from "../../../models/accounts";
 import { catchError, differenceInHour, nTimeFromNowFn, requestHasBody, sleep } from "../../../utils/handlers";
 import pushMail from "../../../utils/pushMail";
 import { v4 as uniqueId } from "uuid";
+import jwt from "jsonwebtoken";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -66,56 +67,16 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       throw { message: "Unlock access to our services by verifying your account now. Check your inbox for our latest verification email." };
     }
 
+    // const token = jwt.sign({ session, name, role }, process.env.SECRET, { expiresIn: "120 days" });
+
     console.log(`
     
     ${authEmail}
-    
-    
+      
     
     `);
 
-    // await     SessionSchema.methods.comparePassword
-
-    // const profile = await Profile.findOne({ email });
-
-    // const validCredentials = await profile.comparePassword(password);
-    // if (!validCredentials) throw "invalid credentials";
-
-    // const { email, password } = validateRequestBody(req.body, ["email", "password"]);
-
-    // const profile = await Profile.findOne({ email });
-
-    // const validCredentials = await profile.comparePassword(password);
-    // if (!validCredentials) throw "invalid credentials";
-
-    // const { acc } = req.query;
-
-    // const account = (acc as string).replaceAll('"', "");
-
-    console.log({ email, password });
-
-    // await SESSION.create({ email, password, name, profile_ID: "saddsa" });
-
-    // await sleep(1);
-
-    // if (account === "2020671697") {
-    //   const payload = {
-    //     status: "success",
-    //     message: null,
-    //     payload: {
-    //       customerName: "Chukwuemeka Maduekwe",
-    //       accountCurrency: "USD - United States Dollars",
-    //       availableBalance: "450,587:84",
-    //       ttBalance: "34,565",
-    //       cashBalance: "367,327:20",
-    //     },
-    //   };
-
-    // return res.status(200).json("successfull signup");
-    // } else {
-    //   throw { status: 404, message: "Account number not found" };
-    // }
-    const data = { success: true, message: "Valid email/password found in database.", payload: { status: "Account is active" } };
+    const data = { success: true, message: "Email/Password is Valid.", payload: { status: "Account is active" } };
     res.status(200).json(data);
   } catch (err: any) {
     return catchError({ res, err, status: err.status, message: err.message });
