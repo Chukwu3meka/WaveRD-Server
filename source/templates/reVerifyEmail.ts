@@ -1,5 +1,5 @@
-export default ({ activationLink }: any) => `
-    Hi there,
+export default ({ fullName, activationLink }: any) => `
+    Hi ${fullName},
     <br />
     <br />
     We noticed that you have not yet verified your email. To continue using our platform, it is important that you confirm your email address.

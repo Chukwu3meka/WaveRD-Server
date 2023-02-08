@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { PROFILE, SESSION } from "../../../models/accounts";
+import { SESSION, PROFILE } from "../../../models/accounts";
 
 import { catchError, differenceInHour, nTimeFromNowFn, requestHasBody, sleep } from "../../../utils/handlers";
 import pushMail from "../../../utils/pushMail";
@@ -12,22 +12,27 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const { email: authEmail, password: authPassword } = req.body;
 
     // verify that account exist, else throw an error
-    const profileData = await SESSION.findOne({ email: authEmail });
-    if (!profileData) throw { message: "Invalid Email/Password" };
+    const sessionData = await SESSION.findOne({ email: authEmail });
+    if (!sessionData) throw { message: "Invalid Email/Password" };
 
-    const { _id, lastLogin, locked, status, failedAttempts, role, email, password, session, verification, otp } = profileData;
+    const profileData = await PROFILE.findOne({ email: authEmail });
+
+    const { fullName, handle } = profileData;
+
+    const { _id, locked, status, failedAttempts, role, email, session, verification } = sessionData;
 
     if (status !== "active") throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation" };
 
     // ? will throw error if passwords does not match
-    const matchPassword = await profileData.comparePassword(authPassword);
+    const matchPassword = await sessionData.comparePassword(authPassword);
 
     if (!matchPassword) {
       const currentFailedAttempts = failedAttempts + 1;
-      if (currentFailedAttempts) await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt - SoccerMASS" });
+      if (currentFailedAttempts)
+        await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt - SoccerMASS", payload: { fullName } });
 
       if (currentFailedAttempts === 5)
-        await pushMail({ account: "accounts", template: "lockNotice", address: email, subject: "Account Lock Notice - SoccerMASS" });
+        await pushMail({ account: "accounts", template: "lockNotice", address: email, subject: "Account Lock Notice - SoccerMASS", payload: { fullName } });
 
       if (currentFailedAttempts >= 5) {
         await SESSION.findByIdAndUpdate({ _id }, { $inc: { currentFailedAttempts: 1 }, $set: { locked: new Date() } });
@@ -61,13 +66,27 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         template: "reVerifyEmail",
         address: email,
         subject: "Verify Your Email to Keep Your SoccerMASS Account Active",
-        payload: { activationLink: `https://www.soccermass.com/auth/verify-email?registration-id=${otp.code}` },
+        payload: { activationLink: `https://www.soccermass.com/auth/verify-email?registration-id=${otp.code}`, fullName },
       });
 
       throw { message: "Unlock access to our services by verifying your account now. Check your inbox for our latest verification email." };
     }
 
-    // const token = jwt.sign({ session, name, role }, process.env.SECRET, { expiresIn: "120 days" });
+    await SESSION.findByIdAndUpdate({ _id }, { $set: { lastLogin: new Date() } });
+    await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Failed Login Attempt - SoccerMASS", payload: { fullName } });
+
+    // const token = jwt.sign(
+    //   {
+    //     // Session
+    //     session,
+    //     role,
+    //     // Profile
+    //     fullName,
+    //     handle,
+    //   },
+    //   process.env.SECRET as string,
+    //   { expiresIn: "120 days" }
+    // );
 
     console.log(`
     
