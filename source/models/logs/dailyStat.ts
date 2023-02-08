@@ -2,7 +2,7 @@ import { Schema } from "mongoose";
 import { logsDatabase } from "../database";
 
 const DailyStatSchema = new Schema({
-  date: { type: String, default: new Date().toDateString(), unique: true },
+  date: { type: String, default: new Date().toDateString() },
   subdomains: {
     hub: { type: Number, required: true, default: 0 },
     game: { type: Number, required: true, default: 0 },

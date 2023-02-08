@@ -13,8 +13,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     const email: string = sensitiveEmail.toLowerCase(); // <= to ensure emails are unique
 
-    console.log(email);
-
     // ? check if email is taken alread
     const emailTaken = await emailExistsFn(email);
     if (emailTaken) throw { message: "Email already in use, Kindly use a different email address" };

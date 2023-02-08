@@ -17,7 +17,23 @@ import { catchError, requestHasBody, sleep } from "../../../utils/handlers";
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
     requestHasBody({ body: req.body, required: ["email", "password"] });
-    const { email, password, name } = req.body;
+    const { email, password } = req.body;
+
+    // verify that account exist, else throw an error
+    const profileData = await PROFILE.findOne({ email });
+    if (!profileData) throw { message: "Invalid Email/Password" };
+
+    // const profile = await Profile.findOne({ email });
+
+    // const validCredentials = await profile.comparePassword(password);
+    // if (!validCredentials) throw "invalid credentials";
+
+    // const { email, password } = validateRequestBody(req.body, ["email", "password"]);
+
+    // const profile = await Profile.findOne({ email });
+
+    // const validCredentials = await profile.comparePassword(password);
+    // if (!validCredentials) throw "invalid credentials";
 
     // const { acc } = req.query;
 
