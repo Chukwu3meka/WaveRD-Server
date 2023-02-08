@@ -19,7 +19,8 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const matchPassword = await profileData.comparePassword(authPassword);
 
     if (!matchPassword) {
-      if (failedAttempts === 5) await pushMail({ account: "accounts", template: "login", address: email, subject: "SoccerMASS Account Login Attempt" });
+      // if (failedAttempts === 5)
+      await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt to your SoccerMASS Account" });
 
       await SESSION.findByIdAndUpdate({ _id }, { $inc: { failedAttempts: 1 }, $set: { locked: new Date() } });
       throw { message: "Invalid Email/Password" };

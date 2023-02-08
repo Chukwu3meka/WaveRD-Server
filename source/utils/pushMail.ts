@@ -1,15 +1,15 @@
 interface IPushMail {
-  payload: any;
   subject: string;
   address: string;
-  template: "welcome";
+  payload?: object;
+  template: "welcome" | "failedLogin";
   account: "noreply" | "accounts" | "contactus";
 }
 
 import nodemailer from "nodemailer";
 import * as templates from "../templates";
 
-export default async ({ account, template, address, subject, payload }: IPushMail) => {
+export default async ({ account, template, address, subject, payload = {} }: IPushMail) => {
   const emailAccount = account === "noreply" ? "NO_REPLY_EMAIL" : account === "accounts" ? "ACCOUNTS_EMAIL" : "CONTACT_US_EMAIL";
   const emailPassword = process.env.EMAIL_PASSWORD;
   const emailAddress = process.env[emailAccount];
@@ -46,8 +46,6 @@ export default async ({ account, template, address, subject, payload }: IPushMai
   
         img {
           border: 0;
-          height: auto;
-          line-height: 100%;
           outline: none;
           text-decoration: none;
           -ms-interpolation-mode: bicubic;
@@ -123,15 +121,13 @@ export default async ({ account, template, address, subject, payload }: IPushMai
                     <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #f6f6f6; vertical-align: top" width="100%">
                       <tbody>
                         <tr>
-                          <td align="center" style="font-size: 0px; padding: 10px 25px; word-break: break-word">
+                          <td align="center" style="font-size: 0px; padding: 10px; word-break: break-word">
                             <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: collapse; border-spacing: 0px">
                               <tbody>
                                 <tr>
-                                  <td style="width: 80px">
+                                  <td>
                                     <a href="https://soccermass.com" target="_blank">
                                       <img
-                                        width="80px"
-                                        height="80px"
                                         src="https://soccermass.com/images/layout/soccermass.webp"
                                         style="
                                           border: 0;
@@ -139,9 +135,11 @@ export default async ({ account, template, address, subject, payload }: IPushMai
                                           display: block;
                                           outline: none;
                                           text-decoration: none;
-                                          height: 80px;
-                                          width: 80px;
-                                          font-size: 13px;
+                                          min-height: 100px !important;
+                                          height: 100px !important;
+                                          max-height: 100px !important;
+                                          width: 100px !important;
+                                          max-width: none;
                                         " />
                                     </a>
                                   </td>
@@ -170,9 +168,11 @@ export default async ({ account, template, address, subject, payload }: IPushMai
                           </td>
                         </tr>
                         <tr>
-                          <td align="left" style="font-size: 0px; padding: 10px 25px; word-break: break-word">
-                            <div style="font-family: helvetica; font-size: 16px; line-height: 1; text-align: left; color: #413f3f"; line-height: 25px;>
-                              ${templates[template]({ ...payload })}
+                          <td align="left" style="font-size: 0px; padding: 10px 25px; word-break: break-word; line-height: 25px">
+                            <div>
+                              <p style="font-family: helvetica; font-size: 16px; text-align: left; color: #413f3f" ; line-height: 25px;>
+                                ${templates[template]({ ...payload })}
+                              </p>
                             </div>
                           </td>
                         </tr>
@@ -333,7 +333,8 @@ export default async ({ account, template, address, subject, payload }: IPushMai
                           <td align="center" style="font-size: 0px; padding: 10px 25px; word-break: break-word">
                             <div style="font-family: Ubuntu, Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1; text-align: center; color: #1d1b1b">
                               <p style="line-height: 25px">
-                                You've received this email because of your recent activity on our website. If you prefer not to receive any more emails from us, kindly unsubscribe
+                                You've received this email because of your recent activity on our website. If you prefer not to receive any more emails from us,
+                                kindly unsubscribe
                                 <strong
                                   ><a target="_blank" href="https://soccermass.com/profile/subscriptions" style="text-decoration: none; color: rgb(68, 139, 68)"
                                     >here</a
