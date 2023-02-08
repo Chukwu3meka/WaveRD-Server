@@ -1,30 +1,42 @@
 import bcrypt from "bcryptjs";
-import { NextFunction } from "express";
 import { Schema } from "mongoose";
+import { v4 as uniqueId } from "uuid";
 
 import { accountsDatabase } from "../../database";
-
-import { v4 as uniqueId } from "uuid";
 import { nTimeFromNowFn } from "../../../utils/handlers";
 
-const SessionSchema = new Schema({
-  lastLogin: { type: Date, default: null },
-  locked: { type: Boolean, required: true, default: false },
-  password: { type: String, required: true },
-  status: { type: String, default: "active" },
-  failedAttempts: { type: Number, default: 0 },
-  email: { type: String, unique: true, required: true },
-  role: { type: String, required: true, default: "user" },
-  session: { type: String, required: true, unique: true, default: uniqueId() },
-  verification: {
-    email: { type: Boolean, required: true, default: false },
+const SessionSchema = new Schema(
+  {
+    lastLogin: { type: Date, default: null },
+    locked: { type: Date, default: null },
+    password: { type: String, required: true },
+    // ? status: { "active", "email-verification", "suspended" }
+    status: { type: String, default: "email-verification" },
+    failedAttempts: { type: Number, default: 0 },
+    email: { type: String, unique: true, required: true },
+    role: { type: String, required: true, default: "user" },
+    session: { type: String, required: true, unique: true, default: uniqueId() },
+    verification: {
+      email: { type: Boolean, required: true, default: false },
+    },
+    otp: {
+      purpose: { type: String, default: "email verification" },
+      code: { type: String, default: `${uniqueId()}-${uniqueId()}-${uniqueId()}` },
+      expiry: { type: Date, default: nTimeFromNowFn({ context: "hours", interval: 3 }) },
+    },
   },
-  otp: {
-    purpose: { type: String, default: "email verification" },
-    code: { type: String, default: `${uniqueId()}-${uniqueId()}-${uniqueId()}` },
-    expiry: { type: Date, default: nTimeFromNowFn({ context: "hours", interval: 3 }) },
-  },
-});
+  {
+    methods: {
+      async comparePassword(attempt: string) {
+        try {
+          return await bcrypt.compare(attempt, this.password);
+        } catch (err) {
+          throw err;
+        }
+      },
+    },
+  }
+);
 
 SessionSchema.pre("save", async function (next) {
   try {
@@ -37,28 +49,11 @@ SessionSchema.pre("save", async function (next) {
 
     const hashedPassword = await bcrypt.hash(this.password, 10);
     this.password = hashedPassword;
-
     return next();
   } catch (err: any) {
     return next(err);
   }
 });
-
-SessionSchema.methods.hashPassword = async function (password: string, next: NextFunction) {
-  try {
-    return await bcrypt.hash(password, 10);
-  } catch (err) {
-    next(err);
-  }
-};
-
-SessionSchema.methods.comparePassword = async function (attempt: string, next: NextFunction) {
-  try {
-    return await bcrypt.compare(attempt, this.password);
-  } catch (err) {
-    next(err);
-  }
-};
 
 const PersonalSessionModel = accountsDatabase.model("Personal_Session", SessionSchema);
 
