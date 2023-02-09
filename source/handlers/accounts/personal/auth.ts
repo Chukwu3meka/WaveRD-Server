@@ -8,18 +8,6 @@ import { catchError, differenceInHour, nTimeFromNowFn, requestHasBody, sleep } f
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
-    //     console.log(
-    //       `
-    // ${req.originalUrl}
-
-    // ${req.baseUrl}
-
-    // ${req.headers.host}
-
-    // ${req.headers.origin}
-    //       `
-    //     );
-
     requestHasBody({ body: req.body, required: ["email", "password"] });
     const { email: authEmail, password: authPassword } = req.body;
 
@@ -46,6 +34,8 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       profile: { fullName, handle },
     } = searchResult[0];
 
+    console.log({ fullName, handle });
+
     if (status !== "active") throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation" };
 
     // ? will throw error if passwords does not match
@@ -53,16 +43,16 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     if (!matchPassword) {
       const currentFailedAttempts = failedAttempts + 1;
-      if (currentFailedAttempts < 5)
+      if (currentFailedAttempts < 7)
         await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt - SoccerMASS", payload: { fullName } });
 
-      if (currentFailedAttempts === 5)
+      if (currentFailedAttempts === 7)
         await pushMail({ account: "accounts", template: "lockNotice", address: email, subject: "Account Lock Notice - SoccerMASS", payload: { fullName } });
 
-      if (currentFailedAttempts >= 5) {
-        await SESSION.findByIdAndUpdate({ _id }, { $inc: { currentFailedAttempts: 1 }, $set: { locked: new Date() } });
+      if (currentFailedAttempts >= 7) {
+        await SESSION.findByIdAndUpdate({ _id }, { $inc: { failedAttempts: 1 }, $set: { locked: new Date() } });
       } else {
-        await SESSION.findByIdAndUpdate({ _id }, { $inc: { currentFailedAttempts: 1 } });
+        await SESSION.findByIdAndUpdate({ _id }, { $inc: { failedAttempts: 1 } });
       }
 
       throw { message: "Invalid Email/Password" };
