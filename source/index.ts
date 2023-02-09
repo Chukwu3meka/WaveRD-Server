@@ -15,7 +15,7 @@ const server = async () => {
     const app = express(),
       port = process.env.PORT || 5000;
 
-    app.use(cors());
+    // app.use(cors());
     app.use(cookieParser());
     app.use(bodyParser.json({ limit: "7mb" }));
     // app.use(cookieParser(process.env.SECRET));

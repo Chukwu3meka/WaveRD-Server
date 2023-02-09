@@ -1,4 +1,4 @@
-// import cors from "cors";
+import cors from "cors";
 
 import hub from "./routes";
 
@@ -9,6 +9,7 @@ import hub from "./routes";
 // };
 
 export default (app: any) => {
-  app.use("/api/hub", hub);
+  // app.use("/api/hub", hub);
+  app.use("/api/hub", cors(), hub);
   // app.use("/api/hub", cors(corsOptions), hub);
 };
