@@ -90,7 +90,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     const token = jwt.sign({ session, role, fullName, handle }, process.env.SECRET as string, { expiresIn: "120 days" });
 
-    const data = { success: true, message: "Email/Password is Valid.", payload: { token } };
+    const data = { success: true, message: "Email/Password is Valid.", payload: { role, fullName, handle } };
 
     const cookiesOption = {
       httpOnly: true,
