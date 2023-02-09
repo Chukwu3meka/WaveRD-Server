@@ -31,10 +31,8 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       password,
       session,
       verification,
-      profile: { fullName, handle },
+      profile: [{ fullName, handle }],
     } = searchResult[0];
-
-    console.log({ fullName, handle });
 
     if (status !== "active") throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation" };
 
