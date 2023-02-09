@@ -71,7 +71,7 @@ interface INTimeFromNowFn {
   context: "days" | "hours";
   interval: number;
 }
-export const nTimeFromNowFn = ({ interval, context }: INTimeFromNowFn) => {
+export const nTimeFromNowFn = ({ interval, context }: INTimeFromNowFn): Date => {
   const currentTime = new Date();
 
   switch (context) {
@@ -82,7 +82,7 @@ export const nTimeFromNowFn = ({ interval, context }: INTimeFromNowFn) => {
     case "hours":
       return new Date(currentTime.getTime() + interval * 60 * 60 * 1000);
     default:
-      break;
+      return new Date();
   }
 };
 

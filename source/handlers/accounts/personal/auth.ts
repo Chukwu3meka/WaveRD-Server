@@ -105,14 +105,10 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const data = { success: true, message: "Email/Password is Valid.", payload: { token } };
 
     const cookiesOption = {
-      secure: false,
-      // domain: req.headers.origin?.replace("http://", ".")?.replace("https://", ".")?.replace(/:\d+/, ""),
-      // domain: req.headers.origin?.replace("http://", "")?.replace("https://", "")?.replace(/:\d+/, ""),
-      // domain: "localhost:5000",
-      // domain: `.${process.env.SERVER_DOMAIN}`,
-      // signed: true,
-      expires: nTimeFromNowFn({ context: "days", interval: 120 }),
       httpOnly: true,
+      secure: process.env.production ? true : false,
+      // domain: req.headers.origin?.replace("http://", ".")?.replace("https://", ".")?.replace(/:\d+/, ""),
+      expires: nTimeFromNowFn({ context: "days", interval: 120 }),
     };
 
     res.status(200).cookie("SoccerMASS", token, cookiesOption).json(data);
