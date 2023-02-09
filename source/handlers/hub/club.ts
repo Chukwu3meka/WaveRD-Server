@@ -1,23 +1,29 @@
 import { NextFunction, Request, Response } from "express";
 
 import validator from "../../utils/validator";
-import { PROFILE } from "../../models/accounts";
+import { CLUB } from "../../models/hub";
 import { catchError, requestHasBody } from "../../utils/handlers";
+import { isValidObjectId } from "mongoose";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
-    console.log(req.cookies);
-
-    console.log(req.params.id);
-
     requestHasBody({ body: req.params, required: ["id"] });
     const { id } = req.params;
 
-    // const handleExists = await handleExistsFn(handle);
+    // 63e54d3215e0ae5734cce9bc
+    const isClubIDValid = isValidObjectId(id);
+    if (!isClubIDValid) throw { message: `Invalid Club ID provided` };
 
-    const data = { success: true, message: `Club data for ${id} found}`, payload: { exists: "sads" } };
+    return await CLUB.findById(id)
+      .then((clubData) => {
+        if (!clubData) throw { message: `No club was located with the ID: '${id}'.` };
 
-    res.status(200).json(data);
+        const data = { success: true, message: `Club data for ${clubData.title} found}`, payload: clubData };
+        return res.status(200).json(data);
+      })
+      .catch(() => {
+        throw { message: `The club with ID: '${id}' may have been deleted or may not exist.` };
+      });
   } catch (err: any) {
     return catchError({ res, err, status: err.status, message: err.message });
   }

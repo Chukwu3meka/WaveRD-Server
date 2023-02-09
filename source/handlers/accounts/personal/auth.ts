@@ -53,7 +53,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     if (!matchPassword) {
       const currentFailedAttempts = failedAttempts + 1;
-      if (currentFailedAttempts)
+      if (currentFailedAttempts < 5)
         await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt - SoccerMASS", payload: { fullName } });
 
       if (currentFailedAttempts === 5)
