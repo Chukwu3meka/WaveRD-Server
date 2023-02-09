@@ -1,13 +1,3 @@
-// ? Personal Accounts
-import PROFILE from "./personal/profile";
-import SESSION from "./personal/session";
+import CLUB from "./club";
 
-// ? Business Accounts
-
-export {
-  // * Personal
-  PROFILE,
-  SESSION,
-
-  // * Business
-};
+export { CLUB };
