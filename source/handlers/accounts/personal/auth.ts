@@ -8,6 +8,18 @@ import { catchError, differenceInHour, nTimeFromNowFn, requestHasBody, sleep } f
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
+    //     console.log(
+    //       `
+    // ${req.originalUrl}
+
+    // ${req.baseUrl}
+
+    // ${req.headers.host}
+
+    // ${req.headers.origin}
+    //       `
+    //     );
+
     requestHasBody({ body: req.body, required: ["email", "password"] });
     const { email: authEmail, password: authPassword } = req.body;
 
@@ -86,14 +98,28 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     }
 
     await SESSION.findByIdAndUpdate({ _id }, { $set: { lastLogin: new Date() } });
-    await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", payload: { fullName } });
+    // await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", payload: { fullName } });
 
     const token = jwt.sign({ session, role, fullName, handle }, process.env.SECRET as string, { expiresIn: "120 days" });
 
     const data = { success: true, message: "Email/Password is Valid.", payload: { token } };
-    const cookiesOption = { domain: `.${process.env.SERVER_DOMAIN}`, expires: nTimeFromNowFn({ context: "days", interval: 120 }), httpOnly: true };
+
+    // res.cookie("jlkjlkjlkj", true);
+
+    const cookiesOption = {
+      secure: false,
+      // domain: req.headers.origin?.replace("http://", ".")?.replace("https://", ".")?.replace(/:\d+/, ""),
+      // domain: req.headers.origin?.replace("http://", "")?.replace("https://", "")?.replace(/:\d+/, ""),
+      // domain: "localhost:5000",
+      // domain: `.${process.env.SERVER_DOMAIN}`,
+      expires: nTimeFromNowFn({ context: "days", interval: 120 }),
+      httpOnly: true,
+
+      // signed: true,
+    };
 
     res.status(200).cookie("SoccerMASS", token, cookiesOption).json(data);
+    // res.cookie("SoccerMASS", token, { sameSite }).json(data);
   } catch (err: any) {
     return catchError({ res, err, status: err.status, message: err.message });
   }

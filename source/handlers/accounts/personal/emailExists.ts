@@ -14,6 +14,28 @@ export const emailExistsFn = async (email: string) => {
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
+    var cookie = req.headers.cookie;
+    console.log(cookie);
+    // res.send('Cookie value: ' + cookie);
+
+    console.log(`
+
+
+
+    "req.cookies"
+    
+    ${req.headers.cookie}
+
+
+    ${JSON.stringify(req.cookies)}
+
+    ${JSON.stringify(req.cookies.SoccerMASS)}
+    
+
+
+`);
+    // ${req.cookies}
+
     requestHasBody({ body: req.body, required: ["email"] });
     const { email } = req.body;
 
