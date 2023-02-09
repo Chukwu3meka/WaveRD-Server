@@ -26,10 +26,20 @@ const SessionSchema = new Schema(
     },
   },
   {
-    methods: {
-      async comparePassword(attempt: string) {
+    // methods: {
+    //   async comparePassword(attempt: string) {
+    //     try {
+    //       return await bcrypt.compare(attempt, this.password);
+    //     } catch (err) {
+    //       throw err;
+    //     }
+    //   },
+    // },
+
+    statics: {
+      async comparePassword(attempt: string, password: string) {
         try {
-          return await bcrypt.compare(attempt, this.password);
+          return await bcrypt.compare(attempt, password);
         } catch (err) {
           throw err;
         }
