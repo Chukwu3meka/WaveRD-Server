@@ -40,6 +40,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
             return res.status(201).json(data);
           })
           .catch(async (err) => {
+            console.log({ err });
             // delete profile/possibly session if session not created
             await PROFILE.deleteOne({ email, handle, fullName });
             await SESSION.deleteOne({ email });
