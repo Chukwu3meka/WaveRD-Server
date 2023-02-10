@@ -7,7 +7,7 @@ const allowedOrigins = [
   "http://manager.localhost:3000",
   "http://apihub.localhost:3000",
 
-  "https://soccermass.com",
+  "https://www.soccermass.com",
   "https://manager.soccermass.com",
   "https://apihub.soccermass.com",
 ];
