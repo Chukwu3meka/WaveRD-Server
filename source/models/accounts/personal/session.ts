@@ -52,10 +52,11 @@ SessionSchema.pre("save", async function (next) {
   try {
     if (!this.isModified("password")) return next();
 
-    const hashedId = await bcrypt.hash(this._id.toString(), 10);
+    // const hashedId = await bcrypt.hash(this._id.toString(), 10);
 
     // make session longer by replacing special characters
-    this.session = `${uniqueId()}-${hashedId}-${uniqueId()}`.replaceAll("/", uniqueId()).replaceAll("$", uniqueId()).replaceAll(".", uniqueId());
+    // this.session = `${uniqueId()}-${hashedId}-${uniqueId()}`.replaceAll("/", uniqueId()).replaceAll("$", uniqueId()).replaceAll(".", uniqueId());
+    this.session = `${uniqueId()}-${this.id}-${uniqueId()}`;
 
     const hashedPassword = await bcrypt.hash(this.password, 10);
     this.password = hashedPassword;
