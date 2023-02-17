@@ -1,8 +1,11 @@
 import mongoose from "mongoose";
 
-mongoose.set("debug", false); // <= hide console messages
-mongoose.set("strictQuery", false);
 mongoose.Promise = global.Promise;
+
+mongoose.set({
+  strictQuery: false,
+  debug: false, // ? <= hide console messages
+});
 
 interface IConnectionEvents {
   all: string;

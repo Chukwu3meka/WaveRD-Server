@@ -35,7 +35,7 @@ const allRequests = async (req: Request, res: Response, next: NextFunction) => {
 
     next(); //Port is important if the url has it
   } catch (err: any) {
-    if (process.env.NODE === "development") console.log(err.message);
+    if (process.env.NODE_ENV === "development") console.log(err.message);
     return catchError({ res, err, status: err.status, message: "Request didn't pass middleware test" });
   }
 };

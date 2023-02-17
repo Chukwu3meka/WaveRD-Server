@@ -42,7 +42,7 @@ const server = async () => {
 
     app.listen(port, () => console.log(`SoccerMASS:::listening on port ${port}`));
   } catch (error: any) {
-    console.log("SoccerMASS Server Error", (process.env.NODE !== "production" && (error.message as string)) || error);
+    console.log("SoccerMASS Server Error", (process.env.NODE_ENV !== "production" && (error.message as string)) || error);
   }
 };
 
