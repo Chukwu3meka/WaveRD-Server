@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-mongoose.set("debug", true);
+mongoose.set("debug", false); // <= hide console messages
 mongoose.set("strictQuery", false);
 mongoose.Promise = global.Promise;
 

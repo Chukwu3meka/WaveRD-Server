@@ -1,8 +1,7 @@
-import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import validator from "../../../utils/validator";
-import { PROFILE } from "../../../models/accounts";
-import { catchError, requestHasBody } from "../../../utils/handlers";
+import { NextFunction, Request, Response } from "express";
+
+import { catchError } from "../../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -10,8 +9,8 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     if (!cookie) throw { message: "User not Authenticated" };
 
     return jwt.verify(cookie, <string>process.env.SECRET, async (err: any, decoded: any) => {
-      if (err) throw { message: "Suspicious token" };
-      if (!decoded) throw { message: "Token not available" };
+      if (err) throw { message: "Invalid Cookie" };
+      if (!decoded) throw { message: "Suspicious token" };
 
       const { role, fullName, handle } = decoded;
 
@@ -20,7 +19,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
         return res.status(200).json(data);
       } else {
-        throw { message: "Invalid Cookie" };
+        throw { message: "Invalid Token" };
       }
     });
   } catch (err: any) {

@@ -18,13 +18,24 @@ const server = async () => {
     // app.use(cors());
     app.use(cookieParser());
     app.use(bodyParser.json({ limit: "7mb" }));
-    // app.use(cookieParser(process.env.SECRET));
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(cookieSession({ secret: process.env.SECRET }));
 
     // Apply the middleware to all incoming requests
     app.use(passport.initialize());
     app.use(passport.session());
+
+    app.post("/api/**", (req, res, next) => {
+      console.log(`
+      
+      
+      dsaddsadwww0-
+      ss
+      
+      `);
+      next();
+    });
+
     app.use(allRequests); // <= handle all requests hitting server
 
     appRoutes(app); //  app routes goes here

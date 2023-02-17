@@ -3,10 +3,11 @@ import cors from "cors";
 import personal from "./personal";
 
 const allowedOrigins = [
-  // ? SoccerMASS Development
+  // ? SoccerMASS Development Web
   "http://localhost:3000",
   "http://apihub.localhost:3000",
   "http://manager.localhost:3000",
+  "http://accounts.localhost:3000",
   // ? SoccerMASS Production
   "https://www.soccermass.com",
   "https://dev.soccermass.com",

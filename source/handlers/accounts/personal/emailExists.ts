@@ -7,7 +7,7 @@ import { catchError, requestHasBody } from "../../../utils/handlers";
 export const emailExistsFn = async (email: string) => {
   validator({ type: "email", value: email });
 
-  const dbResponse = await PROFILE.findOne({ email: email.toLowerCase() });
+  const dbResponse = await PROFILE.findOne({ email });
 
   return !!dbResponse;
 };
