@@ -6,7 +6,7 @@ import pushMail from "../../../utils/pushMail";
 import { SESSION } from "../../../models/accounts";
 import { catchError, differenceInHour, nTimeFromNowFn, requestHasBody, sleep } from "../../../utils/handlers";
 
-export default async (req: Request, res: Response, next: NextFunction) => {
+export default async (req: Request, res: Response) => {
   try {
     requestHasBody({ body: req.body, required: ["email", "password"] });
     const { email: authEmail, password: authPassword } = req.body;

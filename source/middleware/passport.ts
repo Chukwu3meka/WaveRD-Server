@@ -11,7 +11,7 @@ const returnEmail = (profile: any, cb: any) => {
     const email = profile.emails[0].value;
     return cb(null, email);
   }
-  throw { errMsg: "email not found" };
+  throw { message: "email not found" };
 };
 
 // verify that env files are available
@@ -20,7 +20,7 @@ passport.use(
     {
       clientID: process.env.FACEBOOK_CLIENT_ID as string,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
-      callbackURL: "/auth/facebook/callback",
+      callbackURL: "/api/accounts/personal/facebook/callback",
       profileFields: ["id", "emails", "name"],
       // proxy: trustProxy,
     },
@@ -33,7 +33,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-      callbackURL: `/auth/google/callback`,
+      callbackURL: `/api/accounts/personal/google/callback`,
     },
     (accessToken: any, refreshToken: any, profile: any, cb: any) => returnEmail(profile, cb)
   )
@@ -45,7 +45,7 @@ passport.use(
       consumerKey: process.env.TWITTER_CONSUMER_KEY as string,
       consumerSecret: process.env.TWITTER_CONSUMER_SECRET as string,
       userProfileURL: "https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true",
-      callbackURL: `/auth/twitter/callback`,
+      callbackURL: `/api/accounts/personal/twitter/callback`,
       // proxy: trustProxy,
     },
     (accessToken, refreshToken, profile, cb) => returnEmail(profile, cb)
