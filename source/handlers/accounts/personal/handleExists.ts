@@ -7,7 +7,8 @@ import { catchError, requestHasBody } from "../../../utils/handlers";
 export const handleExistsFn = async (handle: string) => {
   validator({ type: "handle", value: handle });
 
-  const dbResponse = await PROFILE.findOne({ handle: { $regex: new RegExp("^" + handle, "i") } }); // ? FOR INSENSITIVITY SEARCH
+  const searchPhrase = new RegExp(`^${handle}$`); // ? FOR INSENSITIVITY SEARCH
+  const dbResponse = await PROFILE.findOne({ handle: { $regex: searchPhrase, $options: "i" } });
 
   return !!dbResponse;
 };
