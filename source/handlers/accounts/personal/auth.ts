@@ -12,29 +12,31 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const { email: authEmail, password: authPassword } = req.body;
 
     const searchResult = await SESSION.aggregate([
-      { $match: { email: authEmail } },
+      { $match: { email: authEmail.toLowerCase() } },
       { $lookup: { from: "personal_profiles", localField: "email", foreignField: "email", as: "profile" } },
       { $limit: 1 },
-      { $project: { otp: 0 } },
+      // { $project: { otp: 0 } },
     ]);
 
     // verify that account exist, else throw an error
-    if (!searchResult) throw { message: "Invalid Email/Password" };
+    if (!searchResult || !searchResult[0]) throw { message: "Invalid Email/Password" };
 
     const {
       _id,
-      locked,
-      status,
-      failedAttempts,
+      otp,
       role,
       email,
-      password,
+      locked,
+      status,
       session,
+      password,
       verification,
+      failedAttempts,
       profile: [{ fullName, handle }],
     } = searchResult[0];
 
-    if (status !== "active") throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation" };
+    if (status !== "active")
+      throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", client: true };
 
     // ? will throw error if passwords does not match
     const matchPassword = await SESSION.comparePassword(authPassword, password);
@@ -66,23 +68,30 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     if (failedAttempts) await SESSION.findByIdAndUpdate({ _id }, { $set: { failedAttempts: 0 } });
 
     if (!verification?.email) {
-      const otp = {
-        purpose: "email verification",
-        code: `${uniqueId()}-${uniqueId()}-${uniqueId()}`,
-        expiry: nTimeFromNowFn({ context: "hours", interval: 3 }),
-      };
+      const lastSent = differenceInHour(otp.sent);
 
-      await SESSION.findByIdAndUpdate({ _id }, { $set: { otp } });
+      if (lastSent > 3) {
+        const newOTP = {
+          sent: new Date(),
+          purpose: "email verification",
+          code: `${uniqueId()}-${uniqueId()}-${uniqueId()}`,
+          expiry: nTimeFromNowFn({ context: "hours", interval: 3 }),
+        };
 
-      await pushMail({
-        account: "accounts",
-        template: "reVerifyEmail",
-        address: email,
-        subject: "Verify Your Email to Keep Your SoccerMASS Account Active",
-        payload: { activationLink: `https://www.soccermass.com/auth/verify-email?registration-id=${otp.code}`, fullName },
-      });
+        await SESSION.findByIdAndUpdate({ _id }, { $set: { newOTP } });
 
-      throw { message: "Unlock access to our services by verifying your account now. Check your inbox for our latest verification email." };
+        await pushMail({
+          account: "accounts",
+          template: "reVerifyEmail",
+          address: email,
+          subject: "Verify Your Email to Keep Your SoccerMASS Account Active",
+          payload: { activationLink: `https://www.soccermass.com/auth/verify-email?registration-id=${newOTP.code}`, fullName },
+        });
+
+        throw { message: "To access our services, kindly check your inbox for the most recent verification email from us", client: true };
+      }
+
+      throw { message: `Kindly check your inbox for our latest verification email that was sent ${lastSent} hours ago`, client: true };
     }
 
     await SESSION.findByIdAndUpdate({ _id }, { $set: { lastLogin: new Date() } });
@@ -101,6 +110,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     res.status(200).cookie("SoccerMASS", token, cookiesOption).json(data);
   } catch (err: any) {
-    return catchError({ res, err, status: err.status, message: err.message });
+    const message = err.client ? err.message : "Invalid Email/Password";
+    return catchError({ res, err, status: err.status, message });
   }
 };

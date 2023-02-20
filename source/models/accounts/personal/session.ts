@@ -20,6 +20,7 @@ const SessionSchema = new Schema(
       email: { type: Boolean, required: true, default: false },
     },
     otp: {
+      sent: { type: Date, default: new Date() },
       purpose: { type: String, default: "email verification" },
       code: { type: String, default: `${uniqueId()}-${uniqueId()}-${uniqueId()}` },
       expiry: { type: Date, default: nTimeFromNowFn({ context: "hours", interval: 3 }) },

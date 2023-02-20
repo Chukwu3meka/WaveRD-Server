@@ -1,6 +1,6 @@
 import "dotenv/config";
 
-import cors from "cors";
+// import cors from "cors";
 import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
@@ -24,18 +24,6 @@ const server = async () => {
     // Apply the middleware to all incoming requests
     app.use(passport.initialize());
     app.use(passport.session());
-
-    app.post("/api/**", (req, res, next) => {
-      console.log(`
-      
-      
-      dsaddsadwww0-
-      ss
-      
-      `);
-      next();
-    });
-
     app.use(allRequests); // <= handle all requests hitting server
 
     appRoutes(app); //  app routes goes here
