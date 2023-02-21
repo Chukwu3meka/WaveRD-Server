@@ -4,6 +4,7 @@ import emailExists from "./emailExists";
 import handleExists from "./handleExists";
 import cookie from "./cookie";
 import oAuthSession from "./oAuthSession";
+import logout from "./logout";
 import * as oAuth from "./oAuth";
 
-export { oAuth, cookie, handleExists, emailExists, addAccount, auth, oAuthSession };
+export { oAuth, logout, cookie, handleExists, emailExists, addAccount, auth, oAuthSession };
