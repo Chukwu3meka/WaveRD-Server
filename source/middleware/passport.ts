@@ -20,7 +20,7 @@ passport.use(
     {
       clientID: process.env.FACEBOOK_CLIENT_ID as string,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
-      callbackURL: "/api/accounts/personal/facebook/callback",
+      callbackURL: process.env.NODE_ENV === "development" ? "/api/accounts/personal/facebook/callback" : "/api/personal/facebook/callback",
       profileFields: ["id", "emails", "name"],
       // proxy: trustProxy,
     },
@@ -33,7 +33,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-      callbackURL: `/api/accounts/personal/google/callback`,
+      callbackURL: process.env.NODE_ENV === "development" ? `/api/accounts/personal/google/callback` : `/api/personal/google/callback`,
     },
     (accessToken: any, refreshToken: any, profile: any, cb: any) => returnEmail(profile, cb)
   )
@@ -45,7 +45,7 @@ passport.use(
       consumerKey: process.env.TWITTER_CONSUMER_KEY as string,
       consumerSecret: process.env.TWITTER_CONSUMER_SECRET as string,
       userProfileURL: "https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true",
-      callbackURL: `/api/accounts/personal/twitter/callback`,
+      callbackURL: process.env.NODE_ENV === "development" ? `/api/accounts/personal/twitter/callback` : `/api/personal/twitter/callback`,
       // proxy: trustProxy,
     },
     (accessToken, refreshToken, profile, cb) => returnEmail(profile, cb)
