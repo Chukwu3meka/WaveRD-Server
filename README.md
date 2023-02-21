@@ -51,3 +51,7 @@ All packages installed are key to this app running smoothly and we graciously th
 5. You don't need to install any project management such as nodemnon or pm2 as Node.js 18 now comes witth and inbuilt watch mode
 6. Make sure to use `node` as enviroment, `yarn` as build command and `npm start` to start app in render
 7. ...
+
+## Issues
+
+1. Stick to Passport 0.5 to avoid issues with oauth, for now
