@@ -10,16 +10,16 @@ router.route("/handle_exists").post(personal.handleExists);
 router.route("/add_account").post(personal.addAccount);
 router.route("/auth").post(personal.auth);
 router.route("/cookie").get(personal.cookie);
+router.route("/oAuthSession").post(personal.oAuthSession);
 // router.route("/:club/players").get(club.clubPlayers);
 
-router.route("/facebook").get(passport.authenticate("facebook", { scope: ["email"] }));
-router.route("/facebook/callback").get(passport.authenticate("facebook"), personal.oAuth.facebookAuth);
-
-router.route("/google").get(passport.authenticate("google", { scope: ["email"] }));
-router.route("/google/callback").get(passport.authenticate("google"), personal.oAuth.googleAuth);
-
+router.route("/oauth").get(personal.oAuth.default);
 router.route("/twitter").get(passport.authenticate("twitter"));
+router.route("/google").get(passport.authenticate("google", { scope: ["email"] }));
+router.route("/facebook").get(passport.authenticate("facebook", { scope: ["email"] }));
+router.route("/google/callback").get(passport.authenticate("google"), personal.oAuth.googleAuth);
 router.route("/twitter/callback").get(passport.authenticate("twitter"), personal.oAuth.twitterAuth);
+router.route("/facebook/callback").get(passport.authenticate("facebook"), personal.oAuth.facebookAuth);
 
 module.exports = router;
 

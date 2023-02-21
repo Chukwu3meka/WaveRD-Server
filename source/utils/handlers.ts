@@ -125,3 +125,14 @@ export const differenceInHour = (date: Date) => {
   const diff = Math.round((new Date().valueOf() - new Date(date).valueOf()) / (1000 * 60 * 60));
   return diff;
 };
+
+// difference in hours between date
+export const obfuscate = (phrase: string) => {
+  let r = "";
+  for (let i of phrase.split("").keys()) {
+    let valh = (phrase.charCodeAt(i) ^ 0x7f).toString(16);
+    if (valh.length == 1) valh = "0" + valh;
+    r += valh;
+  }
+  return r;
+};

@@ -78,7 +78,7 @@ export default async (req: Request, res: Response) => {
           expiry: nTimeFromNowFn({ context: "hours", interval: 3 }),
         };
 
-        await SESSION.findByIdAndUpdate({ _id }, { $set: { newOTP } });
+        await SESSION.findByIdAndUpdate({ _id }, { $set: { otp: newOTP } });
 
         await pushMail({
           account: "accounts",
