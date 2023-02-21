@@ -54,4 +54,4 @@ All packages installed are key to this app running smoothly and we graciously th
 
 ## Issues
 
-1. Stick to Passport 0.5 to avoid issues with oauth, for now
+1. Stick to Passport 0.5 to avoid issues with oauth for now. [stackoverflow](https://stackoverflow.com/questions/72375564/typeerror-req-session-regenerate-is-not-a-function-using-passport)
