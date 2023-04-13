@@ -1,6 +1,7 @@
 import express from "express";
 
 import passport from "../../middleware/passport";
+import securedRoute from "../../middleware/securedRoute";
 import * as personal from "../../handlers/accounts/personal";
 
 const router = express.Router();
@@ -11,6 +12,7 @@ router.route("/add_account").post(personal.addAccount);
 router.route("/auth").post(personal.auth);
 router.route("/oAuthSession").post(personal.oAuthSession);
 router.route("/cookie").get(personal.cookie);
+router.route("/cookieConsent").patch(securedRoute, personal.cookieConsent);
 router.route("/logout").get(personal.logout);
 // router.route("/:club/players").get(club.clubPlayers);
 

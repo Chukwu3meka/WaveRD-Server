@@ -10,6 +10,9 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     return jwt.verify(cookie, <string>process.env.SECRET, async (err: any, decoded: any) => {
       if (err) throw { message: "Suspicious token" };
+
+      // cookieConsent
+
       if (!decoded) throw { message: "Token not available" };
 
       const { role, fullName, handle, cookieConsent } = decoded;

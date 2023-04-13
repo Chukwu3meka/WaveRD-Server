@@ -31,7 +31,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       expiresIn: "120 days",
     });
 
-    const data = { success: true, message: "SuccessfuloAuth", payload: { role: searchResult.role, fullName, handle, allowedCookies: stat?.allowedCookies } };
+    const data = { success: true, message: "SuccessfuloAuth", payload: { role: searchResult.role, fullName, handle, cookieConsent: stat?.cookieConsent } };
 
     const cookiesOption = {
       httpOnly: true,

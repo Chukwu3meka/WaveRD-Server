@@ -3,10 +3,9 @@ import { Request, Response, NextFunction } from "express";
 import { catchError } from "../utils/handlers";
 import { ALL_REQUEST, DAILY_STAT } from "../models/logs";
 
-const allRequests = async (req: Request, res: Response, next: NextFunction) => {
+export default async (req: Request, res: Response, next: NextFunction) => {
   try {
     // ? "Translating subdomains into valid server paths"
-
     if (req.headers.host == `hub.${process.env.SERVER_DOMAIN}`) req.url = `/api/hub${req.url.replace("/api", "")}`; // ?  <= calls to SoccerMASS API Hub
     if (req.headers.host == `logs.${process.env.SERVER_DOMAIN}`) req.url = `/api/logs${req.url.replace("/api", "")}`; // ?  <= SoccerMASS Internal calls to logs
     if (req.headers.host == `game.${process.env.SERVER_DOMAIN}`) req.url = `/api/game${req.url.replace("/api", "")}`; // ?  <= SoccerMASS direct call from Manager
@@ -39,5 +38,3 @@ const allRequests = async (req: Request, res: Response, next: NextFunction) => {
     return catchError({ res, err, status: err.status, message: "Request didn't pass middleware test" });
   }
 };
-
-export default allRequests;
