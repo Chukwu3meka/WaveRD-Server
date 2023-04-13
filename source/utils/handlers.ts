@@ -13,41 +13,34 @@ interface ICatchError {
 
 export const catchError = async ({ res, err, status = 400, message = "Unable to process request", redirect = false }: ICatchError) => {
   if (process.env.NODE_ENV !== "production")
-    console.log(`ERROR @ ${res.req.originalUrl}
-Plain >>> ${err}
-:::_:::_:::               :::_:::_:::
-JSON >>> ${JSON.stringify(err)}`);
+    console.log(`ERROR @ ${res.req.originalUrl} :::_:::_:::Plain >>> ${err}:::_:::_:::JSON >>> ${JSON.stringify(err)}`);
 
   await FAILED_REQUESTS.create({ endpoint: res.req.originalUrl, message, payload: JSON.stringify(err) });
 
-  if (redirect) {
-    res.redirect("http://localhost:3000/auth/signin");
-
-    // return  res.send({name : "StackOverFlow", reason : "Need help!", redirect_path: "/user/me"});
-
-    const role = "sadssa",
-      fullName = "sadsadsa",
-      handle = "SAdsadsadsa";
-
-    const token = jwt.sign({ session: "SAdsadsadsads", role, fullName, handle }, process.env.SECRET as string, { expiresIn: "120 days" });
-
-    const data = { success: true, message: "Email/Password is Valid.", payload: {} };
-
-    const cookiesOption = {
-      httpOnly: true,
-      secure: process.env.production ? true : false,
-      // domain: req.headers.origin?.replace("http://", ".")?.replace("https://", ".")?.replace(/:\d+/, ""),
-      expires: nTimeFromNowFn({ context: "days", interval: 120 }),
-    };
-
-    res.status(200).cookie("222SoccerMASS", token, cookiesOption).json(data);
-  }
-
-  //   redirectObject;
-
-  // return res.status(status).json({ success: false, message, payload: null });
-
   return res.status(status).json({ success: false, message, payload: null });
+
+  // if (redirect) {
+  //   res.redirect("http://localhost:3000/auth/signin");
+
+  //   // return  res.send({name : "StackOverFlow", reason : "Need help!", redirect_path: "/user/me"});
+
+  //   const role = "sadssa",
+  //     fullName = "sadsadsa",
+  //     handle = "SAdsadsadsa";
+
+  //   const token = jwt.sign({ session: "SAdsadsadsads", role, fullName, handle }, process.env.SECRET as string, { expiresIn: "120 days" });
+
+  //   const data = { success: true, message: "Email/Password is Valid.", payload: {} };
+
+  //   const cookiesOption = {
+  //     httpOnly: true,
+  //     secure: process.env.production ? true : false,
+  //     // domain: req.headers.origin?.replace("http://", ".")?.replace("https://", ".")?.replace(/:\d+/, ""),
+  //     expires: nTimeFromNowFn({ context: "days", interval: 120 }),
+  //   };
+
+  //   res.status(200).cookie("222SoccerMASS", token, cookiesOption).json(data);
+  // }
 };
 
 export const sleep = async (seconds: number) => {
