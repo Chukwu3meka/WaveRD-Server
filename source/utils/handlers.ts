@@ -12,12 +12,12 @@ interface ICatchError {
 }
 
 export const catchError = async ({ res, err, status = 400, message = "Unable to process request", redirect = false }: ICatchError) => {
-  if (process.env.NODE_ENV !== "production")
+  if (<string>process.env.NODE_ENV === "development")
     console.log(`ERROR @ ${res.req.originalUrl} :::_:::_:::Plain >>> ${err}:::_:::_:::JSON >>> ${JSON.stringify(err)}`);
 
   await FAILED_REQUESTS.create({ endpoint: res.req.originalUrl, message, payload: JSON.stringify(err) });
 
-  return res.status(status).json({ success: false, message, payload: null });
+  res.status(status).json({ success: false, message, payload: null });
 
   // if (redirect) {
   //   res.redirect("http://localhost:3000/auth/signin");

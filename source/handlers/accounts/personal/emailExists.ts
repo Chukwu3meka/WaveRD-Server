@@ -15,8 +15,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     requestHasBody({ body: req.body, required: ["email"] });
     const { email } = req.body;
 
-    console.log(process.env.production);
-
     const emailExists = await emailExistsFn(email);
 
     const data = { success: true, message: `${email} is ${emailExists ? "taken" : "available"}`, payload: { exists: emailExists } };
