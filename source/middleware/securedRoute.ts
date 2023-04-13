@@ -13,7 +13,12 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     jwt.verify(cookie, <string>process.env.SECRET, async (err: any, decoded: any) => {
       if (err || !decoded) return (grantAccess = false);
       const { role, fullName, handle } = decoded;
-      if (role && fullName && handle) return (grantAccess = true);
+
+      if (role && fullName && handle) {
+        req.body = { ...req.body, auth: { role, fullName, handle } };
+        grantAccess = true;
+        return;
+      }
     });
 
     if (grantAccess) return next(); //Port is important if the url has it
