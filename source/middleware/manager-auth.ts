@@ -1,9 +1,5 @@
-import { Request, Response, NextFunction } from "express";
-
 import jwt from "jsonwebtoken";
-// const Profile = require("../models/profile");
-
-// type IPayload = { session: string; club: string; mass: string };
+import { Request, Response, NextFunction } from "express";
 
 module.exports = (req: Request, res: Response, next: NextFunction) => {
   if (req.headers["authorization"] && req.headers["authorization"].split(" ")[0] === "Bearer") {
@@ -20,11 +16,6 @@ module.exports = (req: Request, res: Response, next: NextFunction) => {
         req.body = { club, mass, ...req.body };
         if (session && mass && club) return next();
         res.status(401).json("suspicious token");
-
-        // const { session } = req.body;
-        // const profile = await Profile.findOne({ session });
-        // if (profile) return next();
-        // res.status(401).json("suspicious token");
       }
     });
   } else {

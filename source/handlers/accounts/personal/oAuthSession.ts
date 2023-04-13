@@ -11,24 +11,13 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const oAuthID = req.body.oAuthID;
     if (!oAuthID) throw { message: "User not Authenticated" };
 
-    // sessionCookie = req.cookies.session.replace("=", "");
-
-    // console.log({ oAuthID });
-
-    // return jwt.decode(sessionCookie, { complete: }, async (err: any, decoded: any) => {
-    //   // const email =
-    //   // if (!decoded) throw { message: "Token not available" };
-    //   console.log({ decoded });
-
-    // });
-
     const searchResult = await SESSION.findOne({ ["otp.code"]: oAuthID });
     if (!searchResult) throw { message: "Email not associated with any account", client: true };
 
     const profile = await PROFILE.findOne({ email: searchResult.email });
     if (!profile) throw { message: "Email not associated with any account", client: true };
 
-    const { fullName, handle } = profile;
+    const { fullName, handle, stat } = profile;
 
     await pushMail({
       account: "accounts",
@@ -42,7 +31,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       expiresIn: "120 days",
     });
 
-    const data = { success: true, message: "SuccessfuloAuth", payload: { role: searchResult.role, fullName, handle } };
+    const data = { success: true, message: "SuccessfuloAuth", payload: { role: searchResult.role, fullName, handle, allowedCookies: stat?.allowedCookies } };
 
     const cookiesOption = {
       httpOnly: true,

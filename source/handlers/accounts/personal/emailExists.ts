@@ -6,9 +6,7 @@ import { catchError, requestHasBody, sleep } from "../../../utils/handlers";
 
 export const emailExistsFn = async (email: string) => {
   validator({ type: "email", value: email });
-
   const dbResponse = await PROFILE.findOne({ email });
-
   return !!dbResponse;
 };
 
@@ -17,9 +15,9 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     requestHasBody({ body: req.body, required: ["email"] });
     const { email } = req.body;
 
-    const emailExists = await emailExistsFn(email);
+    console.log(process.env.production);
 
-    console.log(process.env.NODE_ENV);
+    const emailExists = await emailExistsFn(email);
 
     const data = { success: true, message: `${email} is ${emailExists ? "taken" : "available"}`, payload: { exists: emailExists } };
 

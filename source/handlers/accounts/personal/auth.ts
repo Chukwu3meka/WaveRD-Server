@@ -18,6 +18,8 @@ export default async (req: Request, res: Response) => {
       // { $project: { otp: 0 } },
     ]);
 
+    // allowedCookies
+
     // verify that account exist, else throw an error
     if (!searchResult || !searchResult[0]) throw { message: "Invalid Email/Password" };
 
@@ -32,7 +34,7 @@ export default async (req: Request, res: Response) => {
       password,
       verification,
       failedAttempts,
-      profile: [{ fullName, handle }],
+      profile: [{ fullName, handle, stat: allowedCookies }],
     } = searchResult[0];
 
     if (status !== "active")
@@ -99,7 +101,7 @@ export default async (req: Request, res: Response) => {
 
     const token = jwt.sign({ session, role, fullName, handle }, process.env.SECRET as string, { expiresIn: "120 days" });
 
-    const data = { success: true, message: "Email/Password is Valid.", payload: { role, fullName, handle } };
+    const data = { success: true, message: "Email/Password is Valid.", payload: { role, fullName, handle, allowedCookies } };
 
     const cookiesOption = {
       httpOnly: true,

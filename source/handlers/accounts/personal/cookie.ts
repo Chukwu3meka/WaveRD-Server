@@ -12,10 +12,10 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       if (err) throw { message: "Suspicious token" };
       if (!decoded) throw { message: "Token not available" };
 
-      const { role, fullName, handle } = decoded;
+      const { role, fullName, handle, allowedCookies } = decoded;
 
       if (role && fullName && handle) {
-        const data = { success: true, message: `Cookie retrieved successfully`, payload: { role, fullName, handle } };
+        const data = { success: true, message: `Cookie retrieved successfully`, payload: { role, fullName, handle, allowedCookies } };
         return res.status(200).clearCookie("session").clearCookie("session.sig").json(data);
       } else {
         throw { message: "Invalid Cookie" };
