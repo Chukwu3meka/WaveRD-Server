@@ -8,7 +8,7 @@ const ProfileSchema = new Schema({
   stat: {
     joined: { type: Date, default: Date.now },
     cookieConsent: { type: Boolean, default: false },
-    cookieConsentDate: { type: Date, default: Date.now },
+    cookieConsentDate: { type: Date },
   },
 });
 

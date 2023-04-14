@@ -1,29 +1,22 @@
-import jwt from "jsonwebtoken";
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 
 import { catchError } from "../../../utils/handlers";
+import { PROFILE, SESSION } from "../../../models/accounts";
 
-export default async (req: Request, res: Response, next: NextFunction) => {
+export default async (req: Request, res: Response) => {
   try {
-    const cookie = req.cookies.SoccerMASS;
-    if (!cookie) throw { message: "User not Authenticated" };
+    const { handle, session } = req.body.auth;
 
-    return jwt.verify(cookie, <string>process.env.SECRET, async (err: any, decoded: any) => {
-      if (err) throw { message: "Suspicious token" };
+    const userSession = await SESSION.findOne({ session });
+    if (!userSession) throw { message: "Session not found" };
+    const userProfile = await PROFILE.findOne({ email: userSession.email });
+    if (!userProfile) throw { message: "Profile not found" };
 
-      // cookieConsent
+    await PROFILE.updateOne({ email: userProfile.email }, { $set: { "stat.cookieConsent": true, "stat.cookieConsentDate": new Date() } });
 
-      if (!decoded) throw { message: "Token not available" };
+    const data = { success: true, message: `${handle} has allowed cookies` };
 
-      const { role, fullName, handle, cookieConsent } = decoded;
-
-      if (role && fullName && handle) {
-        const data = { success: true, message: `Cookie retrieved successfully`, payload: { role, fullName, handle, cookieConsent } };
-        return res.status(200).clearCookie("session").clearCookie("session.sig").json(data);
-      } else {
-        throw { message: "Invalid Cookie" };
-      }
-    });
+    res.status(200).json(data);
   } catch (err: any) {
     return catchError({ res, err, status: err.status, message: err.message });
   }

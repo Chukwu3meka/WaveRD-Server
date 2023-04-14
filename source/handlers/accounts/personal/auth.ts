@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
 import { v4 as uniqueId } from "uuid";
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 
 import pushMail from "../../../utils/pushMail";
 import { SESSION } from "../../../models/accounts";
-import { catchError, differenceInHour, nTimeFromNowFn, requestHasBody, sleep } from "../../../utils/handlers";
+import { catchError, differenceInHour, nTimeFromNowFn, requestHasBody } from "../../../utils/handlers";
 
 export default async (req: Request, res: Response) => {
   try {
@@ -43,13 +43,13 @@ export default async (req: Request, res: Response) => {
 
     if (!matchPassword) {
       const currentFailedAttempts = failedAttempts + 1;
-      if (currentFailedAttempts < 7)
+      if (currentFailedAttempts > 1 && currentFailedAttempts < 7)
         await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt - SoccerMASS", payload: { fullName } });
 
       if (currentFailedAttempts === 7)
         await pushMail({ account: "accounts", template: "lockNotice", address: email, subject: "Account Lock Notice - SoccerMASS", payload: { fullName } });
 
-      if (currentFailedAttempts >= 7) {
+      if (currentFailedAttempts > 7) {
         await SESSION.findByIdAndUpdate({ _id }, { $inc: { failedAttempts: 1 }, $set: { locked: new Date() } });
       } else {
         await SESSION.findByIdAndUpdate({ _id }, { $inc: { failedAttempts: 1 } });

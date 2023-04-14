@@ -12,10 +12,10 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     jwt.verify(cookie, <string>process.env.SECRET, async (err: any, decoded: any) => {
       if (err || !decoded) return (grantAccess = false);
-      const { role, fullName, handle } = decoded;
+      const { role, fullName, handle, session } = decoded;
 
-      if (role && fullName && handle) {
-        req.body = { ...req.body, auth: { role, fullName, handle } };
+      if (role && fullName && handle && session) {
+        req.body = { ...req.body, auth: { role, fullName, handle, session } };
         grantAccess = true;
         return;
       }

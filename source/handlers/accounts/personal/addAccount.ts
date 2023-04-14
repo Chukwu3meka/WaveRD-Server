@@ -31,7 +31,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
               activationLink: `https://soccermass.com/auth/verify-email?registration-id=${dbResponse.otp.code}`,
             };
 
-            console.log("profile created");
+            // console.log("profile created");
 
             await pushMail({ account: "accounts", template: "welcome", address: email, subject: "Welcome to SoccerMASS", payload: emailPayload });
 
@@ -40,7 +40,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
             return res.status(201).json(data);
           })
           .catch(async (err) => {
-            console.log({ err });
+            // console.log({ err });
             // delete profile/possibly session if session not created
             await PROFILE.deleteOne({ email, handle, fullName });
             await SESSION.deleteOne({ email });
