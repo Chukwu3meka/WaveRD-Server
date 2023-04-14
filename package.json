@@ -5,9 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node dist/index.ts",
     "tsc": "tsc --watch",
-    "node-dev": "node --watch --watch-preserve-output --trace-warnings ./dist/index.js",
+    "start": "node --watch --watch-preserve-output --trace-warnings ./dist/index.js",
     "dev": "pm2 kill && pm2 start process.json && pm2 logs"
   },
   "repository": {
