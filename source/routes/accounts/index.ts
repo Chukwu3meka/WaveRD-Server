@@ -26,6 +26,6 @@ const corsOptions = {
 export default (app: any) => {
   // ? App-API Request to Personal
   // app.use("/api/accounts/personal", personal);
-  app.use("/api/accounts/personal", cors(corsOptions), personal);
+  app.use("/api/personal", cors(corsOptions), personal);
   // app.use("/api/accounts/personal", cors(corsOptions), personal);
 };
