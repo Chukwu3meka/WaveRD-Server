@@ -7,8 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc --watch",
     "dev": "pm2 kill && pm2 start process.json && pm2 logs",
-    "build": "yarn && tsc",
-    "start": "node ./dist/index.js"
+    "build": "tsc",
+    "start": "node ./dist/application.js"
   },
   "repository": {
     "type": "git",
@@ -48,6 +48,7 @@
     "uuid": "^7.0.3"
   },
   "devDependencies": {
+    "@types/passport-google-oauth20": "^2.0.11",
     "@types/bcryptjs": "^2.4.2",
     "@types/cookie-parser": "^1.4.3",
     "@types/cookie-session": "^2.0.44",
@@ -57,7 +58,6 @@
     "@types/nodemailer": "^6.4.7",
     "@types/passport": "^1.0.11",
     "@types/passport-facebook": "^2.1.11",
-    "@types/passport-google-oauth20": "^2.0.11",
     "@types/passport-twitter": "^1.0.37",
     "@types/uuid": "^9.0.0",
     "pm2": "^5.2.2",
