@@ -6,8 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc --watch",
-    "start": "node --watch --watch-preserve-output --trace-warnings ./dist/index.js",
-    "dev": "pm2 kill && pm2 start process.json && pm2 logs"
+    "dev": "pm2 kill && pm2 start process.json && pm2 logs",
+    "build": "yarn && tsc",
+    "start": "node ./dist/index.js"
   },
   "repository": {
     "type": "git",
