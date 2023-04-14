@@ -34,7 +34,7 @@ export const catchError = async ({ res, err, status = 400, message = "Unable to 
 
   //   const cookiesOption = {
   //     httpOnly: true,
-  //     secure: process.env.production ? true : false,
+  //     secure: process.env.NODE_ENV === "production" ? true : false,
   //     // domain: req.headers.origin?.replace("http://", ".")?.replace("https://", ".")?.replace(/:\d+/, ""),
   //     expires: nTimeFromNowFn({ context: "days", interval: 120 }),
   //   };
