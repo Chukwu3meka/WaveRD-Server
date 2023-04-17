@@ -2,7 +2,7 @@ import express from "express";
 
 // middleware
 import passport from "../../middleware/passport";
-import securedRoute from "../../middleware/securedRoute";
+import securedRoute from "../../middleware/verifyToken";
 
 // handlers
 import * as personal from "../../handlers/accounts/personal";

@@ -1,11 +1,9 @@
-import cors from "cors";
 import { Request, Response, NextFunction } from "express";
 
 import { catchError } from "../utils/handlers";
 import { ALL_REQUEST, DAILY_STAT } from "../models/logs";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
-  console.log(req.url);
   try {
     // ? "Translating subdomains into valid server paths"
     if (req.headers.host == `hub.${process.env.SERVER_DOMAIN}`) req.url = `/api/hub${req.url.replace("/api", "")}`; // ?  <= calls to SoccerMASS API Hub
@@ -15,7 +13,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     //  ? "Server request monitoring system"
     const endpoint = req.url,
-      origin = req.headers.origin,
       subdomain = req.headers.host?.split(".")[0];
 
     await ALL_REQUEST.create({ endpoint, subdomain });
@@ -34,18 +31,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       },
       { upsert: true }
     );
-
-    // // // Ensure that request is coming from 'SoccerMASS' in production or 'localhost:3000' in dev
-    // if (origin === "http://localhost:3000" || origin === "https://www.soccermass.com") {
-    //   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    //   res.header("Access-Control-Allow-Credentials", "true"); // If credentials are required
-    //   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    //   res.header("Access-Control-Allow-Origin", origin); // Replace with the appropriate origin
-    // }
-
-    // cors({ preflightContinue: true });
-
-    console.log({ endpoint, origin, subdomain });
 
     next(); //Port is important if the url has it
   } catch (err: any) {
