@@ -14,6 +14,8 @@ export const handleExistsFn = async (handle: string) => {
 };
 
 export default async (req: Request, res: Response, next: NextFunction) => {
+  console.log("sdfdsfds fdsfdsf s", req.headers);
+
   try {
     requestHasBody({ body: req.body, required: ["handle"] });
     const { handle } = req.body;
