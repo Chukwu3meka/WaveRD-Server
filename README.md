@@ -14,7 +14,7 @@ SoccerMass APIs are hosted on **[Render](https://render.com/)** and can be found
 
 Though similar in nature, they handlle different api request:
 
-- **app-api.soccermass.com** >>> Handles request aimed at SoccerMASS
+- **app-soccermass.com** >>> Handles request aimed at SoccerMASS
 - **game-api.soccermass.com** >>> Handles all request intended to serve Football Manager
 - **hub-api.soccermass.com** >>> Handles all request intended to serve API Hub (Third party request, i.e external calls)
 

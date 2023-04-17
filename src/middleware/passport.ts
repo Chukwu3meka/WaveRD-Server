@@ -3,8 +3,8 @@ import twitterPassport from "passport-twitter";
 import facebookPassport from "passport-facebook";
 import googlePassport from "passport-google-oauth20";
 
-let trustProxy = false;
-if (process.env.DYNO) trustProxy = true;
+// let trustProxy = false;
+// if (process.env.DYNO) trustProxy = true;
 
 const returnEmail = (profile: any, cb: any) => {
   if (profile.emails) {
@@ -21,7 +21,7 @@ passport.use(
       clientID: process.env.FACEBOOK_CLIENT_ID as string,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
       callbackURL:
-        process.env.NODE_ENV === "development" ? "/api/accounts/personal/facebook/callback" : "https://accounts.soccermass.com/api/personal/facebook/callback",
+        process.env.NODE_ENV === "production" ? "https://accounts.soccermass.com/api/personal/facebook/callback" : "/api/accounts/personal/facebook/callback",
       profileFields: ["id", "emails", "name"],
       // proxy: trustProxy,
     },
@@ -35,7 +35,7 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
       callbackURL:
-        process.env.NODE_ENV === "development" ? `/api/accounts/personal/google/callback` : `https://accounts.soccermass.com/api/personal/google/callback`,
+        process.env.NODE_ENV === "production" ? `https://accounts.soccermass.com/api/personal/google/callback` : `/api/accounts/personal/google/callback`,
     },
     (accessToken: any, refreshToken: any, profile: any, cb: any) => returnEmail(profile, cb)
   )
@@ -48,7 +48,7 @@ passport.use(
       consumerSecret: process.env.TWITTER_CONSUMER_SECRET as string,
       userProfileURL: "https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true",
       callbackURL:
-        process.env.NODE_ENV === "development" ? `/api/accounts/personal/twitter/callback` : `https://accounts.soccermass.com/api/personal/twitter/callback`,
+        process.env.NODE_ENV === "production" ? `https://accounts.soccermass.com/api/personal/twitter/callback` : `/api/accounts/personal/twitter/callback`,
       // proxy: trustProxy,
     },
     (accessToken, refreshToken, profile, cb) => returnEmail(profile, cb)

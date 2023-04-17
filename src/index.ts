@@ -5,7 +5,7 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
 
-import routesHandlers from "./routes";
+import routeHandlers from "./routes";
 import passport from "./middleware/passport";
 import allRequests from "./middleware/allRequests";
 
@@ -25,9 +25,7 @@ const server = async () => {
 
     app.use(allRequests); // <= handle all requests hitting server
 
-    routesHandlers(app);
-
-    console.log("SoccerMASS Server Enviroment", process.env.NODE_ENV);
+    routeHandlers(app);
 
     app.listen(port, () => console.log(`SoccerMASS:::listening on port ${port}`));
   } catch (error: any) {
