@@ -8,7 +8,7 @@
     "tsc": "tsc --watch",
     "dev": "pm2 kill && pm2 start process.json && pm2 logs",
     "build": "tsc",
-    "start": "node ./dist/application.js"
+    "start": "node ./dist/index.js"
   },
   "repository": {
     "type": "git",
