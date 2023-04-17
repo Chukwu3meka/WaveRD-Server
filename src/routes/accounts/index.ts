@@ -8,7 +8,9 @@ const allowedOrigins = [
   "http://apihub.localhost:3000",
   "http://manager.localhost:3000",
   "http://accounts.localhost:3000",
+
   // ? SoccerMASS Production
+  "https://soccermass.com",
   "https://www.soccermass.com",
   "https://dev.soccermass.com",
   "https://apihub.soccermass.com",
