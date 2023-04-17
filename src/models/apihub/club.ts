@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-import { hubDatabase } from "../database";
+import { apihubDatabase } from "../database";
 
 const ClubSchema = new Schema({
   coach: { type: String, required: true },
@@ -13,6 +13,6 @@ const ClubSchema = new Schema({
   rivals: [{ type: String, required: true }],
 });
 
-const ClubModel = hubDatabase.model("Clubs", ClubSchema);
+const ClubModel = apihubDatabase.model("Clubs", ClubSchema);
 
 export default ClubModel;

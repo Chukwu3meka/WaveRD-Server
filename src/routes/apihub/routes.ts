@@ -1,6 +1,6 @@
 import express from "express";
 
-import * as hub from "../../handlers/hub";
+import * as hub from "../../handlers/apihub";
 
 const router = express.Router();
 
