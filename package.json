@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc --watch",
     "dev": "pm2 kill && pm2 start process.json && pm2 logs",
-    "build": "tsc",
+    "build": "npm install && tsc",
     "start": "node ./dist/application.js"
   },
   "repository": {
