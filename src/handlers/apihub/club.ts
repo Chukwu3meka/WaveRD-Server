@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import validator from "../../utils/validator";
-import { CLUB } from "../../models/hub";
+import { CLUB } from "../../models/apihub";
 import { catchError, requestHasBody } from "../../utils/handlers";
 import { isValidObjectId } from "mongoose";
 
