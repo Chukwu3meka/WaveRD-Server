@@ -7,7 +7,7 @@ import cookieSession from "cookie-session";
 
 import routeHandlers from "./routes";
 import passport from "./middleware/passport";
-import allRequests from "./middleware/logRequests";
+import allRequests from "./middleware/requests";
 
 const server = async () => {
   try {
