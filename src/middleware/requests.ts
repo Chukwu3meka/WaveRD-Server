@@ -25,7 +25,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
          So any request without subdomain is assumed to be for accounts       */
       subdomain = requestHeaderHost?.startsWith("srv-") ? requestHeaderHost.replace("srv-", "") : "accounts";
 
-    console.log(req.url, { endpoint, subdomain });
+    // console.log(req.url, { endpoint, subdomain });
 
     await ALL_REQUEST.create({ endpoint, subdomain });
 

@@ -75,10 +75,10 @@ const oAuthFunc = async (req: Request, res: Response) => {
 
     await SESSION.findByIdAndUpdate({ _id }, { $set: { otp: newOTP } });
 
-    return res.redirect(`http://${process.env.CLIENT_DOMAIN}/auth/signin/?response=${obfuscate(oAuthId)}`);
+    return res.redirect(`http://${process.env.CLIENT_DOMAIN}/accounts/signin/?response=${obfuscate(oAuthId)}`);
   } catch (err: any) {
     const message = err.client ? err.message : "We encountered an oAuth error. Please wait and try again later";
-    return res.redirect(`http://${process.env.CLIENT_DOMAIN}/auth/signin/?${auth}=${obfuscate(`${new Date()}`)}&response=${obfuscate(message)}`);
+    return res.redirect(`http://${process.env.CLIENT_DOMAIN}/accounts/signin/?${auth}=${obfuscate(`${new Date()}`)}&response=${obfuscate(message)}`);
   }
 };
 
