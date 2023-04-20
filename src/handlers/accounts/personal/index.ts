@@ -1,5 +1,5 @@
-import auth from "./auth";
-import addAccount from "./addAccount";
+import signin from "./signin";
+import signup from "./signup";
 import emailExists from "./emailExists";
 import handleExists from "./handleExists";
 import cookie from "./cookie";
@@ -8,4 +8,4 @@ import logout from "./logout";
 import cookieConsent from "./cookieConsent";
 import * as oAuth from "./oAuth";
 
-export { oAuth, logout, cookieConsent, cookie, handleExists, emailExists, addAccount, auth, oAuthSession };
+export { oAuth, logout, cookieConsent, cookie, handleExists, emailExists, signup, signin, oAuthSession };

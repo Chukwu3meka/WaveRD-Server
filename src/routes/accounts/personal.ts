@@ -9,10 +9,10 @@ import * as personal from "../../handlers/accounts/personal";
 
 const router = express.Router();
 
-router.route("/auth").post(personal.auth);
+router.route("/auth").post(personal.signin);
 router.route("/logout").get(personal.logout);
 router.route("/cookie").get(personal.cookie);
-router.route("/add_account").post(personal.addAccount);
+router.route("/add_account").post(personal.signup);
 router.route("/email_exists").post(personal.emailExists);
 router.route("/oAuthSession").post(personal.oAuthSession);
 router.route("/handle_exists").post(personal.handleExists);
