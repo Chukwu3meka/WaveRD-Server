@@ -91,7 +91,10 @@ export default async (req: Request, res: Response) => {
         throw { message: "To access our services, kindly check your inbox for the most recent verification email from us", client: true };
       }
 
-      throw { message: `Kindly check your inbox for our latest verification email that was sent ${lastSent} hours ago`, client: true };
+      throw {
+        message: `Kindly check your inbox for our latest verification email that was sent ${lastSent < 1 ? "less than an hour" : "few hours"} ago`,
+        client: true,
+      };
     }
 
     await SESSION.findByIdAndUpdate({ _id }, { $set: { lastLogin: new Date() } });
