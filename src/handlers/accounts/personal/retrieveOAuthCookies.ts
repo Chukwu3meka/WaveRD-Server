@@ -1,12 +1,11 @@
 import jwt from "jsonwebtoken";
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 
+import pushMail from "../../../utils/pushMail";
+import { PROFILE, SESSION } from "../../../models/accounts";
 import { catchError, nTimeFromNowFn } from "../../../utils/handlers";
 
-import { PROFILE, SESSION } from "../../../models/accounts";
-import pushMail from "../../../utils/pushMail";
-
-export default async (req: Request, res: Response, next: NextFunction) => {
+export default async (req: Request, res: Response) => {
   try {
     const oAuthID = req.body.oAuthID;
     if (!oAuthID) throw { message: "User not Authenticated" };

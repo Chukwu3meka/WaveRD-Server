@@ -1,11 +1,11 @@
 import signin from "./signin";
 import signup from "./signup";
+import logout from "./signout";
+import cookie from "./retrieveCookies";
+import * as oAuth from "./oAuthSignin";
 import emailExists from "./emailExists";
 import handleExists from "./handleExists";
-import cookie from "./cookie";
-import oAuthSession from "./oAuthSession";
-import logout from "./logout";
-import cookieConsent from "./cookieConsent";
-import * as oAuth from "./oAuth";
+import cookieConsent from "./allowCookies";
+import oAuthSession from "./retrieveOAuthCookies";
 
 export { oAuth, logout, cookieConsent, cookie, handleExists, emailExists, signup, signin, oAuthSession };
