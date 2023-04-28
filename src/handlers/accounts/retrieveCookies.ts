@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 
-import { catchError } from "../../../utils/handlers";
-import { PROFILE, SESSION } from "../../../models/accounts";
+import { catchError } from "../../utils/handlers";
+import { PROFILE } from "../../models/accounts";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -16,14 +16,11 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       const { role, fullName, handle, session } = decoded;
 
       if (role && fullName && handle && session) {
-        const userSession = await SESSION.findOne({ session }); // ensure
-        if (!userSession) throw { message: "Token not found in Database" };
-        if (userSession.status !== "active") throw { message: "Account not active" };
+        const profile = await PROFILE.findOne({ session }); // ensure
+        if (!profile) throw { message: "Token not found in Database" };
+        if (profile.status !== "active") throw { message: "Account not active" };
 
-        const userProfile = await PROFILE.findOne({ email: userSession.email });
-        if (!userProfile) throw { message: "Profile not found in Database" };
-
-        const cookieConsent = userProfile?.stat?.cookieConsent;
+        const cookieConsent = profile?.stat?.cookieConsent;
 
         const data = { success: true, message: `Cookie retrieved successfully`, payload: { role, fullName, handle, cookieConsent } };
         return res.status(200).clearCookie("session").clearCookie("session.sig").json(data);

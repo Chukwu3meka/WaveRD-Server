@@ -2,16 +2,16 @@ import jwt from "jsonwebtoken";
 import { v4 as uniqueId } from "uuid";
 import { Request, Response } from "express";
 
-import pushMail from "../../../utils/pushMail";
-import { SESSION } from "../../../models/accounts";
-import { catchError, differenceInHour, nTimeFromNowFn, requestHasBody } from "../../../utils/handlers";
+import pushMail from "../../utils/pushMail";
+import { PROFILE } from "../../models/accounts";
+import { catchError, differenceInHour, nTimeFromNowFn, requestHasBody } from "../../utils/handlers";
 
 export default async (req: Request, res: Response) => {
   try {
     requestHasBody({ body: req.body, required: ["email", "password"] });
     const { email: authEmail, password: authPassword } = req.body;
 
-    const searchResult = await SESSION.aggregate([
+    const searchResult = await PROFILE.aggregate([
       { $match: { email: authEmail.toLowerCase() } },
       { $lookup: { from: "personal_profiles", localField: "email", foreignField: "email", as: "profile" } },
       { $limit: 1 },
@@ -39,7 +39,7 @@ export default async (req: Request, res: Response) => {
       throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", client: true };
 
     // ? will throw error if passwords does not match
-    const matchPassword = await SESSION.comparePassword(authPassword, password);
+    const matchPassword = await PROFILE.comparePassword(authPassword, password);
 
     if (!matchPassword) {
       const currentFailedAttempts = failedAttempts + 1;
@@ -50,9 +50,9 @@ export default async (req: Request, res: Response) => {
         await pushMail({ account: "accounts", template: "lockNotice", address: email, subject: "Account Lock Notice - SoccerMASS", payload: { fullName } });
 
       if (currentFailedAttempts > 7) {
-        await SESSION.findByIdAndUpdate({ _id }, { $inc: { failedAttempts: 1 }, $set: { locked: new Date() } });
+        await PROFILE.findByIdAndUpdate({ _id }, { $inc: { failedAttempts: 1 }, $set: { locked: new Date() } });
       } else {
-        await SESSION.findByIdAndUpdate({ _id }, { $inc: { failedAttempts: 1 } });
+        await PROFILE.findByIdAndUpdate({ _id }, { $inc: { failedAttempts: 1 } });
       }
 
       throw { message: "Invalid Email/Password" };
@@ -62,10 +62,10 @@ export default async (req: Request, res: Response) => {
       const lockDuration = differenceInHour(locked) <= 3; // ? <= check if account has been locked for 3 hours
       if (lockDuration) throw { message: "Account is temporarily locked, Please try again later" };
 
-      await SESSION.findByIdAndUpdate({ _id }, { $set: { locked: null } });
+      await PROFILE.findByIdAndUpdate({ _id }, { $set: { locked: null } });
     }
 
-    if (failedAttempts) await SESSION.findByIdAndUpdate({ _id }, { $set: { failedAttempts: 0 } });
+    if (failedAttempts) await PROFILE.findByIdAndUpdate({ _id }, { $set: { failedAttempts: 0 } });
 
     if (!verification?.email) {
       const lastSent = differenceInHour(otp.sent);
@@ -78,7 +78,7 @@ export default async (req: Request, res: Response) => {
           expiry: nTimeFromNowFn({ context: "hours", interval: 3 }),
         };
 
-        await SESSION.findByIdAndUpdate({ _id }, { $set: { otp: newOTP } });
+        await PROFILE.findByIdAndUpdate({ _id }, { $set: { otp: newOTP } });
 
         await pushMail({
           account: "accounts",
@@ -97,7 +97,7 @@ export default async (req: Request, res: Response) => {
       };
     }
 
-    await SESSION.findByIdAndUpdate({ _id }, { $set: { lastLogin: new Date() } });
+    await PROFILE.findByIdAndUpdate({ _id }, { $set: { lastLogin: new Date() } });
     await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", payload: { fullName } });
 
     const token = jwt.sign({ session, role, fullName, handle }, process.env.SECRET as string, { expiresIn: "120 days" });

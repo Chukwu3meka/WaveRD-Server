@@ -1,17 +1,17 @@
 import { v4 as uniqueId } from "uuid";
 import { NextFunction, Request, Response } from "express";
 
-import pushMail from "../../../utils/pushMail";
-import validator from "../../../utils/validator";
-import { SESSION } from "../../../models/accounts";
-import { catchError, differenceInHour, nTimeFromNowFn, obfuscate } from "../../../utils/handlers";
+import pushMail from "../../utils/pushMail";
+import validator from "../../utils/validator";
+import { PROFILE } from "../../models/accounts";
+import { catchError, differenceInHour, nTimeFromNowFn, obfuscate } from "../../utils/handlers";
 
 const oAuthFunc = async (req: Request, res: Response) => {
   const auth = req.body.auth;
   try {
     validator({ type: "email", value: req.user, label: "Email" });
 
-    const searchResult = await SESSION.aggregate([
+    const searchResult = await PROFILE.aggregate([
       { $match: { email: req.user } },
       { $lookup: { from: "personal_profiles", localField: "email", foreignField: "email", as: "profile" } },
       { $limit: 1 },
@@ -34,8 +34,8 @@ const oAuthFunc = async (req: Request, res: Response) => {
     if (status !== "active")
       throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", client: true };
 
-    if (locked) await SESSION.findByIdAndUpdate({ _id }, { $set: { locked: null } }); // ?  <= unlock account, since its social auth
-    if (failedAttempts) await SESSION.findByIdAndUpdate({ _id }, { $set: { failedAttempts: 0 } }); // ? <= reset counter in failed attempt
+    if (locked) await PROFILE.findByIdAndUpdate({ _id }, { $set: { locked: null } }); // ?  <= unlock account, since its social auth
+    if (failedAttempts) await PROFILE.findByIdAndUpdate({ _id }, { $set: { failedAttempts: 0 } }); // ? <= reset counter in failed attempt
 
     if (!verification?.email) {
       const lastSent = differenceInHour(otp.sent) || "an";
@@ -48,7 +48,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
           expiry: nTimeFromNowFn({ context: "hours", interval: 3 }),
         };
 
-        await SESSION.findByIdAndUpdate({ _id }, { $set: { newOTP } });
+        await PROFILE.findByIdAndUpdate({ _id }, { $set: { newOTP } });
 
         await pushMail({
           account: "accounts",
@@ -73,7 +73,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
       expiry: nTimeFromNowFn({ context: "hours", interval: 0.03 }),
     };
 
-    await SESSION.findByIdAndUpdate({ _id }, { $set: { otp: newOTP } });
+    await PROFILE.findByIdAndUpdate({ _id }, { $set: { otp: newOTP } });
 
     return res.redirect(`http://${process.env.CLIENT_DOMAIN}/accounts/signin/?response=${obfuscate(oAuthId)}`);
   } catch (err: any) {

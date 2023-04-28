@@ -5,7 +5,7 @@ import passport from "../../middleware/passport";
 import securedRoute from "../../middleware/verifyToken";
 
 // handlers
-import * as personal from "../../handlers/accounts/personal";
+import * as personal from "../../handlers/accounts";
 
 const router = express.Router();
 

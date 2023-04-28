@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
-import validator from "../../../utils/validator";
-import { PROFILE } from "../../../models/accounts";
-import { catchError, requestHasBody } from "../../../utils/handlers";
+import validator from "../../utils/validator";
+import { PROFILE } from "../../models/accounts";
+import { catchError, requestHasBody } from "../../utils/handlers";
 
 export const handleExistsFn = async (handle: string) => {
   validator({ type: "handle", value: handle });
