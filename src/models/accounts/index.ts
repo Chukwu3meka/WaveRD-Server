@@ -1,5 +1,5 @@
 // ? Personal Accounts
-import PROFILE from "./personal/profile";
+import PROFILE from "./profile";
 
 // ? Business Accounts
 

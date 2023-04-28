@@ -1,4 +1,4 @@
-export const personalAccounts = {
+export const accounts = {
   origin: [
     // ? SoccerMASS Development Web
     "http://localhost:3000",

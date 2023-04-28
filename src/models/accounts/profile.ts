@@ -2,8 +2,8 @@ import bcrypt from "bcryptjs";
 import { Schema } from "mongoose";
 import { v4 as uniqueId } from "uuid";
 
-import { accountsDatabase } from "../../database";
-import { nTimeFromNowFn } from "../../../utils/handlers";
+import { accountsDatabase } from "../database";
+import { nTimeFromNowFn } from "../../utils/handlers";
 
 const ProfileSchema = new Schema(
   {

@@ -6,11 +6,11 @@ import { redirectToWeb } from "../utils/handlers";
 import * as corsOptions from "../utils/corsOptions";
 
 // routes
-import personalAccounts from "./accounts/personal";
+import accounts from "./accounts";
 
 export default (app: Application) => {
   // ? Personal Accounts
-  app.use("/api/accounts/personal/", cors(corsOptions.personalAccounts), personalAccounts);
+  app.use("/api/accounts/", cors(corsOptions.accounts), accounts);
 
   // ?
 
