@@ -25,6 +25,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         throw { message: `The club with ID: '${id}' may have been deleted or may not exist.` };
       });
   } catch (err: any) {
-    return catchError({ res, err, status: err.status, message: err.message });
+    return catchError({ res, err });
   }
 };

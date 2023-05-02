@@ -13,7 +13,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     const searchResult = await PROFILE.aggregate([
       { $match: { email: authEmail } },
-      { $lookup: { from: "personal_profiles", localField: "email", foreignField: "email", as: "profile" } },
+      { $lookup: { from: "profiles", localField: "email", foreignField: "email", as: "profile" } },
       { $limit: 1 },
       { $project: { otp: 0 } },
     ]);
@@ -101,6 +101,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     res.status(200).cookie("SoccerMASS", token, cookiesOption).json(data);
   } catch (err: any) {
-    return catchError({ res, err, status: err.status, message: err.message });
+    return catchError({ res, err });
   }
 };

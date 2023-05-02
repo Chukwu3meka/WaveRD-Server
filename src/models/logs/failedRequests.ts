@@ -3,6 +3,7 @@ import { Schema } from "mongoose";
 import { logsDatabase } from "../database";
 
 const FailedRequestsSchema = new Schema({
+  err: { type: Object, required: true },
   message: { type: String, required: true },
   payload: { type: Object, required: true },
   endpoint: { type: String, required: true },

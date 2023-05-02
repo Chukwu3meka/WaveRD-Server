@@ -1,57 +1,52 @@
 import bcrypt from "bcryptjs";
 import { Schema } from "mongoose";
-import { v4 as uniqueId } from "uuid";
+import { v4 as uuid } from "uuid";
 
 import { accountsDatabase } from "../database";
-import { nTimeFromNowFn } from "../../utils/handlers";
+import { nTimeFromNowFn, range } from "../../utils/handlers";
 
 const ProfileSchema = new Schema(
   {
     fullName: { type: String, required: true },
+    created: { type: Date, default: Date.now() },
     handle: { type: String, required: true, unique: true },
     email: { type: String, unique: true, required: false },
-    stat: {
-      joined: { type: Date, default: Date.now },
-      cookieConsent: { type: Boolean, default: false },
-      cookieConsentDate: { type: Date },
+    role: { type: String, default: "user" }, // ? user || admin
+    status: { type: String, default: "active" }, // ? active || suspended
+
+    auth: {
+      locked: { type: Date, default: null },
+      password: { type: String, required: true },
+      sessions: [{ device: { type: String }, session: { type: String }, date: { type: Date, default: Date.now() } }],
+
+      failedAttempts: {
+        attempts: { type: Number, default: 0 },
+        lastAttenpt: { type: Date, default: null },
+      },
+
+      otp: {
+        sent: { type: Date, default: Date.now() },
+        purpose: { type: String, default: "email verification" },
+        code: { type: String, default: `${range(10, 99)}-${uuid()}-${uuid()}` },
+        expiry: { type: Date, default: nTimeFromNowFn({ context: "hours", interval: 3 }) },
+      },
     },
 
-    lastLogin: { type: Date, default: null },
-    locked: { type: Date, default: null },
-    password: { type: String, required: true },
-    // ? status: { "active",  "suspended" }
-    status: { type: String, default: "active" },
-    failedAttempts: { type: Number, default: 0 },
-    role: { type: String, required: true, default: "user" },
-    session: { type: String, required: true, unique: true, default: uniqueId() },
-    verification: {
-      email: { type: Boolean, required: true, default: false },
-    },
-    otp: {
-      sent: { type: Date, default: new Date() },
-      purpose: { type: String, default: "email verification" },
-      code: { type: String, default: `${uniqueId()}-${uniqueId()}-${uniqueId()}` },
-      expiry: { type: Date, default: nTimeFromNowFn({ context: "hours", interval: 3 }) },
+    stat: {
+      cookie: {
+        date: { type: Date, default: null },
+        consent: { type: Boolean, default: false },
+      },
+      email: {
+        date: { type: Date, default: null },
+        verified: { type: Boolean, default: false },
+      },
     },
   },
   {
-    // methods: {
-    //   async comparePassword(attempt: string) {
-    //     try {
-    //       return await bcrypt.compare(attempt, this.password);
-    //     } catch (err) {
-    //       throw err;
-    //     }
-    //   },
-    // },
-
     statics: {
       async comparePassword(attempt: string, password: string) {
-        try {
-          return await bcrypt.compare(attempt, password);
-        } catch (err) {
-          throw err;
-        }
+        return await bcrypt.compare(attempt, password);
       },
     },
   }
@@ -59,20 +54,14 @@ const ProfileSchema = new Schema(
 
 ProfileSchema.pre("save", async function (next) {
   try {
-    if (!this.isModified("password")) return next();
-
-    // const hashedId = await bcrypt.hash(this._id.toString(), 10);
-
-    this.session = `${uniqueId()}-${this.id}-${uniqueId()}`; // <=  make session longer by replacing special characters
-
-    const hashedPassword = await bcrypt.hash(this.password, 10);
-    this.password = hashedPassword;
+    // Hassh password if its a new account
+    if (this.auth && this.isModified("auth.password")) this.auth.password = await bcrypt.hash(this.auth.password, 10);
     return next();
   } catch (err: any) {
     return next(err);
   }
 });
 
-const PersonalProfileModel = accountsDatabase.model("Personal_Profiles", ProfileSchema);
+const ProfileModel = accountsDatabase.model("Profiles", ProfileSchema);
 
-export default PersonalProfileModel;
+export default ProfileModel;

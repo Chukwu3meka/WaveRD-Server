@@ -1,46 +1,20 @@
 import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
 import { FAILED_REQUESTS } from "../models/logs";
 
-interface ICatchError {
-  res: Response;
-  err: any;
-  status?: number;
-  message?: string;
-  redirect?: boolean;
-  redirectObject?: any;
-}
+import { CatchError } from "../interface/utils-handlers-interface";
 
-export const catchError = async ({ res, err, status = 400, message = "Unable to process request", redirect = false }: ICatchError) => {
-  if (<string>process.env.NODE_ENV === "development")
-    console.log(`ERROR @ ${res.req.originalUrl} :::_:::_:::Plain >>> ${err}:::_:::_:::JSON >>> ${JSON.stringify(err)}`);
+export const catchError = async ({ res, err }: CatchError) => {
+  const client = err.client || false,
+    endpoint = res.req.originalUrl,
+    status = 400 || err.status,
+    payload = res.req.body,
+    message = err.message || err;
 
-  await FAILED_REQUESTS.create({ endpoint: res.req.originalUrl, message, payload: JSON.stringify(err) });
+  if (<string>process.env.NODE_ENV === "development") console.error(`${res.req.originalUrl} <<<>>> ${JSON.stringify(message)}`);
 
-  res.status(status).json({ success: false, message, payload: null });
+  await FAILED_REQUESTS.create({ endpoint, message, err, payload });
 
-  // if (redirect) {
-  //   res.redirect("http://localhost:3000/auth/signin");
-
-  //   // return  res.send({name : "StackOverFlow", reason : "Need help!", redirect_path: "/user/me"});
-
-  //   const role = "sadssa",
-  //     fullName = "sadsadsa",
-  //     handle = "SAdsadsadsa";
-
-  //   const token = jwt.sign({ session: "SAdsadsadsads", role, fullName, handle }, process.env.SECRET as string, { expiresIn: "120 days" });
-
-  //   const data = { success: true, message: "Email/Password is Valid.", payload: {} };
-
-  //   const cookiesOption = {
-  //     httpOnly: true,
-  //     secure: process.env.NODE_ENV === "production" ? true : false,
-  //     // domain: req.headers.origin?.replace("http://", ".")?.replace("https://", ".")?.replace(/:\d+/, ""),
-  //     expires: nTimeFromNowFn({ context: "days", interval: 120 }),
-  //   };
-
-  //   res.status(200).cookie("222SoccerMASS", token, cookiesOption).json(data);
-  // }
+  res.status(status).json({ success: false, message: client ? message : "Unable to process request", payload: null });
 };
 
 export const sleep = async (seconds: number) => {
@@ -128,4 +102,10 @@ export const obfuscate = (phrase: string) => {
     r += valh;
   }
   return r;
+};
+
+export const range = (min: number, max: number) => {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 };

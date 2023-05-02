@@ -25,6 +25,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     throw { message: "Invalid Cookie" };
   } catch (err: any) {
-    return catchError({ res, err, status: 401, message: "User not Authenticated" });
+    return catchError({ res, err });
   }
 };

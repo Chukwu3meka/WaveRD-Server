@@ -44,8 +44,10 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       { upsert: true }
     );
 
+    if (req.body && req.body.email) req.body.email = req.body.email.toLowerCase(); // ? Make email lower case for all request
+
     next(); //Port is important if the url has it
   } catch (err: any) {
-    return catchError({ res, err, status: err.status, message: "Request didn't pass middleware test" });
+    return catchError({ res, err });
   }
 };

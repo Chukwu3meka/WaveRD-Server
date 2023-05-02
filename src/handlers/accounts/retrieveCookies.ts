@@ -20,15 +20,15 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         if (!profile) throw { message: "Token not found in Database" };
         if (profile.status !== "active") throw { message: "Account not active" };
 
-        const cookieConsent = profile?.stat?.cookieConsent;
+        // const cookieConsent = profile?.stat?.cookieConsent;
 
-        const data = { success: true, message: `Cookie retrieved successfully`, payload: { role, fullName, handle, cookieConsent } };
-        return res.status(200).clearCookie("session").clearCookie("session.sig").json(data);
+        // const data = { success: true, message: `Cookie retrieved successfully`, payload: { role, fullName, handle, cookieConsent } };
+        // return res.status(200).clearCookie("session").clearCookie("session.sig").json(data);
       } else {
         throw { message: "Invalid Cookie" };
       }
     });
   } catch (err: any) {
-    return catchError({ res, err, status: err.status, message: err.message });
+    return catchError({ res, err });
   }
 };

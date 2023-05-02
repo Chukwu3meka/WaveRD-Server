@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { v4 as uniqueId } from "uuid";
+import { v4 as uuid } from "uuid";
 import { Request, Response } from "express";
 
 import pushMail from "../../utils/pushMail";
@@ -9,111 +9,170 @@ import { catchError, differenceInHour, nTimeFromNowFn, requestHasBody } from "..
 export default async (req: Request, res: Response) => {
   try {
     requestHasBody({ body: req.body, required: ["email", "password"] });
-    const { email: authEmail, password: authPassword } = req.body;
+    const { email, password: authPassword } = req.body;
 
-    const searchResult = await PROFILE.aggregate([
-      { $match: { email: authEmail.toLowerCase() } },
-      { $lookup: { from: "personal_profiles", localField: "email", foreignField: "email", as: "profile" } },
-      { $limit: 1 },
-      // { $project: { otp: 0 } },
-    ]);
+    const profile = await PROFILE.findOne({ email });
+    if (!profile) throw { message: "Invalid Email/Password", client: true }; // <= verify that account exist, else throw an error
 
-    // verify that account exist, else throw an error
-    if (!searchResult || !searchResult[0]) throw { message: "Invalid Email/Password" };
+    // this.auth.sessions = `${date}-${uuid()}-${uuid()}-${this.id}`;
 
-    const {
-      _id,
-      otp,
-      role,
-      email,
-      locked,
-      status,
-      session,
-      password,
-      verification,
-      failedAttempts,
-      profile: [{ fullName, handle, stat: cookieConsent }],
-    } = searchResult[0];
+    // const {
+    //   id,
+    //   otp,
+    //   role,
+    //   status,
+    //   fullName,
+    //   handle,
+    //   loginAttempts,
+    //   stat: {
+    //     email: { verified: emailVerified },
+    //     cookie: { consent: cookieConsent },
+    //   },
+    //   auth: { locked, password },
+    // } = profile;
 
-    if (status !== "active")
-      throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", client: true };
+    // if (status !== "active")
+    //   throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", client: true };
 
-    // ? will throw error if passwords does not match
-    const matchPassword = await PROFILE.comparePassword(authPassword, password);
+    // const matchPassword = await PROFILE.comparePassword(authPassword, password);
 
-    if (!matchPassword) {
-      const currentFailedAttempts = failedAttempts + 1;
-      if (currentFailedAttempts > 1 && currentFailedAttempts < 7)
-        await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt - SoccerMASS", payload: { fullName } });
+    // if (!matchPassword) {
+    //   console.log({ loginAttempts });
+    //   console.log("Explicit");
+    // const currentFailedAttempts = failedAttempts + 1;
+    // if (currentFailedAttempts > 1 && currentFailedAttempts < 7)
+    //   await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt - SoccerMASS", payload: { fullName } });
 
-      if (currentFailedAttempts === 7)
-        await pushMail({ account: "accounts", template: "lockNotice", address: email, subject: "Account Lock Notice - SoccerMASS", payload: { fullName } });
+    // if (currentFailedAttempts === 7) {
+    //   await pushMail({ account: "accounts", template: "lockNotice", address: email, subject: "Account Lock Notice - SoccerMASS", payload: { fullName } });
+    //   throw { client: true, message: "Email/Password is Valid " };
+    // }
 
-      if (currentFailedAttempts > 7) {
-        await PROFILE.findByIdAndUpdate({ _id }, { $inc: { failedAttempts: 1 }, $set: { locked: new Date() } });
-      } else {
-        await PROFILE.findByIdAndUpdate({ _id }, { $inc: { failedAttempts: 1 } });
-      }
+    // const lastAttemptDiff = differenceInHour(lastAttempt);
 
-      throw { message: "Invalid Email/Password" };
-    }
+    // console.log(lastAttemptDiff);
+    // if (lastAttemptDiff < 1) {
+    //   await PROFILE.findByIdAndUpdate({ id }, { $inc: { ["auth.failedAttempts"]: 1 }, $set: { locked: new Date() } });
+    // }
 
-    if (locked) {
-      const lockDuration = differenceInHour(locked) <= 3; // ? <= check if account has been locked for 3 hours
-      if (lockDuration) throw { message: "Account is temporarily locked, Please try again later" };
+    // if (currentFailedAttempts < 7) {
+    //   await PROFILE.findByIdAndUpdate({ id }, { $inc: { "auth.failedAttempts": 1 }, $set: { locked: new Date() } });
+    // } else {
+    //   await PROFILE.findByIdAndUpdate({ id }, { $inc: { "auth.failedAttempts": 1 } });
+    // }
 
-      await PROFILE.findByIdAndUpdate({ _id }, { $set: { locked: null } });
-    }
+    //   throw { message: "Invalid Email/Password", client: true };
+    // }
 
-    if (failedAttempts) await PROFILE.findByIdAndUpdate({ _id }, { $set: { failedAttempts: 0 } });
+    //   await Club(mass).updateOne(
+    //     { ref: club },
+    //     {
+    //       $inc: {
+    //         budget: Math.floor(
+    //           ((700 * clubStore(club).capacity) / 13.7 / 1000000) * (myGoal > oppGoal ? 2.3 : myGoal === oppGoal ? 1.5 : 0.5)
+    //         ),
+    //         "history.match.won": myGoal > oppGoal ? 1 : 0,
+    //         "history.match.lost": myGoal === oppGoal ? 1 : 0,
+    //         "history.match.tie": oppGoal > myGoal ? 1 : 0,
+    //         "history.match.goalFor": myGoal,
+    //         "history.match.goalAgainst": oppGoal,
+    //       },
+    //       $push: {
+    //         "history.lastFiveMatches": {
+    //           $each: [myGoal > oppGoal ? "win" : myGoal === oppGoal ? "tie" : "lost"],
+    //           $slice: -5,
+    //         },
+    //         reports: {
+    //           $each: [
+    //             {
+    //               title: "Match Result",
+    //               content: `Our match against
+    //               @(club,${opponent},title) has ended, and we ${
+    //                 myGoal > oppGoal ? "won" : myGoal === oppGoal ? "drew" : "lost"
+    //               } the match by ${homeScore} goals to ${awayScore}`,
+    //               image: `/club/${opponent}.webp`,
+    //             },
+    //           ],
+    //           $slice: -15,
+    //         },
+    //       },
+    //       $set: {
+    //         lastMatch: {
+    //           away,
+    //           home,
+    //           hg: homeScore,
+    //           ag: awayScore,
+    //           date: Date.now(),
+    //           ...matchStat,
+    //         },
+    //       },
+    //     }
+    //   );
+    // };
 
-    if (!verification?.email) {
-      const lastSent = differenceInHour(otp.sent);
+    // if (locked) {
+    //   const lockDuration = differenceInHour(locked) <= 3; // ? <= check if account has been locked for 3 hours
+    //   if (lockDuration) throw { message: "Account is temporarily locked, Please try again later" };
 
-      if (lastSent > 3) {
-        const newOTP = {
-          sent: new Date(),
-          purpose: "email verification",
-          code: `${uniqueId()}-${uniqueId()}-${uniqueId()}`,
-          expiry: nTimeFromNowFn({ context: "hours", interval: 3 }),
-        };
+    //   await PROFILE.findByIdAndUpdate({ id }, { $set: { ["auth.locked"]: null } });
+    // }
 
-        await PROFILE.findByIdAndUpdate({ _id }, { $set: { otp: newOTP } });
+    // if (failedAttempts) await PROFILE.findByIdAndUpdate({ id }, { $set: { ["auth.failedAttempts"]: 0 } });
 
-        await pushMail({
-          account: "accounts",
-          template: "reVerifyEmail",
-          address: email,
-          subject: "Verify Your Email to Keep Your SoccerMASS Account Active",
-          payload: { activationLink: `https://www.soccermass.com/auth/verify-email?registration-id=${newOTP.code}`, fullName },
-        });
+    // if (!emailVerified) {
+    //   const lastSent = differenceInHour(otp.sent);
 
-        throw { message: "To access our services, kindly check your inbox for the most recent verification email from us", client: true };
-      }
+    //   if (lastSent > 3) {
+    //     const newOTP = {
+    //       sent: new Date(),
+    //       purpose: "email verification",
+    //       code: `${uuid()}-${uuid()}-${uuid()}`,
+    //       expiry: nTimeFromNowFn({ context: "hours", interval: 3 }),
+    //     };
 
-      throw {
-        message: `Kindly check your inbox for our latest verification email that was sent ${lastSent < 1 ? "less than an hour" : "few hours"} ago`,
-        client: true,
-      };
-    }
+    //     await PROFILE.findByIdAndUpdate({ id }, { $set: { otp: newOTP } });
 
-    await PROFILE.findByIdAndUpdate({ _id }, { $set: { lastLogin: new Date() } });
-    await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", payload: { fullName } });
+    //     await pushMail({
+    //       account: "accounts",
+    //       template: "reVerifyEmail",
+    //       address: email,
+    //       subject: "Verify Your Email to Keep Your SoccerMASS Account Active",
+    //       payload: { activationLink: `https://www.soccermass.com/auth/verify-email?registration-id=${newOTP.code}`, fullName },
+    //     });
 
-    const token = jwt.sign({ session, role, fullName, handle }, process.env.SECRET as string, { expiresIn: "120 days" });
+    //     throw { message: "To access our services, kindly check your inbox for the most recent verification email from us", client: true };
+    //   }
 
-    const data = { success: true, message: "Email/Password is Valid.", payload: { role, fullName, handle, cookieConsent } };
+    //   throw {
+    //     message: `Kindly check your inbox for our latest verification email that was sent ${lastSent < 1 ? "less than an hour" : "few hours"} ago`,
+    //     client: true,
+    //   };
+    // }
 
-    const cookiesOption = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production" ? true : false,
-      // domain: req.headers.origin?.replace("http://", ".")?.replace("https://", ".")?.replace(/:\d+/, ""),
-      expires: nTimeFromNowFn({ context: "days", interval: 120 }),
-    };
+    // const session = `${id}@${uuid()}-${uuid()}-${uuid()}`;
 
-    res.status(200).cookie("SoccerMASS", token, cookiesOption).json(data);
+    // await PROFILE.findByIdAndUpdate({ id }, { $set: { lastLogin: new Date() } });
+    // await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", payload: { fullName } });
+
+    // this.auth.sessions[0]
+    // console.log({ session });
+
+    // const sidToken = jwt.sign({ session }, process.env.SECRET as string, { expiresIn: "120 days" });
+    // const userToken = jwt.sign({ role, fullName, handle, id: id }, process.env.SECRET as string, { expiresIn: "120 days" });
+
+    // const data = { success: true, message: "Email/Password is Valid.", payload: { role, fullName, handle, cookieConsent } };
+
+    // const cookiesOption = {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production" ? true : false,
+    //   // domain: req.headers.origin?.replace("http://", ".")?.replace("https://", ".")?.replace(/:\d+/, ""),
+    //   // domain: '.soccermass.com',
+    //   expires: nTimeFromNowFn({ context: "days", interval: 120 }),
+    // };
+
+    // res.status(200).cookie("SID", sidToken, cookiesOption).cookie("user", userToken, cookiesOption).json(data);
+    res.status(200).json("data");
   } catch (err: any) {
-    const message = err.client ? err.message : "Invalid Email/Password";
-    return catchError({ res, err, status: err.status, message });
+    return catchError({ res, err });
   }
 };

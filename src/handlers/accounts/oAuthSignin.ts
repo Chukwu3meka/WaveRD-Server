@@ -13,7 +13,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
 
     const searchResult = await PROFILE.aggregate([
       { $match: { email: req.user } },
-      { $lookup: { from: "personal_profiles", localField: "email", foreignField: "email", as: "profile" } },
+      { $lookup: { from: "profiles", localField: "email", foreignField: "email", as: "profile" } },
       { $limit: 1 },
     ]);
 
@@ -87,7 +87,7 @@ export const facebookAuth = async (req: Request, res: Response, next: NextFuncti
     req.body.auth = "facebook";
     await oAuthFunc(req, res);
   } catch (err: any) {
-    return catchError({ res, err, status: err.status, message: err.message });
+    return catchError({ res, err });
   }
 };
 
@@ -96,7 +96,7 @@ export const googleAuth = async (req: Request, res: Response, next: NextFunction
     req.body.auth = "google";
     await oAuthFunc(req, res);
   } catch (err: any) {
-    return catchError({ res, err, status: err.status, message: err.message });
+    return catchError({ res, err });
   }
 };
 
@@ -105,6 +105,6 @@ export const twitterAuth = async (req: Request, res: Response, next: NextFunctio
     req.body.auth = "twitter";
     await oAuthFunc(req, res);
   } catch (err: any) {
-    return catchError({ res, err, status: err.status, message: err.message });
+    return catchError({ res, err });
   }
 };

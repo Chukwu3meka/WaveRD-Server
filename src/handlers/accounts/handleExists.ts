@@ -26,6 +26,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     res.status(200).json(data);
   } catch (err: any) {
-    return catchError({ res, err, status: err.status, message: err.message });
+    return catchError({ res, err });
   }
 };
