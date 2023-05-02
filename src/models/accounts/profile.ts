@@ -3,7 +3,7 @@ import { Schema } from "mongoose";
 import { v4 as uuid } from "uuid";
 
 import { accountsDatabase } from "../database";
-import { nTimeFromNowFn, range } from "../../utils/handlers";
+import { generateSession, nTimeFromNowFn, range } from "../../utils/handlers";
 
 const ProfileSchema = new Schema(
   {
@@ -15,9 +15,9 @@ const ProfileSchema = new Schema(
     status: { type: String, default: "active" }, // ? active || suspended
 
     auth: {
+      session: { type: String },
       locked: { type: Date, default: null },
       password: { type: String, required: true },
-      sessions: [{ device: { type: String }, session: { type: String }, date: { type: Date, default: Date.now() } }],
 
       failedAttempts: {
         attempts: { type: Number, default: 0 },
@@ -54,8 +54,10 @@ const ProfileSchema = new Schema(
 
 ProfileSchema.pre("save", async function (next) {
   try {
-    // Hassh password if its a new account
-    if (this.auth && this.isModified("auth.password")) this.auth.password = await bcrypt.hash(this.auth.password, 10);
+    if (this.auth && this.isModified("auth.password")) {
+      this.auth.session = generateSession(this.id); // <= generate login session
+      this.auth.password = await bcrypt.hash(this.auth.password, 10); // <= Hassh password if its a new account
+    }
     return next();
   } catch (err: any) {
     return next(err);

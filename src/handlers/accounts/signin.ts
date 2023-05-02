@@ -14,7 +14,7 @@ export default async (req: Request, res: Response) => {
     const profile = await PROFILE.findOne({ email });
     if (!profile) throw { message: "Invalid Email/Password", client: true }; // <= verify that account exist, else throw an error
 
-    // this.auth.sessions = `${date}-${uuid()}-${uuid()}-${this.id}`;
+    console.log({ profile });
 
     // const {
     //   id,

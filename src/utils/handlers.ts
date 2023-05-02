@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import { FAILED_REQUESTS } from "../models/logs";
+import { v4 as uuid } from "uuid";
 
 import { CatchError } from "../interface/utils-handlers-interface";
+import { ObjectId } from "mongoose";
 
 export const catchError = async ({ res, err }: CatchError) => {
   const client = err.client || false,
@@ -109,3 +111,5 @@ export const range = (min: number, max: number) => {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
+
+export const generateSession = (id: ObjectId) => `${uuid()}-${uuid()}-${Date.now()}-${uuid()}-${uuid()}-${id}-${String(range(0, 999999999)).padStart(9, "0")}`;
