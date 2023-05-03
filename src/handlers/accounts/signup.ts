@@ -19,14 +19,8 @@ export default async (req: Request, res: Response) => {
     const handleTaken = await handleExistsFn(handle);
     if (handleTaken) throw { message: "Handle already in use, Kindly use a different handle", client: true };
 
-    console.log("err");
-
-    PROFILE.create;
-
     return await PROFILE.create({ email, handle, fullName, "auth.password": password })
       .then(async (dbResponse: any) => {
-        console.log(dbResponse);
-
         const emailPayload = {
           fullName,
           handle,
@@ -39,11 +33,8 @@ export default async (req: Request, res: Response) => {
 
         return res.status(201).json(data);
       })
-      // .catch(({ message }) => {
-      .catch((err) => {
-        console.log(err);
-        throw { message: err.message || `Profile creation was unsuccessful`, client: !process.env.NODE_ENV };
-        // throw { message: message || `Profile creation was unsuccessful`, client: !process.env.NODE_ENV };
+      .catch(({ message }) => {
+        throw { message: message || `Profile creation was unsuccessful`, client: !process.env.NODE_ENV };
       });
   } catch (err: any) {
     return catchError({ res, err });

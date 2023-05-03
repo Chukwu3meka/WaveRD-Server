@@ -9,10 +9,11 @@ const ProfileSchema = new Schema(
   {
     fullName: { type: String, required: true },
     created: { type: Date, default: Date.now() },
-    handle: { type: String, required: true, unique: true },
     email: { type: String, unique: true, required: false },
     role: { type: String, default: "user" }, // ? user || admin
     status: { type: String, default: "active" }, // ? active || suspended
+    cookieConsent: { type: Date, default: null }, // ? Date user wwas notified about cookies
+    handle: { type: String, required: true }, // ? Unique but we don't want index created on this
 
     auth: {
       session: { type: String },
@@ -20,8 +21,8 @@ const ProfileSchema = new Schema(
       password: { type: String, required: true },
 
       failedAttempts: {
-        attempts: { type: Number, default: 0 },
-        lastAttenpt: { type: Date, default: null },
+        counter: { type: Number, default: 0 },
+        lastAttempt: { type: Date, default: null },
       },
 
       otp: {
@@ -30,16 +31,9 @@ const ProfileSchema = new Schema(
         code: { type: String, default: `${range(10, 99)}-${uuid()}-${uuid()}` },
         expiry: { type: Date, default: nTimeFromNowFn({ context: "hours", interval: 3 }) },
       },
-    },
 
-    stat: {
-      cookie: {
-        date: { type: Date, default: null },
-        consent: { type: Boolean, default: false },
-      },
-      email: {
-        date: { type: Date, default: null },
-        verified: { type: Boolean, default: false },
+      verification: {
+        email: { type: Date, default: null },
       },
     },
   },
