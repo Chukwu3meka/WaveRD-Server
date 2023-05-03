@@ -13,8 +13,8 @@ export const emailExistsFn = async (email: string) => {
 export default async (req: Request, res: Response) => {
   try {
     requestHasBody({ body: req.body, required: ["email"] });
-
     const { email } = req.body;
+
     const emailExists = await emailExistsFn(email);
     const data = { success: true, message: `${email} is ${emailExists ? "taken" : "available"}`, payload: { exists: emailExists } };
 

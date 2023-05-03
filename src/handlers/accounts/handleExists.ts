@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 
 import validator from "../../utils/validator";
 import { PROFILE } from "../../models/accounts";
@@ -13,19 +13,18 @@ export const handleExistsFn = async (handle: string) => {
   return !!dbResponse;
 };
 
-export default async (req: Request, res: Response, next: NextFunction) => {
-  console.log("sdfdsfds fdsfdsf s", req.headers);
-
+export default async (req: Request, res: Response) => {
   try {
     requestHasBody({ body: req.body, required: ["handle"] });
-    const { handle } = req.body;
 
+    const { handle } = req.body;
     const handleExists = await handleExistsFn(handle);
 
     const data = { success: true, message: `${handle} is ${handleExists ? "taken" : "available"}`, payload: { exists: handleExists } };
 
     res.status(200).json(data);
   } catch (err: any) {
+    err.status = 409;
     return catchError({ res, err });
   }
 };
