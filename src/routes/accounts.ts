@@ -11,11 +11,11 @@ const router = express.Router();
 
 router.route("/signup").post(personal.signup);
 router.route("/signin").post(personal.signin);
+router.route("/cookies").get(personal.cookies);
 
-router.route("/cookie").get(personal.cookie);
 router.route("/signout").get(personal.signout);
 router.route("/email_exists").post(personal.emailExists);
-router.route("/oAuthSession").post(personal.oAuthSession);
+// router.route("/oAuthSession").post(personal.oAuthSession);
 router.route("/handle_exists").post(personal.handleExists);
 router.route("/cookieConsent").patch(securedRoute, personal.cookieConsent);
 

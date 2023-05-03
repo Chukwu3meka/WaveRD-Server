@@ -1,12 +1,12 @@
 import jwt from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 
-import { catchError } from "../../utils/handlers";
 import { PROFILE } from "../../models/accounts";
+import { catchError } from "../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const cookie = req.cookies.SoccerMASS;
+    const cookie = req.cookies.SSID;
     if (!cookie) throw { message: "User not Authenticated" };
 
     return jwt.verify(cookie, <string>process.env.SECRET, async (err: any, decoded: any) => {
@@ -15,18 +15,16 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
       const { role, fullName, handle, session } = decoded;
 
-      // console.log(      if (role && fullName && handle && session) {
-      //   req.body = { ...req.body, auth: { role, fullName, handle, session } };
-
       if (role && fullName && handle && session) {
         const profile = await PROFILE.findOne({ session }); // ensure
         if (!profile) throw { message: "Token not found in Database" };
         if (profile.status !== "active") throw { message: "Account not active" };
 
-        // const cookieConsent = profile?.stat?.cookieConsent;
+        const cookieConsent = profile.cookieConsent;
 
-        // const data = { success: true, message: `Cookie retrieved successfully`, payload: { role, fullName, handle, cookieConsent } };
-        // return res.status(200).clearCookie("session").clearCookie("session.sig").json(data);
+        const data = { success: true, message: `Cookie retrieved successfully`, payload: { role, fullName, handle, cookieConsent } };
+
+        return res.status(200).json(data);
       } else {
         throw { message: "Invalid Cookie" };
       }

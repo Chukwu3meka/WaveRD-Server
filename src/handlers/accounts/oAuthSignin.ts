@@ -9,7 +9,9 @@ import { capitalize, catchError, differenceInHour, generateOtp, nTimeFromNowFn, 
 import { PushMail } from "../../interface/pushMail-handlers-interface";
 
 const oAuthFunc = async (req: Request, res: Response) => {
-  const auth = req.body.auth;
+  const auth = req.body.auth,
+    protocol = process.env.NODE_ENV ? "https://" : "http://";
+
   try {
     const email = <PushMail["address"]>req.user;
     validator({ type: "email", value: email, label: "Email" });
@@ -85,8 +87,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
         secure: process.env.NODE_ENV === "production" ? true : false,
         domain: process.env.NODE_ENV === "production" ? ".soccermass.com" : "localhost",
       },
-      SSIDJwtToken = jwt.sign({ session }, process.env.SECRET as string, { expiresIn: "180 days" }),
-      USERJwtToken = jwt.sign({ role, fullName, handle, id }, process.env.SECRET as string, { expiresIn: "180 days" });
+      SSIDJwtToken = jwt.sign({ session }, process.env.SECRET as string, { expiresIn: "180 days" });
 
     await pushMail({
       account: "accounts",
@@ -96,13 +97,10 @@ const oAuthFunc = async (req: Request, res: Response) => {
       payload: { fullName },
     });
 
-    return res
-      .cookie("SSID", SSIDJwtToken, cookiesOption)
-      .cookie("USER", USERJwtToken, cookiesOption)
-      .redirect(302, `http://${process.env.CLIENT_DOMAIN}/accounts/signin`);
+    return res.cookie("SSID", SSIDJwtToken, cookiesOption).redirect(302, `${protocol}${process.env.CLIENT_DOMAIN}/accounts/signin`);
   } catch (err: any) {
     const message = err.client ? err.message : "We encountered an oAuth error. Please wait and try again later";
-    return res.redirect(`http://${process.env.CLIENT_DOMAIN}/accounts/signin/?${auth}=${obfuscate(`${new Date()}`)}&response=${obfuscate(message)}`);
+    return res.redirect(`${protocol}${process.env.CLIENT_DOMAIN}/accounts/signin/?${auth}=${obfuscate(`${new Date()}`)}&response=${obfuscate(message)}`);
   }
 };
 

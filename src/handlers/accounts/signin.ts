@@ -112,12 +112,11 @@ export default async (req: Request, res: Response) => {
         domain: process.env.NODE_ENV === "production" ? ".soccermass.com" : "localhost",
       },
       SSIDJwtToken = jwt.sign({ session }, process.env.SECRET as string, { expiresIn: "180 days" }),
-      USERJwtToken = jwt.sign({ role, fullName, handle, id }, process.env.SECRET as string, { expiresIn: "180 days" }),
       data = { success: true, message: "Email/Password is Valid.", payload: { role, fullName, handle, cookieConsent } };
 
     await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", payload: { fullName } });
 
-    res.status(200).cookie("SSID", SSIDJwtToken, cookiesOption).cookie("USER", USERJwtToken, cookiesOption).json(data);
+    res.status(200).cookie("SSID", SSIDJwtToken, cookiesOption).json(data);
   } catch (err: any) {
     err.status = 401;
     return catchError({ res, err });
@@ -125,3 +124,4 @@ export default async (req: Request, res: Response) => {
 };
 
 // domain: req.headers.origin?.replace("http://", ".")?.replace("https://", ".")?.replace(/:\d+/, ""),
+// res.status(200).cookie("SSID", SSIDJwtToken, cookiesOption).cookie("USER", USERJwtToken, cookiesOption).json(data);
