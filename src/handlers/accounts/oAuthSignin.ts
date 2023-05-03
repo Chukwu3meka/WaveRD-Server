@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken";
-import { v4 as uniqueId } from "uuid";
 import { NextFunction, Request, Response } from "express";
 
 import pushMail from "../../utils/pushMail";
 import validator from "../../utils/validator";
 import { PROFILE } from "../../models/accounts";
-import { capitalize, catchError, differenceInHour, generateOtp, generateSession, nTimeFromNowFn, obfuscate } from "../../utils/handlers";
+import { capitalize, catchError, differenceInHour, generateOtp, nTimeFromNowFn, obfuscate } from "../../utils/handlers";
+
 import { PushMail } from "../../interface/pushMail-handlers-interface";
 
 const oAuthFunc = async (req: Request, res: Response) => {
@@ -23,14 +23,11 @@ const oAuthFunc = async (req: Request, res: Response) => {
       role,
       handle,
       fullName,
-      cookieConsent,
       status: accountStatus,
       auth: {
         locked,
         session,
-        password,
         verification: { email: emailVerified },
-        failedAttempts: { counter, lastAttempt },
         otp: { purpose: otpPurpose, expiry: otpExpiry },
       },
     } = profile;
@@ -103,7 +100,6 @@ const oAuthFunc = async (req: Request, res: Response) => {
       .cookie("SSID", SSIDJwtToken, cookiesOption)
       .cookie("USER", USERJwtToken, cookiesOption)
       .redirect(302, `http://${process.env.CLIENT_DOMAIN}/accounts/signin`);
-    // .redirect(302, `http://${process.env.CLIENT_DOMAIN}/accounts/signin/?response=${obfuscate(oAuthId)}`);
   } catch (err: any) {
     const message = err.client ? err.message : "We encountered an oAuth error. Please wait and try again later";
     return res.redirect(`http://${process.env.CLIENT_DOMAIN}/accounts/signin/?${auth}=${obfuscate(`${new Date()}`)}&response=${obfuscate(message)}`);
