@@ -15,6 +15,9 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
       const { role, fullName, handle, session } = decoded;
 
+      // console.log(      if (role && fullName && handle && session) {
+      //   req.body = { ...req.body, auth: { role, fullName, handle, session } };
+
       if (role && fullName && handle && session) {
         const profile = await PROFILE.findOne({ session }); // ensure
         if (!profile) throw { message: "Token not found in Database" };

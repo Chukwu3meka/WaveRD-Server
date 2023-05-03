@@ -1,15 +1,8 @@
-interface IPushMail {
-  subject: string;
-  address: string;
-  payload?: object;
-  account: "noreply" | "accounts" | "contactus";
-  template: "welcome" | "failedLogin" | "lockNotice" | "reVerifyEmail" | "successfulLogin";
-}
-
 import nodemailer from "nodemailer";
+import { PushMail } from "../interface/pushMail-handlers-interface";
 import * as templates from "../templates";
 
-export default async ({ account, template, address, subject, payload = {} }: IPushMail) => {
+export default async ({ account, template, address, subject, payload = {} }: PushMail) => {
   const emailAccount = account === "noreply" ? "NO_REPLY_EMAIL" : account === "accounts" ? "ACCOUNTS_EMAIL" : "CONTACT_US_EMAIL";
   const emailPassword = process.env.EMAIL_PASSWORD;
   const emailAddress = process.env[emailAccount];

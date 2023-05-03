@@ -10,8 +10,9 @@ import * as personal from "../handlers/accounts";
 const router = express.Router();
 
 router.route("/signup").post(personal.signup);
-router.route("/cookie").get(personal.cookie);
 router.route("/signin").post(personal.signin);
+
+router.route("/cookie").get(personal.cookie);
 router.route("/signout").get(personal.signout);
 router.route("/email_exists").post(personal.emailExists);
 router.route("/oAuthSession").post(personal.oAuthSession);

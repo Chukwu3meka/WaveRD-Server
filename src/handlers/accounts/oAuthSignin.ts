@@ -1,81 +1,109 @@
+import jwt from "jsonwebtoken";
 import { v4 as uniqueId } from "uuid";
 import { NextFunction, Request, Response } from "express";
 
 import pushMail from "../../utils/pushMail";
 import validator from "../../utils/validator";
 import { PROFILE } from "../../models/accounts";
-import { catchError, differenceInHour, nTimeFromNowFn, obfuscate } from "../../utils/handlers";
+import { capitalize, catchError, differenceInHour, generateOtp, generateSession, nTimeFromNowFn, obfuscate } from "../../utils/handlers";
+import { PushMail } from "../../interface/pushMail-handlers-interface";
 
 const oAuthFunc = async (req: Request, res: Response) => {
   const auth = req.body.auth;
   try {
-    validator({ type: "email", value: req.user, label: "Email" });
+    const email = <PushMail["address"]>req.user;
+    validator({ type: "email", value: email, label: "Email" });
 
-    const searchResult = await PROFILE.aggregate([
-      { $match: { email: req.user } },
-      { $lookup: { from: "profiles", localField: "email", foreignField: "email", as: "profile" } },
-      { $limit: 1 },
-    ]);
-
-    // verify that account exist, else throw an error
-    if (!searchResult || !searchResult[0]) throw { message: "Email not associated with any account", client: true };
+    const profile = await PROFILE.findOne({ email });
+    if (!profile || !profile.auth || !profile.auth.verification || !profile.auth.failedAttempts || !profile.auth.otp)
+      throw { message: "Email not associated with any account", client: true }; // <= verify that account exist, else throw an error
 
     const {
-      _id,
-      otp,
-      email,
-      locked,
-      status,
-      verification,
-      failedAttempts,
-      profile: [{ fullName }],
-    } = searchResult[0];
+      id,
+      role,
+      handle,
+      fullName,
+      cookieConsent,
+      status: accountStatus,
+      auth: {
+        locked,
+        session,
+        password,
+        verification: { email: emailVerified },
+        failedAttempts: { counter, lastAttempt },
+        otp: { purpose: otpPurpose, expiry: otpExpiry },
+      },
+    } = profile;
 
-    if (status !== "active")
+    if (accountStatus !== "active")
       throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", client: true };
 
-    if (locked) await PROFILE.findByIdAndUpdate({ _id }, { $set: { locked: null } }); // ?  <= unlock account, since its social auth
-    if (failedAttempts) await PROFILE.findByIdAndUpdate({ _id }, { $set: { failedAttempts: 0 } }); // ? <= reset counter in failed attempt
+    // update acount lock/security settings
+    if (locked) {
+      const hoursElapsed = differenceInHour(locked) <= 1; // ? <= check if account has been locked for 1 hours
+      if (hoursElapsed) throw { message: "Account is temporarily locked, Please try again later", client: true };
 
-    if (!verification?.email) {
-      const lastSent = differenceInHour(otp.sent) || "an";
+      await PROFILE.findByIdAndUpdate(
+        { id },
+        { $set: { ["auth.locked"]: null, ["auth.failedAttempts.counter"]: 0, ["auth.failedAttempts.lastAttempt"]: null } }
+      );
+    }
 
-      if (lastSent > 3) {
+    // Check if account email is verified
+    if (!emailVerified) {
+      const hoursElapsed = differenceInHour(otpExpiry);
+
+      if (otpPurpose !== "email verification" || hoursElapsed >= 0) {
         const newOTP = {
-          sent: new Date(),
+          code: generateOtp(id),
           purpose: "email verification",
-          code: `${uniqueId()}-${uniqueId()}-${uniqueId()}`,
           expiry: nTimeFromNowFn({ context: "hours", interval: 3 }),
         };
 
-        await PROFILE.findByIdAndUpdate({ _id }, { $set: { newOTP } });
+        await PROFILE.findByIdAndUpdate({ id }, { $set: { ["auth.otp"]: newOTP } });
 
         await pushMail({
           account: "accounts",
           template: "reVerifyEmail",
           address: email,
-          subject: "Verify Your Email to Keep Your SoccerMASS Account Active",
+          subject: "Verify your email to activate Your SoccerMASS account",
           payload: { activationLink: `https://www.soccermass.com/auth/verify-email?registration-id=${newOTP.code}`, fullName },
         });
 
-        throw { message: "To access our services, kindly check your inbox for the most recent verification email from us", client: true };
+        throw {
+          message: "Verify your email to activate Your SoccerMASS account, kindly check your email inbox/spam for the most recent verification email from us",
+          client: true,
+        };
       }
 
-      throw { message: `Kindly check your inbox for our latest verification email that was sent ${lastSent} hour(s) ago`, client: true };
+      throw {
+        message: `Kindly check your inbox/spam for our latest verification email that was sent ${hoursElapsed + 3 ? "few hours" : "less than an hour"} ago`,
+        client: true,
+      };
     }
 
-    const oAuthId = `${uniqueId()}-${uniqueId()}-${_id}-${uniqueId()}-${uniqueId()}`;
+    const cookiesOption = {
+        httpOnly: true,
+        expires: nTimeFromNowFn({ context: "days", interval: 120 }),
+        secure: process.env.NODE_ENV === "production" ? true : false,
+        domain: process.env.NODE_ENV === "production" ? ".soccermass.com" : "localhost",
+      },
+      SSIDJwtToken = jwt.sign({ session }, process.env.SECRET as string, { expiresIn: "180 days" }),
+      USERJwtToken = jwt.sign({ role, fullName, handle, id }, process.env.SECRET as string, { expiresIn: "180 days" });
 
-    const newOTP = {
-      code: oAuthId,
-      sent: new Date(),
-      purpose: "oAuth Validator",
-      expiry: nTimeFromNowFn({ context: "hours", interval: 0.03 }),
-    };
+    await pushMail({
+      account: "accounts",
+      template: "successfulLogin",
+      address: email,
+      subject: `Successful Login to SoccerMASS via ${capitalize(auth)}`,
+      payload: { fullName },
+    });
 
-    await PROFILE.findByIdAndUpdate({ _id }, { $set: { otp: newOTP } });
-
-    return res.redirect(`http://${process.env.CLIENT_DOMAIN}/accounts/signin/?response=${obfuscate(oAuthId)}`);
+    return res
+      .cookie("SSID", SSIDJwtToken, cookiesOption)
+      .cookie("USER", USERJwtToken, cookiesOption)
+      .redirect(302, `http://${process.env.CLIENT_DOMAIN}/accounts/signin`);
+    // .redirect(302, `http://${process.env.CLIENT_DOMAIN}/accounts/signin/?response=${obfuscate(oAuthId)}`);
   } catch (err: any) {
     const message = err.client ? err.message : "We encountered an oAuth error. Please wait and try again later";
     return res.redirect(`http://${process.env.CLIENT_DOMAIN}/accounts/signin/?${auth}=${obfuscate(`${new Date()}`)}&response=${obfuscate(message)}`);
