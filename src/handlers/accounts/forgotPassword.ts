@@ -80,7 +80,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         address: email,
         subject: "Verify Your Email to Keep Your SoccerMASS Account Active",
         payload: {
-          activationLink: `${process.env.PROTOCOL}${process.env.CLIENT_DOMAIN}/accounts/verify-email?gear=${otp.code}`,
+          activationLink: `${process.env.PROTOCOL}srv-accounts.${process.env.SERVER_DOMAIN}/accounts/verify-email?gear=${otp.code}`,
           fullName,
         },
       });
