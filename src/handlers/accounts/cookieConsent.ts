@@ -5,17 +5,14 @@ import { catchError } from "../../utils/handlers";
 
 export default async (req: Request, res: Response) => {
   try {
-    const { handle, session } = req.body.auth;
-
-    const profileData = await PROFILE.findOne({ session });
-    if (!profileData) throw { message: "Session not found" };
-
-    await PROFILE.updateOne({ email: profileData.email }, { $set: { "stat.cookieConsent": true, "stat.cookieConsentDate": new Date() } });
+    const { handle, id } = req.body.auth;
+    await PROFILE.findByIdAndUpdate(id, { $set: { cookieConsent: Date.now() } });
 
     const data = { success: true, message: `${handle} has allowed cookies` };
 
-    res.status(200).json(data);
+    res.status(204).json(data);
   } catch (err: any) {
+    err.status = 304;
     return catchError({ res, err });
   }
 };

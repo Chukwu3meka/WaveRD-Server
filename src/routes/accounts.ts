@@ -12,13 +12,13 @@ const router = express.Router();
 router.route("/signup").post(personal.signup);
 router.route("/signin").post(personal.signin);
 router.route("/cookies").get(personal.cookies);
-
+router.route("/cookieConsent").get(securedRoute, personal.cookieConsent);
 router.route("/signout").get(personal.signout);
-router.route("/email_exists").post(personal.emailExists);
-// router.route("/oAuthSession").post(personal.oAuthSession);
-router.route("/handle_exists").post(personal.handleExists);
-router.route("/cookieConsent").patch(securedRoute, personal.cookieConsent);
 
+router.route("/email_exists").post(personal.emailExists);
+router.route("/handle_exists").post(personal.handleExists);
+
+// router.route("/oAuthSession").post(personal.oAuthSession);
 // router.route("/:club/players").get(club.clubPlayers);
 
 router.route("/twitter").get(passport.authenticate("twitter"));

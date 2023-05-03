@@ -1,21 +1,22 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 
-import { catchError } from "../utils/handlers";
+import { catchError, getIdFromSession } from "../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const cookie = req.cookies.SoccerMASS;
+    const cookie = req.cookies.SSID;
     if (!cookie) throw { message: "User not Authenticated" };
 
     let grantAccess = false;
 
     jwt.verify(cookie, <string>process.env.SECRET, async (err: any, decoded: any) => {
       if (err || !decoded) return (grantAccess = false);
-      const { role, fullName, handle, session } = decoded;
 
-      if (role && fullName && handle && session) {
-        req.body = { ...req.body, auth: { role, fullName, handle, session } };
+      const { fullName, handle, session } = decoded;
+
+      if (fullName && handle && session) {
+        req.body = { ...req.body, auth: { id: getIdFromSession(session), fullName, handle } };
         grantAccess = true;
         return;
       }

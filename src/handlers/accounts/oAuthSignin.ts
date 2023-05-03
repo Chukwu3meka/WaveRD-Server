@@ -10,7 +10,7 @@ import { PushMail } from "../../interface/pushMail-handlers-interface";
 
 const oAuthFunc = async (req: Request, res: Response) => {
   const auth = req.body.auth,
-    protocol = process.env.NODE_ENV ? "https://" : "http://";
+    protocol = process.env.NODE_ENV === "production" ? "https://" : "http://";
 
   try {
     const email = <PushMail["address"]>req.user;
@@ -22,7 +22,6 @@ const oAuthFunc = async (req: Request, res: Response) => {
 
     const {
       id,
-      role,
       handle,
       fullName,
       status: accountStatus,
@@ -87,7 +86,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
         secure: process.env.NODE_ENV === "production" ? true : false,
         domain: process.env.NODE_ENV === "production" ? ".soccermass.com" : "localhost",
       },
-      SSIDJwtToken = jwt.sign({ session }, process.env.SECRET as string, { expiresIn: "180 days" });
+      SSIDJwtToken = jwt.sign({ session, fullName, handle }, process.env.SECRET as string, { expiresIn: "180 days" });
 
     await pushMail({
       account: "accounts",

@@ -44,9 +44,8 @@ export default async (req: Request, res: Response) => {
       if ([5, 6].includes(failedAttempts))
         await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt - SoccerMASS", payload: { fullName } });
 
-      if (failedAttempts === 7) {
+      if (failedAttempts === 7)
         await pushMail({ account: "accounts", template: "lockNotice", address: email, subject: "Account Lock Notice - SoccerMASS", payload: { fullName } });
-      }
 
       // Increment record on Database
       if (failedAttempts >= 7 && hoursElapsed < 1) {
@@ -111,7 +110,7 @@ export default async (req: Request, res: Response) => {
         secure: process.env.NODE_ENV === "production" ? true : false,
         domain: process.env.NODE_ENV === "production" ? ".soccermass.com" : "localhost",
       },
-      SSIDJwtToken = jwt.sign({ session }, process.env.SECRET as string, { expiresIn: "180 days" }),
+      SSIDJwtToken = jwt.sign({ session, fullName, handle }, process.env.SECRET as string, { expiresIn: "180 days" }),
       data = { success: true, message: "Email/Password is Valid.", payload: { role, fullName, handle, cookieConsent } };
 
     await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", payload: { fullName } });
