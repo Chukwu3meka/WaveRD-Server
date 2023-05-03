@@ -1,16 +1,15 @@
+import { v4 as uuid } from "uuid";
 import { Request, Response } from "express";
 import { FAILED_REQUESTS } from "../models/logs";
-import { v4 as uuid } from "uuid";
 
 import { CatchError } from "../interface/utils-handlers-interface";
-import { ObjectId } from "mongoose";
 
 export const catchError = async ({ res, err }: CatchError) => {
   const client = err.client || false,
     endpoint = res.req.originalUrl,
-    status = 400 || err.status,
-    payload = res.req.body,
-    message = err.message || err;
+    message = err.message || err,
+    status = err.status || 400,
+    payload = res.req.body;
 
   if (<string>process.env.NODE_ENV === "development") console.error(`${res.req.originalUrl} <<<>>> ${JSON.stringify(message)}`);
 
@@ -112,4 +111,6 @@ export const range = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-export const generateSession = (id: ObjectId) => `${uuid()}-${uuid()}-${Date.now()}-${uuid()}-${uuid()}-${id}-${String(range(0, 999999999)).padStart(9, "0")}`;
+export const generateSession = (id: any) => `${uuid()}-${uuid()}-${Date.now()}-${uuid()}-${uuid()}-${id}-${String(range(0, 999999999)).padStart(9, "0")}`;
+
+export const generateOtp = (id: any) => `${Date.now()}-${uuid()}-${id}-${String(range(0, 999999999)).padStart(9, "0")}`;

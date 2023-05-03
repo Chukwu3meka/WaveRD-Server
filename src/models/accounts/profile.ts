@@ -3,7 +3,7 @@ import { Schema } from "mongoose";
 import { v4 as uuid } from "uuid";
 
 import { accountsDatabase } from "../database";
-import { generateSession, nTimeFromNowFn, range } from "../../utils/handlers";
+import { generateOtp, generateSession, nTimeFromNowFn, range } from "../../utils/handlers";
 
 const ProfileSchema = new Schema(
   {
@@ -26,9 +26,8 @@ const ProfileSchema = new Schema(
       },
 
       otp: {
-        sent: { type: Date, default: Date.now() },
+        code: { type: String, default: null },
         purpose: { type: String, default: "email verification" },
-        code: { type: String, default: `${range(10, 99)}-${uuid()}-${uuid()}` },
         expiry: { type: Date, default: nTimeFromNowFn({ context: "hours", interval: 3 }) },
       },
 
@@ -48,8 +47,9 @@ const ProfileSchema = new Schema(
 
 ProfileSchema.pre("save", async function (next) {
   try {
-    if (this.auth && this.isModified("auth.password")) {
+    if (this.auth && this.auth.otp && this.isModified("auth.password")) {
       this.auth.session = generateSession(this.id); // <= generate login session
+      this.auth.otp.code = generateOtp(this.id); // <= generate email verification OTP
       this.auth.password = await bcrypt.hash(this.auth.password, 10); // <= Hassh password if its a new account
     }
     return next();
