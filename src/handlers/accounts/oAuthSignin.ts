@@ -63,7 +63,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
           address: email,
           subject: "Verify your email to activate Your SoccerMASS account",
           payload: {
-            activationLink: `${process.env.PROTOCOL}srv-accounts.${process.env.SERVER_DOMAIN}/accounts/verify-email?gear=${newOTP.code}`,
+            activationLink: `${process.env.PROTOCOL}srv-accounts.${process.env.SERVER_DOMAIN}/api/verify-email?gear=${newOTP.code}`,
             fullName,
           },
         });
