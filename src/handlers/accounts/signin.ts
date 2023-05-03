@@ -49,12 +49,12 @@ export default async (req: Request, res: Response) => {
 
       // Increment record on Database
       if (failedAttempts >= 7 && hoursElapsed < 1) {
-        await PROFILE.findByIdAndUpdate(
-          { id },
-          { $inc: { ["auth.failedAttempts.counter"]: 1 }, $set: { ["auth.locked"]: new Date(), ["auth.failedAttempts.lastAttempt"]: new Date() } }
-        );
+        await PROFILE.findByIdAndUpdate(id, {
+          $inc: { ["auth.failedAttempts.counter"]: 1 },
+          $set: { ["auth.locked"]: new Date(), ["auth.failedAttempts.lastAttempt"]: new Date() },
+        });
       } else {
-        await PROFILE.findByIdAndUpdate({ id }, { $inc: { ["auth.failedAttempts.counter"]: 1 }, $set: { ["auth.failedAttempts.lastAttempt"]: new Date() } });
+        await PROFILE.findByIdAndUpdate(id, { $inc: { ["auth.failedAttempts.counter"]: 1 }, $set: { ["auth.failedAttempts.lastAttempt"]: new Date() } });
       }
 
       throw { message: "Invalid Email/Password", client: true };
@@ -65,10 +65,7 @@ export default async (req: Request, res: Response) => {
       const hoursElapsed = differenceInHour(locked) <= 1; // ? <= check if account has been locked for 1 hours
       if (hoursElapsed) throw { message: "Account is temporarily locked, Please try again later", client: true };
 
-      await PROFILE.findByIdAndUpdate(
-        { id },
-        { $set: { ["auth.locked"]: null, ["auth.failedAttempts.counter"]: 0, ["auth.failedAttempts.lastAttempt"]: null } }
-      );
+      await PROFILE.findByIdAndUpdate(id, { $set: { ["auth.locked"]: null, ["auth.failedAttempts.counter"]: 0, ["auth.failedAttempts.lastAttempt"]: null } });
     }
 
     // Check if account email is verified
@@ -82,14 +79,17 @@ export default async (req: Request, res: Response) => {
           expiry: nTimeFromNowFn({ context: "hours", interval: 3 }),
         };
 
-        await PROFILE.findByIdAndUpdate({ id }, { $set: { ["auth.otp"]: newOTP } });
+        await PROFILE.findByIdAndUpdate(id, { $set: { ["auth.otp"]: newOTP } });
 
         await pushMail({
           account: "accounts",
           template: "reVerifyEmail",
           address: email,
           subject: "Verify your email to activate Your SoccerMASS account",
-          payload: { activationLink: `https://www.soccermass.com/auth/verify-email?registration-id=${newOTP.code}`, fullName },
+          payload: {
+            activationLink: `${process.env.PROTOCOL}${process.env.CLIENT_DOMAIN}/accounts/verify-email?registration-id=${newOTP.code}`,
+            fullName,
+          },
         });
 
         throw {

@@ -9,6 +9,6 @@ router.route("/clubs/:id").get(hub.club);
 // router.route("/email_exists").post(hub.clubDetails);
 // router.route("/handle_exists").post(personal.handleExists);
 // router.route("/add_account").post(personal.addAccount);
-// router.route("/auth").post(personal.auth);
+// router.route("/accounts").post(personal.auth);
 
 export default router;

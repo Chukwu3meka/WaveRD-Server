@@ -1,11 +1,9 @@
 import { Request, Response } from "express";
 
-// import { accountsModel } from "../../../utils/models";
-import { emailExistsFn } from "../accounts/emailExists";
 import pushMail from "../../utils/pushMail";
-import { catchError, requestHasBody } from "../../utils/handlers";
-
 import { PROFILE } from "../../models/accounts";
+import { emailExistsFn } from "../accounts/emailExists";
+import { catchError, requestHasBody } from "../../utils/handlers";
 
 export default async (req: Request, res: Response) => {
   try {
@@ -21,7 +19,7 @@ export default async (req: Request, res: Response) => {
         const emailPayload = {
           fullName,
           handle,
-          activationLink: `https://soccermass.com/auth/verify-email?registration-id=${dbResponse.otp.code}`,
+          activationLink: `${process.env.PROTOCOL}${process.env.CLIENT_DOMAIN}/accounts/verify-email?registration-id=${dbResponse.otp.code}`,
         };
 
         await pushMail({ account: "accounts", template: "welcome", address: dbResponse.email, subject: "Welcome to SoccerMASS", payload: emailPayload });

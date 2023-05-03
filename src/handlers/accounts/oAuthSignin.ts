@@ -10,7 +10,7 @@ import { PushMail } from "../../interface/pushMail-handlers-interface";
 
 const oAuthFunc = async (req: Request, res: Response) => {
   const auth = req.body.auth,
-    protocol = process.env.NODE_ENV === "production" ? "https://" : "http://";
+    protocol = process.env.PROTOCOL;
 
   try {
     const email = <PushMail["address"]>req.user;
@@ -41,10 +41,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
       const hoursElapsed = differenceInHour(locked) <= 1; // ? <= check if account has been locked for 1 hours
       if (hoursElapsed) throw { message: "Account is temporarily locked, Please try again later", client: true };
 
-      await PROFILE.findByIdAndUpdate(
-        { id },
-        { $set: { ["auth.locked"]: null, ["auth.failedAttempts.counter"]: 0, ["auth.failedAttempts.lastAttempt"]: null } }
-      );
+      await PROFILE.findByIdAndUpdate(id, { $set: { ["auth.locked"]: null, ["auth.failedAttempts.counter"]: 0, ["auth.failedAttempts.lastAttempt"]: null } });
     }
 
     // Check if account email is verified
@@ -58,14 +55,17 @@ const oAuthFunc = async (req: Request, res: Response) => {
           expiry: nTimeFromNowFn({ context: "hours", interval: 3 }),
         };
 
-        await PROFILE.findByIdAndUpdate({ id }, { $set: { ["auth.otp"]: newOTP } });
+        await PROFILE.findByIdAndUpdate(id, { $set: { ["auth.otp"]: newOTP } });
 
         await pushMail({
           account: "accounts",
           template: "reVerifyEmail",
           address: email,
           subject: "Verify your email to activate Your SoccerMASS account",
-          payload: { activationLink: `https://www.soccermass.com/auth/verify-email?registration-id=${newOTP.code}`, fullName },
+          payload: {
+            activationLink: `${process.env.PROTOCOL}${process.env.CLIENT_DOMAIN}/accounts/verify-email?registration-id=${newOTP.code}`,
+            fullName,
+          },
         });
 
         throw {
