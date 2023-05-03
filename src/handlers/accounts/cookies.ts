@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 
 import { PROFILE } from "../../models/accounts";
-import { catchError } from "../../utils/handlers";
+import { catchError, getIdFromSession } from "../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -10,24 +10,20 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     if (!cookie) throw { message: "User not Authenticated" };
 
     return jwt.verify(cookie, <string>process.env.SECRET, async (err: any, decoded: any) => {
-      if (err) throw { message: "Suspicious token" };
+      if (err) throw { message: "Invalid Cookie" };
       if (!decoded) throw { message: "Token not available" };
 
-      const { role, fullName, handle, session } = decoded;
+      const id = getIdFromSession(decoded.session);
+      if (!id) throw { message: "Suspicious token" };
 
-      if (role && fullName && handle && session) {
-        const profile = await PROFILE.findOne({ session }); // ensure
-        if (!profile) throw { message: "Token not found in Database" };
-        if (profile.status !== "active") throw { message: "Account not active" };
+      const profile = await PROFILE.findById(id);
+      if (!profile) throw { message: "Can't find associated profile" };
+      if (profile.status !== "active") throw { message: "Account not active" };
+      const { role, fullName, handle, cookieConsent } = profile;
 
-        const cookieConsent = profile.cookieConsent;
+      const data = { success: true, message: `Cookie retrieved successfully`, payload: { role, fullName, handle, cookieConsent } };
 
-        const data = { success: true, message: `Cookie retrieved successfully`, payload: { role, fullName, handle, cookieConsent } };
-
-        return res.status(200).json(data);
-      } else {
-        throw { message: "Invalid Cookie" };
-      }
+      return res.status(200).json(data);
     });
   } catch (err: any) {
     return catchError({ res, err });

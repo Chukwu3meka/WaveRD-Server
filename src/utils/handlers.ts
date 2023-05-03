@@ -117,3 +117,9 @@ export const generateSession = (id: ObjectId) => `${uuid()}-${uuid()}-${Date.now
 export const generateOtp = (id: ObjectId) => `${Date.now()}-${uuid()}-${id}-${String(range(0, 999999999)).padStart(9, "0")}`;
 
 export const capitalize = (word: string) => word && word[0].toUpperCase() + word.slice(1);
+
+export const getIdFromSession = (session: string) => {
+  const subSessions = session.split("-");
+  const id = subSessions[subSessions.length - 2];
+  return id;
+};
