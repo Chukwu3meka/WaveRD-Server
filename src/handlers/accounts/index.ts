@@ -6,5 +6,6 @@ import emailExists from "./emailExists";
 import handleExists from "./handleExists";
 import cookieConsent from "./cookieConsent";
 import cookies from "./cookies";
+import verifyEmail from "./verifyEmail";
 
-export { oAuth, signout, cookieConsent, cookies, handleExists, emailExists, signup, signin };
+export { oAuth, signout, cookieConsent, verifyEmail, cookies, handleExists, emailExists, signup, signin };

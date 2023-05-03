@@ -16,8 +16,8 @@ router.route("/cookieConsent").get(securedRoute, personal.cookieConsent);
 router.route("/signout").get(personal.signout);
 router.route("/email_exists").post(personal.emailExists);
 router.route("/handle_exists").post(personal.handleExists);
+router.route("/verify-email").post(personal.verifyEmail);
 
-// router.route("/oAuthSession").post(personal.oAuthSession);
 // router.route("/:club/players").get(club.clubPlayers);
 
 router.route("/twitter").get(passport.authenticate("twitter"));
