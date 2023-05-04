@@ -29,7 +29,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       const currHour = new Date().getHours(),
         currMinute = new Date().getMinutes();
 
-      console.log(`${currHour}:${currMinute}${currHour >= 12 ? "PM" : "AM"} <<>> New request for ${subdomain}${endpoint.split("?")[0].replace("api", "")}`);
+      console.log(`${currHour}:${currMinute}${currHour >= 12 ? "PM" : "AM"} <<>> New request for ${subdomain}/${endpoint.split("?")[0].replace("api", "")}`);
     }
 
     await ALL_REQUEST.create({ endpoint, subdomain });
