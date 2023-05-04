@@ -67,7 +67,7 @@ export const requestHasBody = ({ body, required }: { body: { [key: string]: any 
   // return { ...newBody };
 };
 
-export const redirectToWeb = (req: Request, res: Response) => res.writeHead(302, { Location: "https://soccermass.com" }).end();
+export const redirectToWeb = (req: Request, res: Response) => res.writeHead(302, { Location: process.env.CLIENT_DOMAIN }).end();
 
 // function to generate the date for n  days from now:
 interface INTimeFromNowFn {

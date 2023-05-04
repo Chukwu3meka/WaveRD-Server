@@ -7,7 +7,7 @@ import securedRoute from "../middleware/verifyToken";
 // handlers
 import * as personal from "../handlers/accounts";
 
-const router = express.Router();
+const router = express.Router({ caseSensitive: true, strict: true });
 
 router.route("/signup").post(personal.signup);
 router.route("/signin").post(personal.signin);
@@ -16,7 +16,7 @@ router.route("/cookieConsent").get(securedRoute, personal.cookieConsent);
 router.route("/signout").get(personal.signout);
 router.route("/email_exists").post(personal.emailExists);
 router.route("/handle_exists").post(personal.handleExists);
-router.route("/verify-email").post(personal.verifyEmail);
+router.route("/verify-email").get(personal.verifyEmail);
 
 // router.route("/:club/players").get(club.clubPlayers);
 

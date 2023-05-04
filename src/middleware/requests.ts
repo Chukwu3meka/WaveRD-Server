@@ -21,16 +21,20 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     //  ? "Server request monitoring system"
     const endpoint = requestOrigin.startsWith("/api/") ? requestOrigin.replace("/api/srv-", "").split("/").slice(1).join("/") : req.url,
       /* Since we're setting cookie from the backend with the 'http only' flag, The client and server needs to be on the same domain and same port,
-         Else server would be blocked by client from setting cookie, That's why we've allowed direct calls to the server without subdomain
-         So any request without subdomain is assumed to be for accounts       */
+      Else server would be blocked by client from setting cookie, That's why we've allowed direct calls to the server without subdomain
+      So any request without subdomain is assumed to be for accounts       */
       subdomain = requestHeaderHost?.startsWith("srv-") ? requestHeaderHost.replace("srv-", "") : "accounts";
 
-    // console.log(req.url, { endpoint, subdomain });
+    if (process.env.NODE_ENV === "development") {
+      const currHour = new Date().getHours(),
+        currMinute = new Date().getMinutes();
+
+      console.log(`${currHour}:${currMinute}${currHour >= 12 ? "PM" : "AM"} <<>> New request for ${subdomain}${endpoint.split("?")[0].replace("api", "")}`);
+    }
 
     await ALL_REQUEST.create({ endpoint, subdomain });
 
     //  ? "Daily Records of Server Stat"
-
     await DAILY_STAT.findOneAndUpdate(
       { date: new Date().toDateString() },
       {
