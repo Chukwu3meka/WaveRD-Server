@@ -12,7 +12,8 @@ export const catchError = async ({ res, err }: CatchError) => {
     status = err.status || 400,
     payload = res.req.body;
 
-  if (<string>process.env.NODE_ENV === "development") console.error(`${res.req.originalUrl} <<<>>> ${JSON.stringify(message)}`);
+  // if (<string>process.env.NODE_ENV === "development") console.error(`${res.req.originalUrl} <<<>>> ${JSON.stringify(message)}`);
+  if (<string>process.env.NODE_ENV === "development") console.error(`/${res.req.body.endpoint} <<<>>> ${JSON.stringify(message)}`);
 
   await FAILED_REQUESTS.create({ endpoint, message, err, payload });
 
