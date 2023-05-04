@@ -113,7 +113,8 @@ export const range = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-export const generateSession = (id: ObjectId) => `${uuid()}-${uuid()}-${Date.now()}-${uuid()}-${uuid()}-${id}-${String(range(0, 999999999)).padStart(9, "0")}`;
+export const generateSession = (id: ObjectId) =>
+  `${Date.now()}-${uuid()}-${uuid()}-${uuid()}-${Date.now()}-${uuid()}-${uuid()}-${uuid()}-${Date.now()}-${id}-${String(range(0, 999999999)).padStart(9, "0")}`;
 
 export const getIdFromSession = (session: string) => {
   const subSessions = session.split("-");

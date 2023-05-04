@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 
 import pushMail from "../../utils/pushMail";
 import { PROFILE } from "../../models/accounts";
-import { catchError, differenceInHour, generateSession, nTimeFromNowFn, requestHasBody, sleep } from "../../utils/handlers";
+import { catchError, differenceInHour, generateSession, nTimeFromNowFn, requestHasBody } from "../../utils/handlers";
 
 export default async (req: Request, res: Response) => {
   const data = { success: true, message: "Password reset link sent", payload: null }; // Always return true whether successful or failed
@@ -28,9 +28,9 @@ export default async (req: Request, res: Response) => {
     await PROFILE.findByIdAndUpdate(profile.id, { $set: { ["auth.otp"]: otp } }).then(async () => {
       await pushMail({
         account: "accounts",
-        template: "resetPassword",
+        template: "forgotPassword",
         address: email,
-        subject: "SoccerMASS Password Reset",
+        subject: "SoccerMASS Password Reset Request",
         payload: {
           activationLink: `${process.env.PROTOCOL}${process.env.CLIENT_DOMAIN}/accounts/reset-password?gear=${otp.code}`,
           fullName: profile.fullName,
@@ -38,9 +38,9 @@ export default async (req: Request, res: Response) => {
       });
     });
 
-    return res.status(201).json(data);
+    return res.status(200).json(data);
   } catch (err: any) {
-    res.status(201).json(data);
+    res.status(200).json(data);
 
     err.respond = false;
     return catchError({ res, err });

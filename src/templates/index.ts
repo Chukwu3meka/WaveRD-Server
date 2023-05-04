@@ -4,5 +4,6 @@ import lockNotice from "./lockNotice";
 import reVerifyEmail from "./reVerifyEmail";
 import successfulLogin from "./successfulLogin";
 import resetPassword from "./resetPassword";
+import forgotPassword from "./forgotPassword";
 
-export { welcome, failedLogin, lockNotice, resetPassword, reVerifyEmail, successfulLogin };
+export { welcome, forgotPassword, failedLogin, lockNotice, resetPassword, reVerifyEmail, successfulLogin };
