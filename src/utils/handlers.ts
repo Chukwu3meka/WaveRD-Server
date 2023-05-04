@@ -6,9 +6,10 @@ import { CatchError } from "../interface/utils-handlers-interface";
 import { ObjectId } from "mongoose";
 
 export const catchError = async ({ res, err }: CatchError) => {
-  const client = err.client || false,
+  const respond = err.respond || true,
     endpoint = res.req.originalUrl,
     message = err.message || err,
+    client = err.client || false,
     status = err.status || 400,
     payload = res.req.body;
 
@@ -17,7 +18,7 @@ export const catchError = async ({ res, err }: CatchError) => {
 
   await FAILED_REQUESTS.create({ endpoint, message, err, payload });
 
-  res.status(status).json({ success: false, message: client ? message : "Unable to process request", payload: null });
+  if (respond) res.status(status).json({ success: false, message: client ? message : "Unable to process request", payload: null });
 };
 
 export const sleep = async (seconds: number) => {
