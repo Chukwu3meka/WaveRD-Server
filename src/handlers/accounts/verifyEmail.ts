@@ -13,7 +13,7 @@ export default async (req: Request, res: Response) => {
       if (!id) throw { message: "Account", client: true };
 
       const updated = await PROFILE.findOneAndUpdate(
-        { id, ["auth.otp.code"]: gear, ["auth.otp.purpose"]: "email verification", ["auth.verification.email"]: null },
+        { _id: id, ["auth.otp.code"]: gear, ["auth.otp.purpose"]: "email verification", ["auth.verification.email"]: null },
         {
           $set: {
             ["auth.verification.email"]: Date.now(),
