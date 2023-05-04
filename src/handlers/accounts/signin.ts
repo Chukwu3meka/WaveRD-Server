@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 
 import pushMail from "../../utils/pushMail";
 import { PROFILE } from "../../models/accounts";
-import { catchError, differenceInHour, generateOtp, nTimeFromNowFn, requestHasBody, generateSession } from "../../utils/handlers";
+import { catchError, differenceInHour, nTimeFromNowFn, requestHasBody, generateSession } from "../../utils/handlers";
 
 export default async (req: Request, res: Response) => {
   try {
@@ -74,7 +74,7 @@ export default async (req: Request, res: Response) => {
 
       if (otpPurpose !== "email verification" || hoursElapsed >= 0) {
         const newOTP = {
-          code: generateOtp(id),
+          code: generateSession(id),
           purpose: "email verification",
           expiry: nTimeFromNowFn({ context: "hours", interval: 3 }),
         };

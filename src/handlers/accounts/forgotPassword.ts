@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 import pushMail from "../../utils/pushMail";
 import { PROFILE } from "../../models/accounts";
-import { catchError, differenceInHour, generateOtp, nTimeFromNowFn, requestHasBody, sleep } from "../../utils/handlers";
+import { catchError, differenceInHour, generateSession, nTimeFromNowFn, requestHasBody, sleep } from "../../utils/handlers";
 
 export default async (req: Request, res: Response) => {
   const data = { success: true, message: "Password reset link sent", payload: null }; // Always return true whether successful or failed
@@ -16,7 +16,7 @@ export default async (req: Request, res: Response) => {
 
     const otp = {
       purpose: "password reset",
-      code: generateOtp(profile.id),
+      code: generateSession(profile.id),
       expiry: nTimeFromNowFn({ context: "hours", interval: 3 }),
     };
 

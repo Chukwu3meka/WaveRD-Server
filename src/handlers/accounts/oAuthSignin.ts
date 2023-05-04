@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express";
 import pushMail from "../../utils/pushMail";
 import validator from "../../utils/validator";
 import { PROFILE } from "../../models/accounts";
-import { capitalize, catchError, differenceInHour, generateOtp, nTimeFromNowFn, obfuscate } from "../../utils/handlers";
+import { capitalize, catchError, differenceInHour, generateSession, nTimeFromNowFn, obfuscate } from "../../utils/handlers";
 
 import { PushMail } from "../../interface/pushMail-handlers-interface";
 
@@ -50,7 +50,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
 
       if (otpPurpose !== "email verification" || hoursElapsed >= 0) {
         const newOTP = {
-          code: generateOtp(id),
+          code: generateSession(id),
           purpose: "email verification",
           expiry: nTimeFromNowFn({ context: "hours", interval: 3 }),
         };

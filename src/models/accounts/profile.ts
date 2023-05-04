@@ -3,7 +3,7 @@ import { Schema } from "mongoose";
 import { v4 as uuid } from "uuid";
 
 import { accountsDatabase } from "../database";
-import { generateOtp, generateSession, nTimeFromNowFn, range } from "../../utils/handlers";
+import { generateSession, nTimeFromNowFn, range } from "../../utils/handlers";
 
 const ProfileSchema = new Schema(
   {
@@ -52,7 +52,7 @@ ProfileSchema.pre("save", async function (next) {
   try {
     if (this.auth && this.auth.otp && this.isModified("auth.password")) {
       this.auth.otp = {
-        code: generateOtp(this.id),
+        code: generateSession(this.id),
         purpose: "email verification",
         expiry: nTimeFromNowFn({ context: "hours", interval: 3 }),
       };
