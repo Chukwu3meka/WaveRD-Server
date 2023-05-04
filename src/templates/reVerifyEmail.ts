@@ -12,7 +12,7 @@ export default ({ fullName, activationLink }: any) => `
     Don't Miss Out: We've granted you a 7-day extension from now to verify your email before deadline and keep your account active and avoid account deletion
     <br />
     <br />
-    If you have any questions or need assistance, please don't hesitate to reach out to us <a href="https://www.soccermass.com/info/contact">here</a>.
+    Thank you for using our service. If you have any questions or need assistance, please don't hesitate to reach out to us <a href="https://www.soccermass.com/info/contact">here</a>.
     <br />
     <br />
     Warm Regards,
