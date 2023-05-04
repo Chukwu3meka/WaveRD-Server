@@ -1,23 +1,21 @@
 import { v4 as uuid } from "uuid";
-import { Request, Response } from "express";
-import { FAILED_REQUESTS } from "../models/logs";
-
-import { CatchError } from "../interface/utils-handlers-interface";
 import { ObjectId } from "mongoose";
+import { Request, Response } from "express";
+
+import { FAILED_REQUESTS } from "../models/logs";
+import { CatchError } from "../interface/utils-handlers-interface";
 
 export const catchError = async ({ res, err }: CatchError) => {
-  const respond = err.respond || true,
+  const respond = err.respond === false ? false : true,
     endpoint = res.req.originalUrl,
-    message = err.message || err,
     client = err.client || false,
+    message = err.message || err,
     status = err.status || 400,
     payload = res.req.body;
 
-  // if (<string>process.env.NODE_ENV === "development") console.error(`${res.req.originalUrl} <<<>>> ${JSON.stringify(message)}`);
-  if (<string>process.env.NODE_ENV === "development") console.error(`/${res.req.body.endpoint} <<<>>> ${JSON.stringify(message)}`);
-
   await FAILED_REQUESTS.create({ endpoint, message, err, payload });
 
+  if (<string>process.env.NODE_ENV === "development") console.error(`/${res.req.body.endpoint} <<<>>> ${JSON.stringify(message)}`);
   if (respond) res.status(status).json({ success: false, message: client ? message : "Unable to process request", payload: null });
 };
 
@@ -117,7 +115,7 @@ export const range = (min: number, max: number) => {
 
 export const generateSession = (id: ObjectId) => `${uuid()}-${uuid()}-${Date.now()}-${uuid()}-${uuid()}-${id}-${String(range(0, 999999999)).padStart(9, "0")}`;
 
-export const generateOtp = (id: ObjectId) => `${Date.now()}-${uuid()}-${id}-${String(range(0, 999999999)).padStart(9, "0")}`;
+export const generateOtp = (id: ObjectId) => `${Date.now()}-${uuid()}-${uuid()}-${uuid()}-${id}-${String(range(0, 999999999)).padStart(9, "0")}`;
 
 export const capitalize = (word: string) => word && word[0].toUpperCase() + word.slice(1);
 

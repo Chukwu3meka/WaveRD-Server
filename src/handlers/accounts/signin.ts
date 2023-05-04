@@ -62,8 +62,8 @@ export default async (req: Request, res: Response) => {
 
     // update acount lock/security settings
     if (locked) {
-      const hoursElapsed = differenceInHour(locked) <= 1; // ? <= check if account has been locked for 1 hours
-      if (hoursElapsed) throw { message: "Account is temporarily locked, Please try again later", client: true };
+      const accLocked = differenceInHour(locked) <= 1; // ? <= check if account has been locked for 1 hours
+      if (accLocked) throw { message: "Account is temporarily locked, Please try again later", client: true };
 
       await PROFILE.findByIdAndUpdate(id, { $set: { ["auth.locked"]: null, ["auth.failedAttempts.counter"]: 0, ["auth.failedAttempts.lastAttempt"]: null } });
     }

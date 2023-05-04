@@ -25,7 +25,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       So any request without subdomain is assumed to be for accounts       */
       subdomain = requestHeaderHost?.startsWith("srv-") ? requestHeaderHost.replace("srv-", "") : "accounts";
 
-    req.body.endpoint = `${subdomain}/${endpoint.split("?")[0].replace("api", "")}`;
+    req.body.endpoint = `${subdomain}/${endpoint.split("?")[0].replace("api/", "")}`;
     if (process.env.NODE_ENV === "development") {
       const currHour = new Date().getHours(),
         currMinute = new Date().getMinutes();

@@ -27,8 +27,8 @@ const ProfileSchema = new Schema(
 
       otp: {
         code: { type: String, default: null },
-        purpose: { type: String, default: "email verification" },
-        expiry: { type: Date, default: nTimeFromNowFn({ context: "hours", interval: 3 }) },
+        purpose: { type: String, default: "" },
+        expiry: { type: Date, default: "" },
       },
 
       verification: {
@@ -48,8 +48,12 @@ const ProfileSchema = new Schema(
 ProfileSchema.pre("save", async function (next) {
   try {
     if (this.auth && this.auth.otp && this.isModified("auth.password")) {
+      this.auth.otp = {
+        code: generateOtp(this.id),
+        purpose: "email verification",
+        expiry: nTimeFromNowFn({ context: "hours", interval: 3 }),
+      };
       this.auth.session = generateSession(this.id); // <= generate login session
-      this.auth.otp.code = generateOtp(this.id); // <= generate email verification OTP
       this.auth.password = await bcrypt.hash(this.auth.password, 10); // <= Hassh password if its a new account
     }
     return next();
