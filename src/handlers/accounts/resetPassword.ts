@@ -2,13 +2,12 @@ import { Request, Response } from "express";
 
 import pushMail from "../../utils/pushMail";
 import { PROFILE } from "../../models/accounts";
-import { catchError, differenceInHour, getIdFromSession, requestHasBody } from "../../utils/handlers";
+import { catchError, differenceInHour, requestHasBody } from "../../utils/handlers";
 
 export default async (req: Request, res: Response) => {
   try {
     requestHasBody({ body: req.body, required: ["email", "password", "gear"] });
-    const { email, password, gear } = req.body,
-      id = getIdFromSession(gear);
+    const { email, password, gear } = req.body;
 
     const profile = await PROFILE.findOne({ email, ["auth.otp.code"]: gear });
     if (!profile || !profile.auth || !profile.auth.otp) throw { message: "Invalid password reset link", client: true }; // <= verify that account exist, else throw an error
