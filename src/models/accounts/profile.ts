@@ -41,6 +41,9 @@ const ProfileSchema = new Schema(
       async comparePassword(attempt: string, password: string) {
         return await bcrypt.compare(attempt, password);
       },
+      async hashPassword(password: string) {
+        return await bcrypt.hash(password, 10);
+      },
     },
   }
 );

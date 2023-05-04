@@ -1,108 +1,44 @@
-import jwt from "jsonwebtoken";
-import { v4 as uniqueId } from "uuid";
 import { NextFunction, Request, Response } from "express";
 
 import pushMail from "../../utils/pushMail";
 import { PROFILE } from "../../models/accounts";
-import { catchError, differenceInHour, nTimeFromNowFn, requestHasBody, sleep } from "../../utils/handlers";
+import { catchError, differenceInHour, generateOtp, nTimeFromNowFn, requestHasBody, sleep } from "../../utils/handlers";
 
-export default async (req: Request, res: Response, next: NextFunction) => {
+export default async (req: Request, res: Response) => {
   try {
-    requestHasBody({ body: req.body, required: ["email", "password"] });
-    const { email: authEmail, password: authPassword } = req.body;
+    requestHasBody({ body: req.body, required: ["email", "password", "gear"] });
+    const { email, password, gear } = req.body;
+    console.log(email, password, gear);
 
-    const searchResult = await PROFILE.aggregate([
-      { $match: { email: authEmail } },
-      { $lookup: { from: "profiles", localField: "email", foreignField: "email", as: "profile" } },
-      { $limit: 1 },
-      { $project: { otp: 0 } },
-    ]);
+    // const profile = await PROFILE.findOne({ email });
+    // if (!profile || !profile.auth || !profile.auth.otp) throw { message: "Email does not exists" }; // <= verify that account exist, else throw an error
 
-    // verify that account exist, else throw an error
-    if (!searchResult) throw { message: "Invalid Email/Password" };
+    // const otp = {
+    //   purpose: "password reset",
+    //   code: generateOtp(profile.id),
+    //   expiry: nTimeFromNowFn({ context: "hours", interval: 3 }),
+    // };
 
-    const {
-      _id,
-      locked,
-      status,
-      failedAttempts,
-      role,
-      email,
-      password,
-      session,
-      verification,
-      profile: [{ fullName, handle }],
-    } = searchResult[0];
+    // if (profile.auth.otp.purpose === "password reset") {
+    //   const otpSentRecently = differenceInHour(profile.auth.otp.expiry) <= 0;
+    //   if (otpSentRecently) throw { message: "Password reset link sent recently" };
+    // }
 
-    if (status !== "active") throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation" };
+    // await PROFILE.findByIdAndUpdate(profile.id, { $set: { ["auth.otp"]: otp } }).then(async () => {
+    //   await pushMail({
+    //     account: "accounts",
+    //     template: "resetPassword",
+    //     address: email,
+    //     subject: "SoccerMASS Password Reset",
+    //     payload: {
+    //       activationLink: `${process.env.PROTOCOL}${process.env.CLIENT_DOMAIN}/accounts/reset-password?gear=${otp.code}`,
+    //       fullName: profile.fullName,
+    //     },
+    //   });
+    // });
 
-    // ? will throw error if passwords does not match
-    const matchPassword = await PROFILE.comparePassword(authPassword, password);
-
-    if (!matchPassword) {
-      const currentFailedAttempts = failedAttempts + 1;
-      if (currentFailedAttempts < 7)
-        await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt - SoccerMASS", payload: { fullName } });
-
-      if (currentFailedAttempts === 7)
-        await pushMail({ account: "accounts", template: "lockNotice", address: email, subject: "Account Lock Notice - SoccerMASS", payload: { fullName } });
-
-      if (currentFailedAttempts >= 7) {
-        await PROFILE.findByIdAndUpdate({ _id }, { $inc: { failedAttempts: 1 }, $set: { locked: new Date() } });
-      } else {
-        await PROFILE.findByIdAndUpdate({ _id }, { $inc: { failedAttempts: 1 } });
-      }
-
-      throw { message: "Invalid Email/Password" };
-    }
-
-    if (locked) {
-      const lockDuration = differenceInHour(locked) <= 3; // ? <= check if account has been locked for 3 hours
-      if (lockDuration) throw { message: "Account is temporarily locked, Please try again later" };
-
-      await PROFILE.findByIdAndUpdate({ _id }, { $set: { locked: null } });
-    }
-
-    if (failedAttempts) await PROFILE.findByIdAndUpdate({ _id }, { $set: { failedAttempts: 0 } });
-
-    if (!verification?.email) {
-      const otp = {
-        purpose: "email verification",
-        code: `${uniqueId()}-${uniqueId()}-${uniqueId()}`,
-        expiry: nTimeFromNowFn({ context: "hours", interval: 3 }),
-      };
-
-      await PROFILE.findByIdAndUpdate({ _id }, { $set: { otp } });
-
-      await pushMail({
-        account: "accounts",
-        template: "reVerifyEmail",
-        address: email,
-        subject: "Verify Your Email to Keep Your SoccerMASS Account Active",
-        payload: {
-          activationLink: `${process.env.PROTOCOL}srv-accounts.${process.env.SERVER_DOMAIN}/api/verify-email?gear=${otp.code}`,
-          fullName,
-        },
-      });
-
-      throw { message: "Unlock access to our services by verifying your account now. Check your inbox for our latest verification email." };
-    }
-
-    await PROFILE.findByIdAndUpdate({ _id }, { $set: { lastLogin: new Date() } });
-    await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", payload: { fullName } });
-
-    const token = jwt.sign({ session, role, fullName, handle }, process.env.SECRET as string, { expiresIn: "120 days" });
-
-    const data = { success: true, message: "Email/Password is Valid.", payload: { role, fullName, handle } };
-
-    const cookiesOption = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production" ? true : false,
-      // domain: req.headers.origin?.replace("http://", ".")?.replace("https://", ".")?.replace(/:\d+/, ""),
-      expires: nTimeFromNowFn({ context: "days", interval: 120 }),
-    };
-
-    res.status(200).cookie("SoccerMASS", token, cookiesOption).json(data);
+    const data = { success: true, message: "Password reset successful", payload: null }; // Always return true whether successful or failed
+    return res.status(201).json(data);
   } catch (err: any) {
     return catchError({ res, err });
   }

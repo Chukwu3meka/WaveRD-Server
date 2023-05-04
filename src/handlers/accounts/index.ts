@@ -8,5 +8,6 @@ import cookieConsent from "./cookieConsent";
 import cookies from "./cookies";
 import verifyEmail from "./verifyEmail";
 import forgotPassword from "./forgotPassword";
+import resetPassword from "./resetPassword";
 
-export { oAuth, signout, cookieConsent, verifyEmail, forgotPassword, cookies, handleExists, emailExists, signup, signin };
+export { oAuth, signout, resetPassword, cookieConsent, verifyEmail, forgotPassword, cookies, handleExists, emailExists, signup, signin };

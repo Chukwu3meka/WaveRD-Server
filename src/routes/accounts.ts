@@ -18,6 +18,7 @@ router.route("/email_exists").post(personal.emailExists);
 router.route("/handle_exists").post(personal.handleExists);
 router.route("/verify-email").get(personal.verifyEmail);
 router.route("/forgot-password").post(personal.forgotPassword);
+router.route("/reset-password").post(personal.resetPassword);
 
 // router.route("/:club/players").get(club.clubPlayers);
 
