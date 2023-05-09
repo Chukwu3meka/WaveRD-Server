@@ -7,7 +7,7 @@ import securedRoute from "../middleware/verifyToken";
 // handlers
 import * as personal from "../handlers/accounts";
 
-const router = express.Router({ caseSensitive: true });
+const router = express.Router({ caseSensitive: true, strict: true });
 
 router.route("/signup").post(personal.signup);
 router.route("/signin").post(personal.signin);
