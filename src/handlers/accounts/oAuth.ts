@@ -4,7 +4,8 @@ import { NextFunction, Request, Response } from "express";
 import pushMail from "../../utils/pushMail";
 import validator from "../../utils/validator";
 import { PROFILE } from "../../models/accounts";
-import { capitalize, catchError, differenceInHour, generateSession, nTimeFromNowFn, obfuscate } from "../../utils/handlers";
+import { cookiesOption } from "../../utils/constants";
+import { capitalize, catchError, hourDiff, generateSession, calcFutureDate, obfuscate } from "../../utils/handlers";
 
 import { PushMail } from "../../interface/pushMail-handlers-interface";
 
@@ -28,7 +29,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
         locked,
         session,
         verification: { email: emailVerified },
-        otp: { purpose: otpPurpose, expiry: otpExpiry },
+        otp: { purpose: otpPurpose, time: otpTime },
       },
     } = profile;
 
@@ -37,7 +38,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
 
     // update acount lock/security settings
     if (locked) {
-      const hoursElapsed = differenceInHour(locked) <= 1; // ? <= check if account has been locked for 1 hours
+      const hoursElapsed = hourDiff(locked) <= 1; // ? <= check if account has been locked for 1 hours
       if (hoursElapsed) throw { message: "Account is temporarily locked, Please try again later", client: true };
 
       await PROFILE.findByIdAndUpdate(id, { $set: { ["auth.locked"]: null, ["auth.failedAttempts.counter"]: 0, ["auth.failedAttempts.lastAttempt"]: null } });
@@ -45,13 +46,13 @@ const oAuthFunc = async (req: Request, res: Response) => {
 
     // Check if account email is verified
     if (!emailVerified) {
-      const hoursElapsed = differenceInHour(otpExpiry);
+      const hoursElapsed = hourDiff(otpTime);
 
-      if (otpPurpose !== "email verification" || hoursElapsed >= 0) {
+      if (otpPurpose !== "email verification" || hoursElapsed >= 1) {
         const newOTP = {
           code: generateSession(id),
           purpose: "email verification",
-          expiry: nTimeFromNowFn({ context: "hours", interval: 3 }),
+          time: calcFutureDate({ context: "hours", interval: 3 }),
         };
 
         await PROFILE.findByIdAndUpdate(id, { $set: { ["auth.otp"]: newOTP } });
@@ -79,21 +80,14 @@ const oAuthFunc = async (req: Request, res: Response) => {
       };
     }
 
-    const cookiesOption = {
-        path: "/",
-        httpOnly: true,
-        expires: nTimeFromNowFn({ context: "days", interval: 120 }),
-        secure: process.env.NODE_ENV === "production" ? true : false,
-        domain: process.env.NODE_ENV === "production" ? ".soccermass.com" : ".localhost",
-      },
-      SSIDJwtToken = jwt.sign({ session, fullName, handle }, process.env.SECRET as string, { expiresIn: "180 days" });
+    const SSIDJwtToken = jwt.sign({ session, fullName, handle }, process.env.SECRET as string, { expiresIn: "180 days" });
 
     await pushMail({
-      account: "accounts",
-      template: "successfulLogin",
       address: email,
-      subject: `Successful Login to SoccerMASS via ${capitalize(auth)}`,
+      account: "accounts",
       payload: { fullName },
+      template: "successfulLogin",
+      subject: `Successful Login to SoccerMASS via ${capitalize(auth)}`,
     });
 
     return res.cookie("SSID", SSIDJwtToken, cookiesOption).redirect(302, `${process.env.CLIENT_DOMAIN}/accounts/signin`);

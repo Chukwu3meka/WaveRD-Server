@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import pushMail from "../../utils/pushMail";
 import { PROFILE } from "../../models/accounts";
-import { catchError, differenceInHour, requestHasBody } from "../../utils/handlers";
+import { catchError, hourDiff, requestHasBody } from "../../utils/handlers";
 
 export default async (req: Request, res: Response) => {
   try {
@@ -13,14 +13,14 @@ export default async (req: Request, res: Response) => {
     if (!profile || !profile.auth || !profile.auth.otp) throw { message: "Invalid password reset link", client: true }; // <= verify that account exist, else throw an error
 
     if (profile.auth.otp.purpose === "password reset") {
-      const otpSentRecently = differenceInHour(profile.auth.otp.expiry) > 0;
+      const otpSentRecently = hourDiff(profile.auth.otp.time) > 3;
       if (otpSentRecently) throw { message: "Password reset link has expired", client: true };
     }
 
     const hashedPassword = await PROFILE.hashPassword(password);
 
     await PROFILE.findByIdAndUpdate(profile.id, {
-      $set: { ["auth.password"]: hashedPassword, ["auth.otp"]: { code: null, purpose: null, expiry: null } },
+      $set: { ["auth.password"]: hashedPassword, ["auth.otp"]: { code: null, purpose: null, time: null } },
     }).then(async () => {
       await pushMail({
         address: email,

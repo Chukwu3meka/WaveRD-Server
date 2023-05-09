@@ -69,12 +69,12 @@ export const requestHasBody = ({ body, required }: { body: { [key: string]: any 
 export const redirectToWeb = (req: Request, res: Response) => res.redirect(302, `${process.env.CLIENT_DOMAIN}`);
 
 // function to generate the date for n  days from now:
-interface INTimeFromNowFn {
+interface IcalcFutureDate {
   context: "days" | "hours";
   interval: number;
 }
 
-export const nTimeFromNowFn = ({ interval, context }: INTimeFromNowFn): Date => {
+export const calcFutureDate = ({ interval, context }: IcalcFutureDate): Date => {
   const currentTime = new Date();
 
   switch (context) {
@@ -90,7 +90,7 @@ export const nTimeFromNowFn = ({ interval, context }: INTimeFromNowFn): Date => 
 };
 
 // difference in hours between date
-export const differenceInHour = (date1: Date, date2?: Date) => {
+export const hourDiff = (date1: Date, date2?: Date) => {
   let diff;
 
   if (date1 && date2) {

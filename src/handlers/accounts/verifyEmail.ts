@@ -17,7 +17,7 @@ export default async (req: Request, res: Response) => {
         {
           $set: {
             ["auth.verification.email"]: Date.now(),
-            ["auth.otp"]: { code: null, purpose: null, expiry: null },
+            ["auth.otp"]: { code: null, purpose: null, time: null },
           },
         }
       );
