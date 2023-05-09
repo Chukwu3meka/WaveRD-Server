@@ -51,3 +51,5 @@ All packages installed are key to this app running smoothly and we graciously th
 1. Stick to Passport 0.5 to avoid issues with oauth for now. [stackoverflow](https://stackoverflow.com/questions/72375564/typeerror-req-session-regenerate-is-not-a-function-using-passport)
 2. Ensure not to add NODE_ENV = "development" to server env, to allow installation of dev dependencies
 3. before email update, send notification consistently for 7 days beforeemail change can take effect, also display it in app/user profile pae that email has been updated and will take effect in 7 days time
+4. mmake sure to set case sensitivity in folder/file rename on git/windows
+5. most website sanitize empty space in password
