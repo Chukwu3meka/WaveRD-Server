@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc --watch",
-    "dev": "pm2 kill && pm2 start process.json && pm2 logs",
+    "kill-server": "pm2 kill",
+    "dev": "pm2 start process.json && pm2 logs",
     "build": "tsc",
     "start": "node ./dist/index.js"
   },

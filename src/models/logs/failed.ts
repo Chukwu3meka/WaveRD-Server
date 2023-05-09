@@ -3,11 +3,10 @@ import { Schema } from "mongoose";
 import { logsDatabase } from "../database";
 
 const FailedRequestsSchema = new Schema({
-  err: { type: Object, required: true },
-  message: { type: String, required: true },
+  error: { type: Object, required: true },
   payload: { type: Object, required: true },
-  endpoint: { type: String, required: true },
-  date: { type: String, default: Date.now() },
+  request: { type: Object, required: true },
+  time: { type: String, default: Date.now() },
 });
 
 const FailedRequestsModel = logsDatabase.model("Failed_Requests", FailedRequestsSchema);

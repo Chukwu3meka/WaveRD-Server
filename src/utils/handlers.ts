@@ -6,16 +6,14 @@ import { FAILED_REQUESTS } from "../models/logs";
 import { CatchError } from "../interface/utils-handlers-interface";
 
 export const catchError = async ({ res, err }: CatchError) => {
-  const respond = err.respond === false ? false : true,
-    endpoint = res.req.originalUrl,
-    client = err.client || false,
-    message = err.message || err,
-    status = err.status || 400,
-    payload = res.req.body;
+  const { request = null, ...payload } = res.req.body,
+    { client = false, status = 400, message = null, respond = true } = err || [];
 
-  await FAILED_REQUESTS.create({ endpoint, message, err, payload });
+  // // handle api calls rejected by requests middleware
+  if (message !== "invalid endpoint") await FAILED_REQUESTS.create({ error: err, payload, request });
 
-  if (<string>process.env.NODE_ENV === "development") console.error(`/${res.req.body.endpoint} <<<>>> ${JSON.stringify(message).replaceAll('"', "")}`);
+  if (<string>process.env.NODE_ENV === "development")
+    console.error(request ? `${request.endpoint} <<<>>> ${JSON.stringify(message).replaceAll('"', "")}` : `${res.req.url} <<<>>> Invalid route`);
   if (respond) res.status(status).json({ success: false, message: client ? message : "Unable to process request", payload: null });
 };
 
@@ -68,13 +66,14 @@ export const requestHasBody = ({ body, required }: { body: { [key: string]: any 
 };
 
 // res.writeHead(302, { Location: process.env.CLIENT_DOMAIN }).end();
-export const redirectToWeb = (req: Request, res: Response) => res.redirect(302, `${process.env.PROTOCOL}${process.env.CLIENT_DOMAIN}`);
+export const redirectToWeb = (req: Request, res: Response) => res.redirect(302, `${process.env.CLIENT_DOMAIN}`);
 
 // function to generate the date for n  days from now:
 interface INTimeFromNowFn {
   context: "days" | "hours";
   interval: number;
 }
+
 export const nTimeFromNowFn = ({ interval, context }: INTimeFromNowFn): Date => {
   const currentTime = new Date();
 
@@ -91,8 +90,15 @@ export const nTimeFromNowFn = ({ interval, context }: INTimeFromNowFn): Date => 
 };
 
 // difference in hours between date
-export const differenceInHour = (date: Date) => {
-  const diff = Math.round((new Date().valueOf() - new Date(date).valueOf()) / (1000 * 60 * 60));
+export const differenceInHour = (date1: Date, date2?: Date) => {
+  let diff;
+
+  if (date1 && date2) {
+    diff = Math.round((new Date(date1).valueOf() - new Date(date2).valueOf()) / (1000 * 60 * 60));
+  } else {
+    diff = Math.round((new Date().valueOf() - new Date(date1).valueOf()) / (1000 * 60 * 60));
+  }
+
   return diff;
 };
 

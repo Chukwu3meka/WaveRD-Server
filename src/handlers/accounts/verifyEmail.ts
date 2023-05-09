@@ -22,9 +22,9 @@ export default async (req: Request, res: Response) => {
         }
       );
 
-      if (updated) return res.redirect(302, `${process.env.PROTOCOL}${process.env.CLIENT_DOMAIN}/accounts/email-verification-success`);
+      if (updated) return res.redirect(302, `${process.env.CLIENT_DOMAIN}/accounts/email-verification-success`);
     }
-    res.redirect(302, `${process.env.PROTOCOL}${process.env.CLIENT_DOMAIN}/accounts/email-verification-failed`);
+    res.redirect(302, `${process.env.CLIENT_DOMAIN}/accounts/email-verification-failed`);
   } catch (err: any) {
     err.status = 409;
     return catchError({ res, err });

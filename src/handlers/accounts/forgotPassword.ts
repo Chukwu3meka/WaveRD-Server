@@ -32,7 +32,7 @@ export default async (req: Request, res: Response) => {
         address: email,
         subject: "SoccerMASS Password Reset Request",
         payload: {
-          activationLink: `${process.env.PROTOCOL}${process.env.CLIENT_DOMAIN}/accounts/reset-password?gear=${otp.code}`,
+          activationLink: `${process.env.CLIENT_DOMAIN}/v1/accounts/reset-password?gear=${otp.code}`,
           fullName: profile.fullName,
         },
       });

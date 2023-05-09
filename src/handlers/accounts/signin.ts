@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { Request, Response } from "express";
+import { CookieOptions, Request, Response } from "express";
 
 import pushMail from "../../utils/pushMail";
 import { PROFILE } from "../../models/accounts";
@@ -70,9 +70,12 @@ export default async (req: Request, res: Response) => {
 
     // Check if account email is verified
     if (!emailVerified) {
-      const hoursElapsed = differenceInHour(otpExpiry);
+      const email_otp = otpPurpose === "email verification",
+        expired_otp = differenceInHour(otpExpiry, new Date()) < 0;
 
-      if (otpPurpose !== "email verification" || hoursElapsed >= 0) {
+      // console.log({ expired_otp });
+
+      if ((email_otp && expired_otp) || !email_otp) {
         const newOTP = {
           code: generateSession(id),
           purpose: "email verification",
@@ -87,33 +90,39 @@ export default async (req: Request, res: Response) => {
           address: email,
           subject: "Verify your email to activate Your SoccerMASS account",
           payload: {
-            activationLink: `${process.env.PROTOCOL}srv-accounts.${process.env.SERVER_DOMAIN}/api/verify-email?gear=${newOTP.code}`,
+            activationLink: `${process.env.SERVER_DOMAIN}/v1/accounts/verify-email?gear=${newOTP.code}`,
             fullName,
           },
         });
 
         throw {
-          message: "Verify your email to activate Your SoccerMASS account, kindly check your email inbox/spam for the most recent verification email from us",
+          message: "Kindly check your email inbox/spam for a verification email we just sent",
           client: true,
         };
       }
 
       throw {
-        message: `Kindly check your inbox/spam for our latest verification email that was sent ${hoursElapsed + 3 ? "few hours" : "less than an hour"} ago`,
+        message: `Kindly check your inbox/spam for our latest verification email from SoccerMASS`,
         client: true,
       };
     }
 
-    const cookiesOption = {
+    const cookiesOption: CookieOptions = {
+        // path: "/",
+        path: "/",
+        sameSite: "strict",
+        signed: true,
         httpOnly: true,
         expires: nTimeFromNowFn({ context: "days", interval: 120 }),
         secure: process.env.NODE_ENV === "production" ? true : false,
-        domain: process.env.NODE_ENV === "production" ? ".soccermass.com" : "localhost",
+        domain: process.env.NODE_ENV === "production" ? "soccermass.com" : "localhost",
       },
       SSIDJwtToken = jwt.sign({ session, fullName, handle }, process.env.SECRET as string, { expiresIn: "180 days" }),
       data = { success: true, message: "Email/Password is Valid.", payload: { role, fullName, handle, cookieConsent } };
 
     await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", payload: { fullName } });
+
+    console.log({ SSIDJwtToken });
 
     res.status(200).cookie("SSID", SSIDJwtToken, cookiesOption).json(data);
   } catch (err: any) {

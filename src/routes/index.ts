@@ -9,7 +9,7 @@ import * as corsOptions from "../utils/corsOptions";
 import accounts from "./accounts";
 
 export default (app: Application) => {
-  app.use("/api/accounts/", cors(corsOptions.accounts), accounts);
+  app.use("/v1/accounts/", cors(corsOptions.accounts), accounts);
 
   app.use("*", redirectToWeb); // ? Fallback URL redirects to client (web home page)
 };

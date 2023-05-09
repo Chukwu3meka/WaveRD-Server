@@ -9,8 +9,7 @@ import { capitalize, catchError, differenceInHour, generateSession, nTimeFromNow
 import { PushMail } from "../../interface/pushMail-handlers-interface";
 
 const oAuthFunc = async (req: Request, res: Response) => {
-  const auth = req.body.auth,
-    protocol = process.env.PROTOCOL;
+  const auth = req.body.auth;
 
   try {
     const email = <PushMail["address"]>req.user;
@@ -63,7 +62,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
           address: email,
           subject: "Verify your email to activate Your SoccerMASS account",
           payload: {
-            activationLink: `${process.env.PROTOCOL}srv-accounts.${process.env.SERVER_DOMAIN}/api/verify-email?gear=${newOTP.code}`,
+            activationLink: `${process.env.SERVER_DOMAIN}/v1/accounts/verify-email?gear=${newOTP.code}`,
             fullName,
           },
         });
@@ -81,10 +80,11 @@ const oAuthFunc = async (req: Request, res: Response) => {
     }
 
     const cookiesOption = {
+        path: "/",
         httpOnly: true,
         expires: nTimeFromNowFn({ context: "days", interval: 120 }),
         secure: process.env.NODE_ENV === "production" ? true : false,
-        domain: process.env.NODE_ENV === "production" ? ".soccermass.com" : "localhost",
+        domain: process.env.NODE_ENV === "production" ? ".soccermass.com" : ".localhost",
       },
       SSIDJwtToken = jwt.sign({ session, fullName, handle }, process.env.SECRET as string, { expiresIn: "180 days" });
 
@@ -96,10 +96,10 @@ const oAuthFunc = async (req: Request, res: Response) => {
       payload: { fullName },
     });
 
-    return res.cookie("SSID", SSIDJwtToken, cookiesOption).redirect(302, `${protocol}${process.env.CLIENT_DOMAIN}/accounts/signin`);
+    return res.cookie("SSID", SSIDJwtToken, cookiesOption).redirect(302, `${process.env.CLIENT_DOMAIN}/accounts/signin`);
   } catch (err: any) {
     const message = err.client ? err.message : "We encountered an oAuth error. Please wait and try again later";
-    return res.redirect(`${protocol}${process.env.CLIENT_DOMAIN}/accounts/signin/?${auth}=${obfuscate(`${new Date()}`)}&response=${obfuscate(message)}`);
+    return res.redirect(`${process.env.CLIENT_DOMAIN}/accounts/signin/?${auth}=${obfuscate(`${new Date()}`)}&response=${obfuscate(message)}`);
   }
 };
 
