@@ -3,9 +3,9 @@ import { calcFutureDate } from "./handlers";
 
 export const cookiesOption: CookieOptions = {
   path: "/",
-  sameSite: "strict",
   httpOnly: true,
+  sameSite: "strict",
   expires: calcFutureDate({ context: "days", interval: 180 }),
   secure: process.env.NODE_ENV === "production" ? true : false,
-  domain: process.env.NODE_ENV === "production" ? "soccermass.com" : "localhost",
+  domain: process.env.NODE_ENV === "production" ? ".soccermass.com" : "localhost",
 };
