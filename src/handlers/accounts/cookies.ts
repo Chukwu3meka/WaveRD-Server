@@ -19,9 +19,18 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       const profile = await PROFILE.findById(id);
       if (!profile) throw { message: "Can't find associated profile", client: true };
       if (profile.status !== "active") throw { message: "Account not active", client: true };
-      const { role, fullName, handle, cookieConsent } = profile;
+      const { role, fullName, handle, theme } = profile;
 
-      const data = { success: true, message: `Cookie retrieved successfully`, payload: { role, fullName, handle, cookieConsent } };
+      const data = {
+        success: true,
+        message: `Cookie retrieved successfully`,
+        payload: {
+          theme,
+          role,
+          fullName,
+          handle,
+        },
+      };
 
       return res.status(200).json(data);
     });

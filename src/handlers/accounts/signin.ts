@@ -20,7 +20,6 @@ export default async (req: Request, res: Response) => {
       role,
       handle,
       fullName,
-      cookieConsent,
       status: accountStatus,
       auth: {
         locked,
@@ -107,7 +106,7 @@ export default async (req: Request, res: Response) => {
     }
 
     const SSIDJwtToken = jwt.sign({ session, fullName, handle }, process.env.SECRET as string, { expiresIn: "180 days" }),
-      data = { success: true, message: "Email/Password is Valid.", payload: { role, fullName, handle, cookieConsent } };
+      data = { success: true, message: "Email/Password is Valid.", payload: { role, fullName, handle } };
 
     await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", payload: { fullName } });
 

@@ -12,9 +12,8 @@ const ProfileSchema = new Schema(
     email: { type: String, unique: true, required: false },
     role: { type: String, default: "user" }, // ? user || admin
     status: { type: String, default: "active" }, // ? active || suspended
-    cookieConsent: { type: Date, default: null }, // ? Date user wwas notified about cookies
     handle: { type: String, required: true }, // ? Unique but we don't want index created on this
-
+    theme: { type: String, required: true, default: "light" },
     auth: {
       session: { type: String },
       locked: { type: Date, default: null },
