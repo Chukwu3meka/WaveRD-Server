@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 
 import { PROFILE } from "../../models/accounts";
+import { CONTACT_US } from "../../models/console";
 import { catchError, requestHasBody } from "../../utils/handlers";
 
 import pushMail from "../../utils/pushMail";
@@ -21,8 +22,7 @@ export default async (req: Request, res: Response) => {
 
     await PROFILE.findOneAndUpdate(auth.id, { $set: { ["auth.deletion"]: new Date() } });
 
-    //! Add deletion comment to logs
-    // comment
+    await CONTACT_US.create({ category: "Data Deletion", comment, email });
 
     await pushMail({
       account: "accounts",
