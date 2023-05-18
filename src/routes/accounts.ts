@@ -9,16 +9,18 @@ import * as personal from "../handlers/accounts";
 
 const router = express.Router({ caseSensitive: true, strict: true });
 
-router.route("/signup").post(personal.signup);
-router.route("/signin").post(personal.signin);
-router.route("/cookies").get(personal.cookies);
-// router.route("/cookieConsent").get(securedRoute, personal.cookieConsent);
-router.route("/signout").get(personal.signout);
 router.route("/email_exists").post(personal.emailExists);
 router.route("/handle_exists").post(personal.handleExists);
+router.route("/signup").post(personal.signup);
 router.route("/verify-email").get(personal.verifyEmail);
+router.route("/signin").post(personal.signin);
+router.route("/cookies").get(personal.cookies);
+router.route("/signout").get(personal.signout);
 router.route("/forgot-password").post(personal.forgotPassword);
 router.route("/reset-password").post(personal.resetPassword);
+// router.route("/theme").post(securedRoute, personal.theme);
+router.route("/theme").post(personal.theme);
+router.route("/theme").post(personal.dataDeletion);
 
 // router.route("/:club/players").get(club.clubPlayers);
 
