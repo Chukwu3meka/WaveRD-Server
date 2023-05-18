@@ -1,9 +1,8 @@
 import bcrypt from "bcryptjs";
 import { Schema } from "mongoose";
-import { v4 as uuid } from "uuid";
 
 import { accountsDatabase } from "../database";
-import { generateSession, calcFutureDate, range } from "../../utils/handlers";
+import { generateSession } from "../../utils/handlers";
 
 const ProfileSchema = new Schema(
   {
@@ -17,6 +16,7 @@ const ProfileSchema = new Schema(
     auth: {
       session: { type: String },
       locked: { type: Date, default: null },
+      deletion: { type: Date, default: null },
       password: { type: String, required: true },
 
       failedAttempts: {

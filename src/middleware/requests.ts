@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 import { catchError } from "../utils/handlers";
-import { ALL_REQUEST, DAILY_REQUEST_STAT } from "../models/logs";
+import { ALL_REQUEST, DAILY_REQUEST_STAT } from "../models/console";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {

@@ -1,31 +1,33 @@
 import { Request, Response } from "express";
 
 import { PROFILE } from "../../models/accounts";
-import { catchError } from "../../utils/handlers";
+import { catchError, requestHasBody } from "../../utils/handlers";
 
 export default async (req: Request, res: Response) => {
   try {
-    if (req.query.gear) {
-      const gear = req.query.gear as string,
-        subGears = gear.split("-"),
-        id = subGears[subGears.length - 2];
+    requestHasBody({ body: req.query, required: ["gear"] });
 
-      if (!id) throw { message: "Account", client: true };
+    const gear = req.query.gear as string,
+      subGears = gear.split("-"),
+      id = subGears[subGears.length - 2];
 
-      const updated = await PROFILE.findOneAndUpdate(
-        { _id: id, ["auth.otp.code"]: gear, ["auth.otp.purpose"]: "email verification", ["auth.verification.email"]: null },
-        {
-          $set: {
-            ["auth.verification.email"]: Date.now(),
-            ["auth.otp"]: { code: null, purpose: null, time: null },
-          },
-        }
-      );
+    if (!id) throw { message: "Account", client: true };
 
-      if (updated) return res.redirect(302, `${process.env.CLIENT_DOMAIN}/accounts/email-verification-success`);
-    }
-    res.redirect(302, `${process.env.CLIENT_DOMAIN}/accounts/email-verification-failed`);
+    const updated = await PROFILE.findOneAndUpdate(
+      { _id: id, ["auth.otp.code"]: gear, ["auth.otp.purpose"]: "email verification", ["auth.verification.email"]: null },
+      {
+        $set: {
+          ["auth.verification.email"]: Date.now(),
+          ["auth.otp"]: { code: null, purpose: null, time: null },
+        },
+      }
+    );
+
+    if (updated) return res.redirect(302, `${process.env.CLIENT_DOMAIN}/accounts/email-verification-success`);
   } catch (err: any) {
+    res.redirect(302, `${process.env.CLIENT_DOMAIN}/accounts/email-verification-failed`);
+
+    err.respond = false;
     err.status = 409;
     return catchError({ res, err });
   }

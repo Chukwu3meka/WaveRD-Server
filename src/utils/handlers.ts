@@ -2,7 +2,7 @@ import { v4 as uuid } from "uuid";
 import { ObjectId } from "mongoose";
 import { Request, Response } from "express";
 
-import { FAILED_REQUESTS } from "../models/logs";
+import { FAILED_REQUESTS } from "../models/console";
 import { CatchError } from "../interface/utils-handlers-interface";
 
 export const catchError = async ({ res, err }: CatchError) => {

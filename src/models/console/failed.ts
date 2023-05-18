@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-import { logsDatabase } from "../database";
+import { consoleDatabase } from "../database";
 
 const FailedRequestsSchema = new Schema({
   error: { type: Object, required: true },
@@ -9,6 +9,6 @@ const FailedRequestsSchema = new Schema({
   time: { type: String, default: Date.now() },
 });
 
-const FailedRequestsModel = logsDatabase.model("Failed_Requests", FailedRequestsSchema);
+const FailedRequestsModel = consoleDatabase.model("Failed_Requests", FailedRequestsSchema);
 
 export default FailedRequestsModel;

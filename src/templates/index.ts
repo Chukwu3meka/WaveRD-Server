@@ -5,5 +5,6 @@ import reVerifyEmail from "./reVerifyEmail";
 import successfulLogin from "./successfulLogin";
 import resetPassword from "./resetPassword";
 import forgotPassword from "./forgotPassword";
+import dataDeletion from "./dataDeletion";
 
-export { welcome, forgotPassword, failedLogin, lockNotice, resetPassword, reVerifyEmail, successfulLogin };
+export { welcome, dataDeletion, forgotPassword, failedLogin, lockNotice, resetPassword, reVerifyEmail, successfulLogin };

@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-import { logsDatabase } from "../database";
+import { consoleDatabase } from "../database";
 
 const DailyStatSchema = new Schema({
   apihub: { type: Number, required: true, default: 0 },
@@ -9,6 +9,6 @@ const DailyStatSchema = new Schema({
   date: { type: String, required: true, default: new Date().toDateString() },
 });
 
-const DailyStatModel = logsDatabase.model("Daily_Stat", DailyStatSchema);
+const DailyStatModel = consoleDatabase.model("Daily_Stat", DailyStatSchema);
 
 export default DailyStatModel;
