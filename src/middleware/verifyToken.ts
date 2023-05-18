@@ -17,10 +17,15 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       const { fullName, handle, session } = decoded;
 
       if (fullName && handle && session) {
-        req.body = { ...req.body, auth: { id: getIdFromSession(session), fullName, handle } };
+        const id = getIdFromSession(session);
+        if (!id) throw { message: "Suspicious token" };
+
+        req.body = { ...req.body, auth: { id, fullName, handle } };
         errMessage = true;
         return;
       }
+
+      errMessage = "Broken Authentication";
     });
 
     if (!!errMessage) return next(); //Port is important if the url has it
