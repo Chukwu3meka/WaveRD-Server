@@ -14,7 +14,7 @@ router.route("/handle_exists").post(personal.handleExists);
 router.route("/signup").post(personal.signup);
 router.route("/verify-email").get(personal.verifyEmail);
 router.route("/signin").post(personal.signin);
-router.route("/cookies").get(personal.cookies);
+router.route("/details").get(securedRoute, personal.details);
 router.route("/signout").get(personal.signout);
 router.route("/forgot-password").post(personal.forgotPassword);
 router.route("/reset-password").post(personal.resetPassword);
