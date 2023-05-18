@@ -11,11 +11,11 @@ export default async (req: Request, res: Response) => {
     requestHasBody({ body: req.body, required: ["email", "handle", "comment", "password"] });
     const { email, handle, comment, password, auth } = req.body;
 
-    const profile = await PROFILE.findOne({ _id: auth.id, email });
+    const profile: any = await PROFILE.findOne({ _id: auth.id, email });
     if (!profile || !profile.auth) throw { message: "Invalid Email/Password", client: true };
+    if (profile.auth.deletion) throw { message: "Data deletion already initiated", client: true };
 
     const matchPassword = await PROFILE.comparePassword(password, profile.auth?.password);
-
     if (!matchPassword) throw { message: "Invalid Email/Password", client: true };
 
     if (handle !== profile.handle) throw { message: "Invalid Email/Password", client: true };
