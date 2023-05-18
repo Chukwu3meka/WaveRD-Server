@@ -25,9 +25,9 @@ export default async (req: Request, res: Response) => {
     await CONTACT_US.create({ category: "Data Deletion", comment, email });
 
     await pushMail({
+      address: email,
       account: "accounts",
       template: "dataDeletion",
-      address: email,
       subject: "SoccerMASS - Data Deletion",
       payload: { fullName: profile.fullName },
     });
