@@ -6,13 +6,7 @@ import { catchError, getIdFromSession } from "../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const cookie = req.cookies.SSID;
-    if (!cookie) throw { message: "User not Authenticated", client: true };
-
     return jwt.verify(cookie, <string>process.env.SECRET, async (err: any, decoded: any) => {
-      if (err) throw { message: "Invalid Cookie", client: true };
-      if (!decoded) throw { message: "Token not available", client: true };
-
       const id = getIdFromSession(decoded.session);
       if (!id) throw { message: "Suspicious token", client: true };
 

@@ -8,23 +8,24 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const cookie = req.cookies.SSID;
     if (!cookie) throw { message: "User not Authenticated" };
 
-    let grantAccess = false;
+    let errMessage;
 
     jwt.verify(cookie, <string>process.env.SECRET, async (err: any, decoded: any) => {
-      if (err || !decoded) return (grantAccess = false);
+      if (err) errMessage = "Invalid Cookie";
+      if (!decoded) errMessage = "Token not available";
 
       const { fullName, handle, session } = decoded;
 
       if (fullName && handle && session) {
         req.body = { ...req.body, auth: { id: getIdFromSession(session), fullName, handle } };
-        grantAccess = true;
+        errMessage = true;
         return;
       }
     });
 
-    if (grantAccess) return next(); //Port is important if the url has it
+    if (!!errMessage) return next(); //Port is important if the url has it
 
-    throw { message: "Invalid Cookie" };
+    throw { message: errMessage };
   } catch (err: any) {
     return catchError({ res, err });
   }
