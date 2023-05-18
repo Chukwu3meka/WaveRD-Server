@@ -59,8 +59,8 @@ const modelGenerator = (DB_NAME: string) => {
 };
 
 const apihubDatabase = modelGenerator("APIHUB"); // ? <= API Hub Database
-const logsDatabase = modelGenerator("LOGS"); // ? <= Server Logs Database
+const consoleDatabase = modelGenerator("CONSOLE"); // ? <= Server Logs Database
 const managerDatabase = modelGenerator("MANAGER"); // ? <= Soccer Manager Database
 const accountsDatabase = modelGenerator("ACCOUNTS"); // ? <= Accounts  Database
 
-export { accountsDatabase, logsDatabase, apihubDatabase, managerDatabase };
+export { accountsDatabase, consoleDatabase, apihubDatabase, managerDatabase };
