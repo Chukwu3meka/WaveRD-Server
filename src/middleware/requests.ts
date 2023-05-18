@@ -35,7 +35,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         {
           $inc: {
             apihub: domain === "apihub" ? 1 : 0,
-            logs: domain === "logs" ? 1 : 0,
+            console: domain === "console" ? 1 : 0,
             manager: domain === "manager" ? 1 : 0,
             accounts: domain === "accounts" ? 1 : 0,
           },
