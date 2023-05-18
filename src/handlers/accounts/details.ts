@@ -1,9 +1,9 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 
 import { PROFILE } from "../../models/accounts";
 import { catchError } from "../../utils/handlers";
 
-export default async (req: Request, res: Response, next: NextFunction) => {
+export default async (req: Request, res: Response) => {
   try {
     const { id } = req.body.auth;
 
@@ -14,11 +14,10 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     const { role, fullName, handle, theme } = profile;
 
-    const data = { success: true, message: `Cookie retrieved successfully`, payload: { theme, role, fullName, handle } };
+    const data = { success: true, message: `Profile details retrieved successfully`, payload: { theme, role, fullName, handle } };
 
     return res.status(200).json(data);
   } catch (err: any) {
-    err.status = 401;
     return catchError({ res, err });
   }
 };

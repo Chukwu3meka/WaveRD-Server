@@ -9,3 +9,5 @@ export const cookiesOption: CookieOptions = {
   secure: process.env.NODE_ENV === "production" ? true : false,
   domain: process.env.NODE_ENV === "production" ? ".soccermass.com" : "localhost",
 };
+
+export const themes = ["dark", "light"];
