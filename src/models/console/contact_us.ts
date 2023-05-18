@@ -3,11 +3,11 @@ import { Schema } from "mongoose";
 import { consoleDatabase } from "../database";
 
 const ContactUsSchema = new Schema({
-  date: { type: String, default: new Date().toDateString() },
-  category: { type: String, required: true },
-  email: { type: String },
+  contact: { type: String, required: true },
   comment: { type: String, required: true },
-  mobile: { type: String },
+  category: { type: String, required: true },
+  preference: { type: String, required: true },
+  date: { type: String, default: new Date().toDateString() },
 });
 
 const DailyStatModel = consoleDatabase.model("Contact_Us", ContactUsSchema);

@@ -1,6 +1,6 @@
 interface Validator {
   value: any;
-  type: "email" | "password" | "handle" | "fullName";
+  type: "email" | "password" | "handle" | "fullName" | "comment";
   label?: string | null;
 }
 
@@ -51,6 +51,14 @@ const validator = ({ value, type, label }: Validator) => {
         throw {
           message: `${label} can only have one or more letters, with optional dashes, dots, spaces, or hyphens, as long as they are followed by one or more letters.`,
         };
+      break;
+    }
+
+    case "comment": {
+      charLengthLimit(20, 700);
+
+      const reg = /^[a-zA-Z0-9,.!? ]$/;
+      if (!reg.test(value)) throw { message: `${label} can only have letters, Numbers, comma, dot, exclamation and question mark.` };
       break;
     }
 

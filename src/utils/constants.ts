@@ -11,3 +11,5 @@ export const cookiesOption: CookieOptions = {
 };
 
 export const themes = ["dark", "light"];
+
+export const contactPreferences = ["email", "whatsapp"];
