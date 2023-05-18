@@ -3,24 +3,36 @@ import { Request, Response } from "express";
 import { PROFILE } from "../../models/accounts";
 import { catchError, requestHasBody } from "../../utils/handlers";
 
+import pushMail from "../../utils/pushMail";
+
 export default async (req: Request, res: Response) => {
   try {
-    requestHasBody({ body: req.body, required: ["theme"] });
-    const { theme } = req.body;
+    requestHasBody({ body: req.body, required: ["email", "handle", "comment", "password"] });
+    const { email, handle, comment, password, auth } = req.body;
 
-    // req.body, auth: { id
+    const profile = await PROFILE.findOne({ _id: auth.id, email });
+    if (!profile || !profile.auth) throw { message: "Invalid Email/Password", client: true };
 
-    // await PROFILE.findOneAndUpdate(
-    //   { _id: id, ["auth.otp.code"]: gear, ["auth.otp.purpose"]: "email verification", ["auth.verification.email"]: null },
-    //   {
-    //     $set: {
-    //       ["auth.verification.email"]: Date.now(),
-    //       ["auth.otp"]: { code: null, purpose: null, time: null },
-    //     },
-    //   }
-    // );
+    const matchPassword = await PROFILE.comparePassword(password, profile.auth?.password);
 
-    const data = { success: true, message: `Theme set to ${theme}`, payload: null };
+    if (!matchPassword) throw { message: "Invalid Email/Password", client: true };
+
+    if (handle !== profile.handle) throw { message: "Invalid Email/Password", client: true };
+
+    await PROFILE.findOneAndUpdate(auth.id, { $set: { ["auth.deletion"]: new Date() } });
+
+    //! Add deletion comment to logs
+    // comment
+
+    await pushMail({
+      account: "accounts",
+      template: "dataDeletion",
+      address: email,
+      subject: "SoccerMASS - Data Deletion",
+      payload: { fullName: profile.fullName },
+    });
+
+    const data = { success: true, message: `Data deletion initiated`, payload: null };
 
     res.status(201).json(data);
   } catch (err: any) {

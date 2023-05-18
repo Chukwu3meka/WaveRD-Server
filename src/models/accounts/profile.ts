@@ -14,6 +14,7 @@ const ProfileSchema = new Schema(
     status: { type: String, default: "active" }, // ? active || suspended
     handle: { type: String, required: true }, // ? Unique but we don't want index created on this
     theme: { type: String, required: true, default: "light" },
+    deletion: { type: Date, default: null },
     auth: {
       session: { type: String },
       locked: { type: Date, default: null },
