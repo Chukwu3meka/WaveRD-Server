@@ -1,9 +1,8 @@
 import bcrypt from "bcryptjs";
 import { Schema } from "mongoose";
-import { v4 as uuid } from "uuid";
 
 import { accountsDatabase } from "../database";
-import { generateSession, calcFutureDate, range } from "../../utils/handlers";
+import { generateSession } from "../../utils/handlers";
 
 const ProfileSchema = new Schema(
   {
@@ -14,10 +13,10 @@ const ProfileSchema = new Schema(
     status: { type: String, default: "active" }, // ? active || suspended
     handle: { type: String, required: true }, // ? Unique but we don't want index created on this
     theme: { type: String, required: true, default: "light" },
-    deletion: { type: Date, default: null },
     auth: {
       session: { type: String },
       locked: { type: Date, default: null },
+      deletion: { type: Date, default: null },
       password: { type: String, required: true },
 
       failedAttempts: {
