@@ -18,9 +18,8 @@ router.route("/cookies").get(personal.cookies);
 router.route("/signout").get(personal.signout);
 router.route("/forgot-password").post(personal.forgotPassword);
 router.route("/reset-password").post(personal.resetPassword);
-// router.route("/theme").post(securedRoute, personal.theme);
-router.route("/theme").post(personal.theme);
-router.route("/theme").post(personal.dataDeletion);
+router.route("/theme").post(securedRoute, personal.theme);
+router.route("/data-deletion").post(securedRoute, personal.dataDeletion);
 
 // router.route("/:club/players").get(club.clubPlayers);
 

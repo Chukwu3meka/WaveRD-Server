@@ -4,8 +4,6 @@ import { Request, Response, NextFunction } from "express";
 import { catchError, getIdFromSession } from "../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
-  console.log("dsfdsfdfdsfd");
-
   try {
     const cookie = req.cookies.SSID;
     if (!cookie) throw { message: "User not Authenticated" };

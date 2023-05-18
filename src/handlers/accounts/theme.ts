@@ -6,19 +6,9 @@ import { catchError, requestHasBody } from "../../utils/handlers";
 export default async (req: Request, res: Response) => {
   try {
     requestHasBody({ body: req.body, required: ["theme"] });
-    const { theme } = req.body;
+    const { theme, auth } = req.body;
 
-    // req.body, auth: { id
-
-    // await PROFILE.findOneAndUpdate(
-    //   { _id: id, ["auth.otp.code"]: gear, ["auth.otp.purpose"]: "email verification", ["auth.verification.email"]: null },
-    //   {
-    //     $set: {
-    //       ["auth.verification.email"]: Date.now(),
-    //       ["auth.otp"]: { code: null, purpose: null, time: null },
-    //     },
-    //   }
-    // );
+    await PROFILE.findOneAndUpdate(auth.id, { $set: { theme } });
 
     const data = { success: true, message: `Theme set to ${theme}`, payload: null };
 
