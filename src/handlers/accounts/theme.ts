@@ -9,7 +9,7 @@ export default async (req: Request, res: Response) => {
     requestHasBody({ body: req.body, required: ["theme"] });
     const { theme, auth } = req.body;
 
-    if (!themes.includes(theme)) throw { message: "Invalid theme used", client: true };
+    if (!themes.includes(theme)) throw { message: "Invalid theme used", error: true };
 
     await PROFILE.findOneAndUpdate(auth.id, { $set: { theme } });
 

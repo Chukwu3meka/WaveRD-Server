@@ -9,8 +9,8 @@ export default async (req: Request, res: Response) => {
     requestHasBody({ body: req.body, required: ["category", "comment"] });
     const { category, comment, contact, preference } = req.body;
 
-    if (!contactPreferences.includes(preference)) throw { message: "Preference is invalid", client: true };
-    if (!["others", "advertising", "technical", "suggestion", "service"].includes(category)) throw { message: "Invalid category specified", client: true };
+    if (!contactPreferences.includes(preference)) throw { message: "Preference is invalid", error: true };
+    if (!["others", "advertising", "technical", "suggestion", "service"].includes(category)) throw { message: "Invalid category specified", error: true };
 
     await CONTACT_US.create({ category, comment, contact, preference });
 

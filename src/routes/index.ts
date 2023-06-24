@@ -8,10 +8,12 @@ import * as corsOptions from "../utils/corsOptions";
 // routes
 import console from "./console";
 import accounts from "./accounts";
+import apihub from "./apihub";
 
 export default (app: Application) => {
   app.use("/v1/console/", cors(corsOptions.accounts), console);
   app.use("/v1/accounts/", cors(corsOptions.accounts), accounts); // <= public console
+  app.use("/v1/apihub/", cors(corsOptions.accounts), apihub); // <= public console
 
   // app.use("/console/", cors(corsOptions.accounts), console); // <= private console
 

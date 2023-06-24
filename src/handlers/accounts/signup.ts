@@ -13,11 +13,11 @@ export default async (req: Request, res: Response) => {
 
     // ? check if email is taken alread
     const emailTaken = await emailExistsFn(email);
-    if (emailTaken) throw { message: "Email already in use, Kindly use a different email address", client: true };
+    if (emailTaken) throw { message: "Email already in use, Kindly use a different email address", error: true };
 
     // ? check if handle is taken alread
     const handleTaken = await handleExistsFn(handle);
-    if (handleTaken) throw { message: "Handle already in use, Kindly use a different handle", client: true };
+    if (handleTaken) throw { message: "Handle already in use, Kindly use a different handle", error: true };
 
     return await PROFILE.create({ email, handle, fullName, "auth.password": password })
       .then(async (dbResponse: any) => {

@@ -12,13 +12,13 @@ export default async (req: Request, res: Response) => {
     const { email, handle, comment, password, auth } = req.body;
 
     const profile: any = await PROFILE.findOne({ _id: auth.id, email });
-    if (!profile || !profile.auth) throw { message: "Invalid Email/Password", client: true };
-    if (profile.auth.deletion) throw { message: "Data deletion already initiated", client: true };
+    if (!profile || !profile.auth) throw { message: "Invalid Email/Password", error: true };
+    if (profile.auth.deletion) throw { message: "Data deletion already initiated", error: true };
 
     const matchPassword = await PROFILE.comparePassword(password, profile.auth?.password);
-    if (!matchPassword) throw { message: "Invalid Email/Password", client: true };
+    if (!matchPassword) throw { message: "Invalid Email/Password", error: true };
 
-    if (handle !== profile.handle) throw { message: "Invalid Email/Password", client: true };
+    if (handle !== profile.handle) throw { message: "Invalid Email/Password", error: true };
 
     await PROFILE.findOneAndUpdate(auth.id, { $set: { ["auth.deletion"]: new Date() } });
 

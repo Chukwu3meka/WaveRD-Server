@@ -11,7 +11,7 @@ export default async (req: Request, res: Response) => {
       subGears = gear.split("-"),
       id = subGears[subGears.length - 2];
 
-    if (!id) throw { message: "Account", client: true };
+    if (!id) throw { message: "Account", error: true };
 
     const updated = await PROFILE.findOneAndUpdate(
       { _id: id, ["auth.otp.code"]: gear, ["auth.otp.purpose"]: "email verification", ["auth.verification.email"]: null },

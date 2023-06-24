@@ -4,8 +4,10 @@ import { apihubDatabase } from "../database";
 
 const EndpointSchema = new Schema({
   title: { type: String, required: true },
-  latency: { type: String, required: true },
   rating: { type: Number, required: true },
+  method: { type: String, required: true },
+  category: { type: String, required: true },
+  latency: { type: String, required: true },
   description: { type: String, required: true },
   codeSnippet: { type: String, required: true },
   successResponse: [
@@ -22,6 +24,6 @@ const EndpointSchema = new Schema({
   ],
 });
 
-const EndpointModel = apihubDatabase.model("Clubs", EndpointSchema);
+const EndpointModel = apihubDatabase.model("Endpoints", EndpointSchema);
 
 export default EndpointModel;

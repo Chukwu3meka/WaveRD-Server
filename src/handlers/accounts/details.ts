@@ -9,8 +9,8 @@ export default async (req: Request, res: Response) => {
 
     const profile = await PROFILE.findById(id);
 
-    if (!profile) throw { message: "Can't find associated profile", client: true };
-    if (profile.status !== "active") throw { message: "Account not active", client: true };
+    if (!profile) throw { message: "Can't find associated profile", error: true };
+    if (profile.status !== "active") throw { message: "Account not active", error: true };
 
     const { role, fullName, handle, theme } = profile;
 

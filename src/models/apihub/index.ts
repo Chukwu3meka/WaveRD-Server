@@ -1,4 +1,4 @@
 import CLUB from "./club";
-import ENDPOINT from "./endpoints";
+import ENDPOINTS from "./endpoints";
 
-export { CLUB, ENDPOINT };
+export { CLUB, ENDPOINTS };
