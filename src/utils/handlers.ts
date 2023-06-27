@@ -7,14 +7,14 @@ import { CatchError } from "../interface/utils-handlers-interface";
 
 export const catchError = async ({ res, err }: CatchError) => {
   const { request = null, ...payload } = res.req.body,
-    { client = false, status = 400, message = null, respond = true } = err || [];
+    { error = false, status = 400, message = null, respond = true } = err || [];
 
   // // handle api calls rejected by requests middleware
   if (message !== "invalid endpoint") await FAILED_REQUESTS.create({ error: err, payload, request });
 
   if (<string>process.env.NODE_ENV === "development")
     console.error(request ? `${request.endpoint} <<<>>> ${JSON.stringify(message).replaceAll('"', "")}` : `${res.req.url} <<<>>> Invalid route`);
-  if (respond) res.status(status).json({ success: false, message: client ? message : "Unable to process request", payload: null });
+  if (respond) res.status(status).json({ success: false, message: error ? message : "Unable to process request", payload: null });
 };
 
 export const sleep = async (seconds: number) => {
@@ -22,11 +22,11 @@ export const sleep = async (seconds: number) => {
   return new Promise((resolve) => setTimeout(resolve, duration));
 };
 
-export const requestHasBody = ({ body, required }: { body: { [key: string]: any }; required: string[] }) => {
+export const requestHasBody = ({ body, required, error = false }: { body: { [key: string]: any }; required: string[]; error?: boolean }) => {
   // console.log({ body, required });
 
   for (const x of required) {
-    if (body[x] === undefined) throw { message: `${x} is not defined` };
+    if (body[x] === undefined) throw { message: `${x} is not defined`, error: error };
   }
 
   // const validate = require("./validator").validate;

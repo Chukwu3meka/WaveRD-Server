@@ -18,7 +18,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
 
     const profile = await PROFILE.findOne({ email });
     if (!profile || !profile.auth || !profile.auth.verification || !profile.auth.failedAttempts || !profile.auth.otp)
-      throw { message: "Email not associated with any account", client: true }; // <= verify that account exist, else throw an error
+      throw { message: "Email not associated with any account", error: true }; // <= verify that account exist, else throw an error
 
     const {
       id,
@@ -34,12 +34,12 @@ const oAuthFunc = async (req: Request, res: Response) => {
     } = profile;
 
     if (accountStatus !== "active")
-      throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", client: true };
+      throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", error: true };
 
     // update acount lock/security settings
     if (locked) {
       const hoursElapsed = hourDiff(locked) <= 1; // ? <= check if account has been locked for 1 hours
-      if (hoursElapsed) throw { message: "Account is temporarily locked, Please try again later", client: true };
+      if (hoursElapsed) throw { message: "Account is temporarily locked, Please try again later", error: true };
 
       await PROFILE.findByIdAndUpdate(id, { $set: { ["auth.locked"]: null, ["auth.failedAttempts.counter"]: 0, ["auth.failedAttempts.lastAttempt"]: null } });
     }
@@ -70,13 +70,13 @@ const oAuthFunc = async (req: Request, res: Response) => {
 
         throw {
           message: "Verify your email to activate Your SoccerMASS account, kindly check your email inbox/spam for the most recent verification email from us",
-          client: true,
+          error: true,
         };
       }
 
       throw {
         message: `Kindly check your inbox/spam for our latest verification email that was sent ${hoursElapsed + 3 ? "few hours" : "less than an hour"} ago`,
-        client: true,
+        error: true,
       };
     }
 

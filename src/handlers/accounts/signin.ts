@@ -13,7 +13,7 @@ export default async (req: Request, res: Response) => {
 
     const profile = await PROFILE.findOne({ email });
     if (!profile || !profile.auth || !profile.auth.verification || !profile.auth.failedAttempts || !profile.auth.otp)
-      throw { message: "Invalid Email/Password", client: true }; // <= verify that account exist, else throw an error
+      throw { message: "Invalid Email/Password", error: true }; // <= verify that account exist, else throw an error
 
     const {
       id,
@@ -32,7 +32,7 @@ export default async (req: Request, res: Response) => {
     } = profile;
 
     if (accountStatus !== "active")
-      throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", client: true };
+      throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", error: true };
 
     const matchPassword = await PROFILE.comparePassword(authPassword, password);
 
@@ -57,13 +57,13 @@ export default async (req: Request, res: Response) => {
         await PROFILE.findByIdAndUpdate(id, { $inc: { ["auth.failedAttempts.counter"]: 1 }, $set: { ["auth.failedAttempts.lastAttempt"]: new Date() } });
       }
 
-      throw { message: "Invalid Email/Password", client: true };
+      throw { message: "Invalid Email/Password", error: true };
     }
 
     // update acount lock/security settings
     if (locked) {
       const accLocked = hourDiff(locked) <= 1; // ? <= check if account has been locked for 1 hours
-      if (accLocked) throw { message: "Account is temporarily locked, Please try again later", client: true };
+      if (accLocked) throw { message: "Account is temporarily locked, Please try again later", error: true };
 
       await PROFILE.findByIdAndUpdate(id, { $set: { ["auth.locked"]: null, ["auth.failedAttempts.counter"]: 0, ["auth.failedAttempts.lastAttempt"]: null } });
     }
@@ -95,13 +95,13 @@ export default async (req: Request, res: Response) => {
 
         throw {
           message: "Kindly check your email inbox/spam for a verification email we just sent",
-          client: true,
+          error: true,
         };
       }
 
       throw {
         message: `Kindly check your inbox/spam for our latest verification email from SoccerMASS`,
-        client: true,
+        error: true,
       };
     }
 

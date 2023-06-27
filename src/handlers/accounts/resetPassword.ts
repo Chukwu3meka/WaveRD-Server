@@ -10,11 +10,11 @@ export default async (req: Request, res: Response) => {
     const { email, password, gear } = req.body;
 
     const profile = await PROFILE.findOne({ email, ["auth.otp.code"]: gear });
-    if (!profile || !profile.auth || !profile.auth.otp) throw { message: "Invalid password reset link", client: true }; // <= verify that account exist, else throw an error
+    if (!profile || !profile.auth || !profile.auth.otp) throw { message: "Invalid password reset link", error: true }; // <= verify that account exist, else throw an error
 
     if (profile.auth.otp.purpose === "password reset") {
       const otpSentRecently = hourDiff(profile.auth.otp.time) > 3;
-      if (otpSentRecently) throw { message: "Password reset link has expired", client: true };
+      if (otpSentRecently) throw { message: "Password reset link has expired", error: true };
     }
 
     const hashedPassword = await PROFILE.hashPassword(password);
