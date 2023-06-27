@@ -4,13 +4,12 @@ import { apihubDatabase } from "../database";
 
 const EndpointSchema = new Schema({
   title: { type: String, required: true },
-  rating: { type: Number, required: true },
   method: { type: String, required: true },
   category: { type: String, required: true },
   latency: { type: String, required: true },
   description: { type: String, required: true },
-  codeSnippet: { type: String, required: true },
-  successResponse: [
+  snippet: { type: String, required: true },
+  response: [
     {
       ref: { type: String, required: true },
       title: { type: String, required: true },

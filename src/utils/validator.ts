@@ -65,10 +65,10 @@ const validator = ({ value, type, label, error = false }: Validator) => {
       }
 
       case "phrase": {
-        charLengthLimit(1, 50);
+        // charLengthLimit(1, 50);
 
-        const reg = /^[\w\d]+(?:[,-.\s!]?[\w\d]+)*$/;
-        if (!reg.test(value)) throw { message: `${label} can only have letters, Numbers, comma, dot, and exclamation.` };
+        // const reg = /^[\w\d]+(?:[,-.\s!]?[\w\d]+)*$/;
+        // if (!reg.test(value)) throw { message: `${label} can only have letters, Numbers, comma, dot, and exclamation.` };
         break;
       }
 
