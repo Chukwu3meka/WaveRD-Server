@@ -6,7 +6,8 @@ import * as apihub from "../handlers/apihub";
 const router = express.Router({ caseSensitive: true, strict: true });
 
 // routes
-router.route("/search-endpoints").get(apihub.searchEndpoints);
+// router.route("/search-endpoints").get(apihub.searchEndpoints);
+router.route("/endpoints/search").get(apihub.searchEndpoints);
 router.route("/endpoints").get(apihub.getEndpoints);
 router.route("/endpoints/:id").get(apihub.getEndpoint);
 

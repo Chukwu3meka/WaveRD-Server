@@ -7,11 +7,11 @@ import { Request, Response } from "express";
 
 export default async (req: Request, res: Response) => {
   try {
-    requestHasBody({ body: req.query, required: ["phrase"], error: true });
+    requestHasBody({ body: req.query, required: ["query"], error: true });
 
-    const { phrase = " " } = req.query;
+    const { query } = req.query;
 
-    validator({ type: "phrase", value: phrase, error: true });
+    validator({ type: "query", value: query, error: true });
 
     const result = await ENDPOINTS.aggregate([
       {
@@ -19,15 +19,15 @@ export default async (req: Request, res: Response) => {
           index: "default",
           compound: {
             should: [
-              { autocomplete: { query: phrase, path: "title", score: { boost: { value: 3 } }, fuzzy: { maxEdits: 2, prefixLength: 3 } } },
-              { text: { query: phrase, path: "description" } },
-              { text: { query: phrase, path: "category" } },
+              { autocomplete: { query, path: "title", score: { boost: { value: 3 } }, fuzzy: { maxEdits: 2, prefixLength: 3 } } },
+              { text: { query, path: "description" } },
+              { text: { query, path: "category" } },
             ],
           },
         },
       },
-      { $project: { _id: 0, id: "$_id", title: 1, category: 1, description: 1, score: { $meta: "searchScore" } } },
-      { $limit: 10 },
+      { $project: { _id: 0, id: "$_id", title: 1, description: 1, score: { $meta: "searchScore" } } },
+      { $limit: 5 },
     ]);
 
     const data = {
