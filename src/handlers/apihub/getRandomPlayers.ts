@@ -23,8 +23,8 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       {
         $project: {
           _id: 0,
-          id: "$_id",
           name: 1,
+          id: "$_id",
           country: 1,
           club: { $arrayElemAt: ["$clubs.title", 0] },
           dob: { $dateToString: { format: "%Y-%m-%d", date: "$dob" } },

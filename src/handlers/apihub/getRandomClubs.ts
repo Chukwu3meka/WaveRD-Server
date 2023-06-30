@@ -23,11 +23,11 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       {
         $project: {
           _id: 0,
-          id: "$_id",
           title: 1,
+          id: "$_id",
           stadium: 1,
-          location: 1,
           manager: 1,
+          location: 1,
         },
       },
 
