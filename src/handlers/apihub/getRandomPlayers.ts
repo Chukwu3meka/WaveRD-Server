@@ -5,8 +5,8 @@ import { catchError } from "../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { limit = 5 } = req.query;
-    if (limit && Number(limit) > 5) throw { message: "Limit must not exceed 5", error: true };
+    const { limit = 3 } = req.query;
+    if (limit && Number(limit) > 3) throw { message: "Limit must not exceed 3", error: true };
 
     const result = await PLAYERS.aggregate([
       { $sample: { size: Number(limit) } },
@@ -25,9 +25,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
           _id: 0,
           id: "$_id",
           name: 1,
-          value: 1,
-          roles: 1,
-          rating: 1,
           country: 1,
           club: { $arrayElemAt: ["$clubs.title", 0] },
           dob: { $dateToString: { format: "%Y-%m-%d", date: "$dob" } },
