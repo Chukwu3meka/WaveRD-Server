@@ -13,7 +13,7 @@ export default async (req: Request, res: Response) => {
 
     await PROFILE.findOneAndUpdate(auth.id, { $set: { theme } });
 
-    const data = { success: true, message: `Theme set to ${theme}`, payload: null };
+    const data = { success: true, message: `Theme set to ${theme}`, data: null };
 
     res.status(201).json(data);
   } catch (err: any) {

@@ -42,10 +42,10 @@ export default async (req: Request, res: Response) => {
 
       // Notify user on Login Attempt
       if ([5, 6].includes(failedAttempts))
-        await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt - SoccerMASS", payload: { fullName } });
+        await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt - SoccerMASS", data: { fullName } });
 
       if (failedAttempts === 7)
-        await pushMail({ account: "accounts", template: "lockNotice", address: email, subject: "Account Lock Notice - SoccerMASS", payload: { fullName } });
+        await pushMail({ account: "accounts", template: "lockNotice", address: email, subject: "Account Lock Notice - SoccerMASS", data: { fullName } });
 
       // Increment record on Database
       if (failedAttempts >= 7 && hoursElapsed < 1) {
@@ -87,7 +87,7 @@ export default async (req: Request, res: Response) => {
           template: "reVerifyEmail",
           address: email,
           subject: "Verify your email to activate Your SoccerMASS account",
-          payload: {
+          data: {
             activationLink: `${process.env.SERVER_DOMAIN}/v1/accounts/verify-email?gear=${newOTP.code}`,
             fullName,
           },
@@ -106,9 +106,9 @@ export default async (req: Request, res: Response) => {
     }
 
     const SSIDJwtToken = jwt.sign({ session, fullName, handle }, process.env.SECRET as string, { expiresIn: "180 days" }),
-      data = { success: true, message: "Email/Password is Valid.", payload: { role, fullName, handle } };
+      data = { success: true, message: "Email/Password is Valid.", data: { role, fullName, handle } };
 
-    await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", payload: { fullName } });
+    await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", data: { fullName } });
 
     res.status(200).cookie("SSID", SSIDJwtToken, cookiesOption).json(data);
   } catch (err: any) {

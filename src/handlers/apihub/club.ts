@@ -18,7 +18,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       .then((clubData) => {
         if (!clubData) throw { message: `No club was located with the ID: '${id}'.` };
 
-        const data = { success: true, message: `Club data for ${clubData.title} found}`, payload: clubData };
+        const data = { success: true, message: `Club data for ${clubData.title} found}`, data: clubData };
         return res.status(200).json(data);
       })
       .catch(() => {

@@ -20,7 +20,7 @@ export default async (req: Request, res: Response) => {
     const { handle } = req.body;
     const handleExists = await handleExistsFn(handle);
 
-    const data = { success: true, message: `${handle} is ${handleExists ? "taken" : "available"}`, payload: { exists: handleExists } };
+    const data = { success: true, message: `${handle} is ${handleExists ? "taken" : "available"}`, data: { exists: handleExists } };
 
     res.status(200).json(data);
   } catch (err: any) {

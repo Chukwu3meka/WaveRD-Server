@@ -26,12 +26,12 @@ export default async (req: Request, res: Response) => {
         address: email,
         account: "accounts",
         template: "resetPassword",
-        payload: { fullName: profile.fullName },
+        data: { fullName: profile.fullName },
         subject: "SoccerMASS Password Reset Confirmation",
       });
     });
 
-    const data = { success: true, message: "Password reset successful", payload: null }; // Always return true whether successful or failed
+    const data = { success: true, message: "Password reset successful", data: null }; // Always return true whether successful or failed
     return res.status(201).json(data);
   } catch (err: any) {
     return catchError({ res, err });

@@ -17,7 +17,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       }
     }
 
-    const data = { success: true, payload: byCategory, message: "Endpoints Successfully retrieved" };
+    const data = { success: true, data: byCategory, message: "Endpoints Successfully retrieved" };
 
     return res.status(200).json(data);
   } catch (err: any) {

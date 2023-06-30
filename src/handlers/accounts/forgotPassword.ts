@@ -5,7 +5,7 @@ import { PROFILE } from "../../models/accounts";
 import { catchError, hourDiff, generateSession, calcFutureDate, requestHasBody } from "../../utils/handlers";
 
 export default async (req: Request, res: Response) => {
-  const data = { success: true, message: "Password reset link sent", payload: null }; // Always return true whether successful or failed
+  const data = { success: true, message: "Password reset link sent", data: null }; // Always return true whether successful or failed
 
   try {
     requestHasBody({ body: req.body, required: ["email"] });
@@ -31,7 +31,7 @@ export default async (req: Request, res: Response) => {
         template: "forgotPassword",
         address: email,
         subject: "SoccerMASS Password Reset Request",
-        payload: {
+        data: {
           activationLink: `${process.env.CLIENT_DOMAIN}/accounts/reset-password?gear=${otp.code}`,
           fullName: profile.fullName,
         },

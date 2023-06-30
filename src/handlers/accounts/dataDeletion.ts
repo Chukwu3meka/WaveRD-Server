@@ -29,10 +29,10 @@ export default async (req: Request, res: Response) => {
       account: "accounts",
       template: "dataDeletion",
       subject: "SoccerMASS - Data Deletion",
-      payload: { fullName: profile.fullName },
+      data: { fullName: profile.fullName },
     });
 
-    const data = { success: true, message: `Data deletion initiated`, payload: null };
+    const data = { success: true, message: `Data deletion initiated`, data: null };
 
     res.status(201).json(data);
   } catch (err: any) {

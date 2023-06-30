@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { catchError } from "../../utils/handlers";
 
 export default async (req: Request, res: Response) => {
-  const data = { success: true, message: `Success`, payload: null };
+  const data = { success: true, message: `Success`, data: null };
 
   try {
     res.status(201).json(data);

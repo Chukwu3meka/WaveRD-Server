@@ -32,14 +32,14 @@ export default async (req: Request, res: Response) => {
 
     const data = {
       success: true,
-      payload: result,
+      data: result,
       message: result.length ? "Endpoints similar to Search Phrase retrieved" : "Could not match endpoints with search phrase",
     };
 
     return res.status(200).json(data);
   } catch (err: any) {
     if (err.error && err.type === "validator") {
-      const data = { success: true, message: "Endpoints could not be retrieved", payload: [] };
+      const data = { success: true, message: "Endpoints could not be retrieved", data: [] };
       return res.status(200).json(data);
     }
 

@@ -16,7 +16,7 @@ export default async (req: Request, res: Response) => {
     const { email } = req.body;
 
     const emailExists = await emailExistsFn(email);
-    const data = { success: true, message: `${email} is ${emailExists ? "taken" : "available"}`, payload: { exists: emailExists } };
+    const data = { success: true, message: `${email} is ${emailExists ? "taken" : "available"}`, data: { exists: emailExists } };
 
     res.status(200).json(data);
   } catch (err: any) {

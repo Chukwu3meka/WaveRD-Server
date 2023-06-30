@@ -36,7 +36,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     if (!result) throw { message: "Unable to retrieve Players", error: true };
 
-    const data = { success: true, payload: result, message: "Players Successfully retrieved" };
+    const data = { success: true, data: result, message: "Players Successfully retrieved" };
 
     return res.status(200).json(data);
   } catch (err: any) {

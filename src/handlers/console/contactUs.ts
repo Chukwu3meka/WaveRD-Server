@@ -14,7 +14,7 @@ export default async (req: Request, res: Response) => {
 
     await CONTACT_US.create({ category, comment, contact, preference });
 
-    const data = { success: true, message: `Notice sent successfully`, payload: null };
+    const data = { success: true, message: `Notice sent successfully`, data: null };
 
     res.status(201).json(data);
   } catch (err: any) {

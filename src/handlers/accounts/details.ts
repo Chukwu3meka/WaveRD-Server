@@ -14,7 +14,7 @@ export default async (req: Request, res: Response) => {
 
     const { role, fullName, handle, theme } = profile;
 
-    const data = { success: true, message: `Profile details retrieved successfully`, payload: { theme, role, fullName, handle } };
+    const data = { success: true, message: `Profile details retrieved successfully`, data: { theme, role, fullName, handle } };
 
     return res.status(200).json(data);
   } catch (err: any) {
