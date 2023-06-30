@@ -1,21 +1,40 @@
 import { NextFunction, Request, Response } from "express";
 
-import { isValidObjectId } from "mongoose";
-import { ENDPOINTS } from "../../models/apihub";
-import { catchError, requestHasBody } from "../../utils/handlers";
+import { PLAYERS } from "../../models/apihub";
+import { catchError } from "../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
-    requestHasBody({ body: req.query, required: ["limit"], error: true });
-    let { limitStr } = req.query;
-    const limit = Number(limitStr);
+    const { limit = 20 } = req.query;
+    if (limit && Number(limit) > 20) throw { message: "Limit must not exceed 20", error: true };
 
-    if (limit > 20) throw { message: "Limit must not exceed 20", error: true };
-
-    const result = await ENDPOINTS.aggregate([
+    const result = await PLAYERS.aggregate([
       { $sample: { size: 20 } },
-      { $project: { _id: 0, id: "$_id", title: 1, description: 1, snippet: 1, response: 1 } },
-      { $limit: limit },
+
+      {
+        $lookup: {
+          from: "clubs",
+          localField: "club",
+          foreignField: "_id",
+          as: "clubs",
+        },
+      },
+
+      {
+        $project: {
+          _id: 0,
+          name: 1,
+          value: 1,
+          roles: 1,
+          rating: 1,
+          country: 1,
+          id: "$_id",
+          club: { $arrayElemAt: ["$clubs.title", 0] },
+          dob: { $dateToString: { format: "%Y-%m-%d", date: "$dob" } },
+        },
+      },
+
+      { $limit: Number(limit) },
     ]);
 
     if (!result) throw { message: "Unable to retrieve Players", error: true };
