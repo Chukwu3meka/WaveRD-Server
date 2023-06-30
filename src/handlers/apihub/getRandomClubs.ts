@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import { PLAYERS } from "../../models/apihub";
+import { CLUBS } from "../../models/apihub";
 import { catchError } from "../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
@@ -8,7 +8,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const { limit = 5 } = req.query;
     if (limit && Number(limit) > 5) throw { message: "Limit must not exceed 5", error: true };
 
-    const result = await PLAYERS.aggregate([
+    const result = await CLUBS.aggregate([
       { $sample: { size: Number(limit) } },
 
       {
@@ -24,13 +24,10 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         $project: {
           _id: 0,
           id: "$_id",
-          name: 1,
-          value: 1,
-          roles: 1,
-          rating: 1,
-          country: 1,
-          club: { $arrayElemAt: ["$clubs.title", 0] },
-          dob: { $dateToString: { format: "%Y-%m-%d", date: "$dob" } },
+          title: 1,
+          stadium: 1,
+          location: 1,
+          manager: 1,
         },
       },
 

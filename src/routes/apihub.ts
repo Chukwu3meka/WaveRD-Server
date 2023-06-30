@@ -15,6 +15,7 @@ router.route("/endpoints/:id").get(apihub.getEndpoint);
 
 // external
 router.route("/players/random").get(apihub.getRandomPlayers);
+router.route("/clubs/random").get(apihub.getRandomClubs);
 
 // router.route("/clubs/:id").get(hub.club);
 // // router.route("/:club/players").get(hub.clubPlayers);
