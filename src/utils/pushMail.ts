@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 import { PushMail } from "../interface/pushMail-handlers-interface";
 import * as templates from "../templates";
 
-export default async ({ account, template, address, subject, payload = {} }: PushMail) => {
+export default async ({ account, template, address, subject, data = {} }: PushMail) => {
   const emailAccount = account === "noreply" ? "NO_REPLY_EMAIL" : account === "accounts" ? "ACCOUNTS_EMAIL" : "CONTACT_US_EMAIL";
   const emailPassword = process.env.EMAIL_PASSWORD;
   const emailAddress = process.env[emailAccount];
@@ -164,7 +164,7 @@ export default async ({ account, template, address, subject, payload = {} }: Pus
                           <td align="left" style="font-size: 0px; padding: 10px 25px; word-break: break-word; line-height: 25px">
                             <div>
                               <p style="font-family: helvetica; font-size: 16px; text-align: left; color: #413f3f" ; line-height: 25px;>
-                                ${templates[template]({ ...payload })}
+                                ${templates[template]({ ...data })}
                               </p>
                             </div>
                           </td>

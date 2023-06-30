@@ -6,15 +6,15 @@ import { FAILED_REQUESTS } from "../models/console";
 import { CatchError } from "../interface/utils-handlers-interface";
 
 export const catchError = async ({ res, err }: CatchError) => {
-  const { request = null, ...payload } = res.req.body,
+  const { request = null, ...data } = res.req.body,
     { error = false, status = 400, message = null, respond = true } = err || [];
 
   // // handle api calls rejected by requests middleware
-  if (message !== "invalid endpoint") await FAILED_REQUESTS.create({ error: err, payload, request });
+  if (message !== "invalid endpoint") await FAILED_REQUESTS.create({ error: err, data, request });
 
   if (<string>process.env.NODE_ENV === "development")
     console.error(request ? `${request.endpoint} <<<>>> ${JSON.stringify(message).replaceAll('"', "")}` : `${res.req.url} <<<>>> Invalid route`);
-  if (respond) res.status(status).json({ success: false, message: error ? message : "Unable to process request", payload: null });
+  if (respond) res.status(status).json({ success: false, message: error ? message : "Unable to process request", data: null });
 };
 
 export const sleep = async (seconds: number) => {

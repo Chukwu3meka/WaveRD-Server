@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import validator from "../../utils/validator";
-import { CLUB } from "../../models/apihub";
+import { CLUBS } from "../../models/apihub";
 import { catchError, requestHasBody } from "../../utils/handlers";
 import { isValidObjectId } from "mongoose";
 
@@ -14,11 +14,11 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const isClubIDValid = isValidObjectId(id);
     if (!isClubIDValid) throw { message: `Invalid Club ID provided` };
 
-    return await CLUB.findById(id)
+    return await CLUBS.findById(id)
       .then((clubData) => {
         if (!clubData) throw { message: `No club was located with the ID: '${id}'.` };
 
-        const data = { success: true, message: `Club data for ${clubData.title} found}`, payload: clubData };
+        const data = { success: true, message: `Club data for ${clubData.title} found}`, data: clubData };
         return res.status(200).json(data);
       })
       .catch(() => {

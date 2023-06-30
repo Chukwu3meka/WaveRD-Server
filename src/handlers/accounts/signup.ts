@@ -27,9 +27,9 @@ export default async (req: Request, res: Response) => {
           activationLink: `${process.env.SERVER_DOMAIN}/v1/accounts/verify-email?gear=${dbResponse.auth.otp.code}`,
         };
 
-        await pushMail({ account: "accounts", template: "welcome", address: email, subject: "Welcome to SoccerMASS", payload: emailPayload });
+        await pushMail({ account: "accounts", template: "welcome", address: email, subject: "Welcome to SoccerMASS", data: emailPayload });
 
-        const data = { success: true, message: "Account created successfully", payload: null };
+        const data = { success: true, message: "Account created successfully", data: null };
 
         return res.status(201).json(data);
       })

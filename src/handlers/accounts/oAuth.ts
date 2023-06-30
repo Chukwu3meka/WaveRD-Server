@@ -62,7 +62,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
           template: "reVerifyEmail",
           address: email,
           subject: "Verify your email to activate Your SoccerMASS account",
-          payload: {
+          data: {
             activationLink: `${process.env.SERVER_DOMAIN}/v1/accounts/verify-email?gear=${newOTP.code}`,
             fullName,
           },
@@ -85,7 +85,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
     await pushMail({
       address: email,
       account: "accounts",
-      payload: { fullName },
+      data: { fullName },
       template: "successfulLogin",
       subject: `Successful Login to SoccerMASS via ${capitalize(auth)}`,
     });

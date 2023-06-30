@@ -4,7 +4,7 @@ import { consoleDatabase } from "../database";
 
 const FailedRequestsSchema = new Schema({
   error: { type: Object, required: true },
-  payload: { type: Object, required: true },
+  data: { type: Object, required: true },
   request: { type: Object, required: true },
   time: { type: String, default: Date.now() },
 });

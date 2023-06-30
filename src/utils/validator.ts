@@ -1,6 +1,6 @@
 interface Validator {
   value: any;
-  type: "email" | "password" | "handle" | "fullName" | "comment" | "phrase";
+  type: "email" | "password" | "handle" | "fullName" | "comment" | "query";
   label?: string | null;
   error?: boolean;
 }
@@ -64,8 +64,8 @@ const validator = ({ value, type, label, error = false }: Validator) => {
         break;
       }
 
-      case "phrase": {
-        // charLengthLimit(1, 50);
+      case "query": {
+        charLengthLimit(1, 50);
 
         // const reg = /^[\w\d]+(?:[,-.\s!]?[\w\d]+)*$/;
         // if (!reg.test(value)) throw { message: `${label} can only have letters, Numbers, comma, dot, and exclamation.` };

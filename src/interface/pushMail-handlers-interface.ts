@@ -1,7 +1,7 @@
 export interface PushMail {
   subject: string;
   address: string;
-  payload?: object;
+  data?: object;
   account: "noreply" | "accounts" | "contactus";
   template: "welcome" | "failedLogin" | "lockNotice" | "reVerifyEmail" | "successfulLogin" | "resetPassword" | "forgotPassword" | "dataDeletion";
 }

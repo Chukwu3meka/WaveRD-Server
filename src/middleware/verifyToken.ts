@@ -32,7 +32,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     throw { message: errMessage };
   } catch (err: any) {
-    res.status(401).json({ success: false, message: `User not Authenticated`, payload: null });
+    res.status(401).json({ success: false, message: `User not Authenticated`, data: null });
 
     err.respond = false;
     return catchError({ res, err });

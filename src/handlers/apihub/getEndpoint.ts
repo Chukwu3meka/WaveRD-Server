@@ -15,7 +15,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const result = await ENDPOINTS.findOne({ _id: id }, { _id: 0, id: "$_id", title: 1, description: 1, snippet: 1, response: 1 });
     if (!result) throw { message: "Unable to retrieve Endpoint", error: true };
 
-    const data = { success: true, payload: result, message: "Endpoint Successfully retrieved" };
+    const data = { success: true, data: result, message: "Endpoint Successfully retrieved" };
 
     return res.status(200).json(data);
   } catch (err: any) {
