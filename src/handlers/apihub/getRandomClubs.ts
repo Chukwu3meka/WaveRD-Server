@@ -5,8 +5,8 @@ import { catchError } from "../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { limit = 3 } = req.query;
-    if (limit && Number(limit) > 3) throw { message: "Limit must not exceed 3", error: true };
+    const { limit = 20 } = req.query;
+    if (limit && Number(limit) > 20) throw { message: "Limit must not exceed 20", error: true };
 
     const result = await CLUBS.aggregate([
       { $sample: { size: Number(limit) } },
