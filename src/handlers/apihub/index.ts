@@ -1,7 +1,7 @@
 import club from "./club";
 import searchEndpoints from "./searchEndpoints";
 import getEndpoints from "./getEndpoints";
-import getEndpoint from "./getEndpoint";
+import getEndpoint from "./endpoint";
 import getRandomPlayers from "./getRandomPlayers";
 import getRandomClubs from "./getRandomClubs";
 

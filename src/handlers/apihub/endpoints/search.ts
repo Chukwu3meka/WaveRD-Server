@@ -1,6 +1,6 @@
-import validator from "../../utils/validator";
-import { ENDPOINTS } from "../../models/apihub";
-import { catchError, requestHasBody } from "../../utils/handlers";
+import validator from "../../../utils/validator";
+import { ENDPOINTS } from "../../../models/apihub";
+import { catchError, requestHasBody } from "../../../utils/handlers";
 
 // interfaces
 import { Request, Response } from "express";
