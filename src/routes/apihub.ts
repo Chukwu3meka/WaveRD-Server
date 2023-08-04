@@ -11,18 +11,14 @@ const router = express.Router({ caseSensitive: true, strict: true });
 
 // internal
 router.route("/endpoints/search").get(apihub.searchEndpoints);
-router.route("/endpoints").get(apihub.getEndpoints);
-router.route("/endpoints/:id").get(apihub.getEndpoint);
+router.route("/endpoints").get(apihub.endpoints);
+router.route("/endpoints/:id").get(apihub.endpoint);
 
 // external
-router.route("/players/random").get(hubGuard, apihub.getRandomPlayers);
-router.route("/clubs/random").get(hubGuard, apihub.getRandomClubs);
+router.route("/players/random").get(hubGuard, apihub.randomPlayers);
+router.route("/clubs/random").get(hubGuard, apihub.randomClubs);
+router.route("/clubs/:id").get(hubGuard, apihub.club);
 
-// router.route("/clubs/:id").get(hub.club);
-// // router.route("/:club/players").get(hub.clubPlayers);
-// // router.route("/email_exists").post(hub.clubDetails);
-// // router.route("/handle_exists").post(personal.handleExists);
-// // router.route("/add_account").post(personal.addAccount);
-// // router.route("/accounts").post(personal.auth);
+// router.route("/:club/players").get(hub.clubPlayers);
 
 export default router;

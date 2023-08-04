@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
 import { isValidObjectId } from "mongoose";
-import { ENDPOINTS } from "../../models/apihub";
-import { catchError, requestHasBody } from "../../utils/handlers";
+import { ENDPOINTS } from "../../../models/apihub";
+import { catchError, requestHasBody } from "../../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -12,7 +12,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const isClubIDValid = isValidObjectId(id);
     if (!isClubIDValid) throw { message: `Invalid Endpoint ID provided` };
 
-    const result = await ENDPOINTS.findOne({ _id: id }, { _id: 0, id: "$_id", title: 1, description: 1, snippet: 1, response: 1 });
+    const result = await ENDPOINTS.findOne({ _id: id }, { _id: 0, id: "$_id", title: 1, description: 1, snippets: 1, response: 1 });
     if (!result) throw { message: "Unable to retrieve Endpoint", error: true };
 
     const data = { success: true, data: result, message: "Endpoint Successfully retrieved" };

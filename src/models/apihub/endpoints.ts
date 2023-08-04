@@ -8,7 +8,10 @@ const EndpointSchema = new Schema({
   category: { type: String, required: true },
   latency: { type: String, required: true },
   description: { type: String, required: true },
-  snippet: { type: String, required: true },
+  snippets: {
+    curl: { title: { type: String, required: true }, snippet: { type: String, required: true } },
+    fetch: { title: { type: String, required: true }, snippet: { type: String, required: true } },
+  },
   response: { type: String, required: true },
 });
 

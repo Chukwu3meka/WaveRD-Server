@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
-import { ENDPOINTS } from "../../models/apihub";
-import { catchError } from "../../utils/handlers";
+import { ENDPOINTS } from "../../../models/apihub";
+import { catchError } from "../../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
