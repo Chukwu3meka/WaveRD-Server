@@ -9,7 +9,7 @@
     "kill-server": "pm2 kill",
     "api": "pm2 start process.json && pm2 logs",
     "build": "tsc",
-    "start": "node --watch ./dist/index.js",
+    "start": "node ./dist/index.js",
     "gateway": "node ../gateway/index.js"
   },
   "repository": {
