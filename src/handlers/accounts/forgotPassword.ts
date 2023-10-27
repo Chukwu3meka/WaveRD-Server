@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-
 import pushMail from "../../utils/pushMail";
+import validate from "../../utils/validator";
 import { PROFILE } from "../../models/accounts";
 import { catchError, hourDiff, generateSession, calcFutureDate, requestHasBody } from "../../utils/handlers";
 
@@ -11,19 +11,18 @@ export default async (req: Request, res: Response) => {
     requestHasBody({ body: req.body, required: ["email"] });
     const { email } = req.body;
 
+    // Validate request body before processing request
+    validate({ type: "email", value: email });
+
     const profile = await PROFILE.findOne({ email });
     if (!profile || !profile.auth || !profile.auth.otp) throw { message: "Email does not exists" }; // <= verify that account exist, else throw an error
 
-    if (profile.auth.otp.purpose === "password reset") {
-      const hoursElapsed = hourDiff(profile.auth.otp.time);
-      if (hoursElapsed <= 1) throw { message: "Password reset link sent recently" };
-    }
+    // if (profile.auth.otp.purpose === "password reset") {
+    //   const hoursElapsed = hourDiff(profile.auth.otp.time);
+    //   if (hoursElapsed <= 1) throw { message: "Password reset link sent recently", error: true };
+    // }
 
-    const otp = {
-      time: new Date(),
-      purpose: "password reset",
-      code: generateSession(profile.id),
-    };
+    const otp = { time: new Date(), purpose: "password reset", code: generateSession(profile.id) };
 
     await PROFILE.findByIdAndUpdate(profile.id, { $set: { ["auth.otp"]: otp } }).then(async () => {
       await pushMail({
@@ -32,7 +31,7 @@ export default async (req: Request, res: Response) => {
         address: email,
         subject: "SoccerMASS Password Reset Request",
         data: {
-          activationLink: `${process.env.CLIENT_DOMAIN}/accounts/reset-password?gear=${otp.code}`,
+          activationLink: `${process.env.API_URL}/accounts/reset-password?gear=${otp.code}`,
           fullName: profile.fullName,
         },
       });
@@ -40,9 +39,11 @@ export default async (req: Request, res: Response) => {
 
     return res.status(200).json(data);
   } catch (err: any) {
-    res.status(200).json(data);
+    if (!err.error) {
+      res.status(200).json(data);
+      err.respond = false;
+    }
 
-    err.respond = false;
     return catchError({ res, err });
   }
 };

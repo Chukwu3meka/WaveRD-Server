@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express";
 import pushMail from "../../utils/pushMail";
 import validator from "../../utils/validator";
 import { PROFILE } from "../../models/accounts";
-import { cookiesOption } from "../../utils/constants";
+import { clientCookiesOption } from "../../utils/constants";
 import { capitalize, catchError, hourDiff, generateSession, calcFutureDate, obfuscate } from "../../utils/handlers";
 
 import { PushMail } from "../../interface/pushMail-handlers-interface";
@@ -63,7 +63,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
           address: email,
           subject: "Verify your email to activate Your SoccerMASS account",
           data: {
-            activationLink: `${process.env.SERVER_DOMAIN}/v1/accounts/verify-email?gear=${newOTP.code}`,
+            activationLink: `${process.env.CLIENT_URL}/v1/accounts/verify-email?gear=${newOTP.code}`,
             fullName,
           },
         });
@@ -90,10 +90,10 @@ const oAuthFunc = async (req: Request, res: Response) => {
       subject: `Successful Login to SoccerMASS via ${capitalize(auth)}`,
     });
 
-    return res.cookie("SSID", SSIDJwtToken, cookiesOption).redirect(302, `${process.env.CLIENT_DOMAIN}`);
+    return res.cookie("SSID", SSIDJwtToken, clientCookiesOption).redirect(302, `${process.env.API_URL}`);
   } catch (err: any) {
-    const message = err.client ? err.message : "We encountered an oAuth error. Please wait and try again later";
-    return res.redirect(`${process.env.CLIENT_DOMAIN}/accounts/signin/?${auth}=${obfuscate(`${new Date()}`)}&response=${obfuscate(message)}`);
+    const message = err.error ? err.message : "We encountered an oAuth error. Kindly try again later or contact support if issue persists";
+    return res.redirect(`${process.env.CLIENT_URL}/accounts/signin/?${auth}=${obfuscate(`${new Date()}`)}&response=${obfuscate(message)}`);
   }
 };
 

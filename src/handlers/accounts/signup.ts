@@ -1,15 +1,22 @@
 import { Request, Response } from "express";
 
 import pushMail from "../../utils/pushMail";
+import validate from "../../utils/validator";
 import { emailExistsFn } from "./emailExists";
-import { PROFILE } from "../../models/accounts";
 import { handleExistsFn } from "./handleExists";
+import { PROFILE } from "../../models/accounts";
 import { catchError, requestHasBody } from "../../utils/handlers";
 
 export default async (req: Request, res: Response) => {
   try {
     requestHasBody({ body: req.body, required: ["email", "password", "fullName", "handle"] });
     const { email, password, fullName, handle } = req.body;
+
+    // Validate request body before processing request
+    validate({ type: "email", value: email });
+    validate({ type: "handle", value: handle });
+    validate({ type: "fullName", value: fullName });
+    validate({ type: "password", value: password });
 
     // ? check if email is taken alread
     const emailTaken = await emailExistsFn(email);
@@ -24,7 +31,7 @@ export default async (req: Request, res: Response) => {
         const emailPayload = {
           fullName,
           handle,
-          activationLink: `${process.env.SERVER_DOMAIN}/v1/accounts/verify-email?gear=${dbResponse.auth.otp.code}`,
+          activationLink: `${process.env.API_URL}/v1/accounts/verify-email?gear=${dbResponse.auth.otp.code}`,
         };
 
         await pushMail({ account: "accounts", template: "welcome", address: email, subject: "Welcome to SoccerMASS", data: emailPayload });
