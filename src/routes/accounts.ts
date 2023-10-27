@@ -2,10 +2,13 @@ import express from "express";
 
 // middleware
 import passport from "../middleware/passport";
+// import timeout from "connect-timeout";
+import timeout from "../middleware/timeout";
 import securedRoute from "../middleware/verifyToken";
 
 // handlers
 import * as personal from "../handlers/accounts";
+// import { haltOnTimedout } from "../utils/handlers";
 
 const router = express.Router({ caseSensitive: true, strict: true });
 
@@ -13,7 +16,10 @@ router.route("/email_exists").post(personal.emailExists);
 router.route("/handle_exists").post(personal.handleExists);
 router.route("/signup").post(personal.signup);
 router.route("/verify-email").get(personal.verifyEmail);
-router.route("/signin").post(personal.signin);
+// router.route("/signin").post(personal.signin);
+router.route("/signin").post(timeout(3), personal.signin);
+// router.route("/signin").post(personal.signin);
+// router.route("/signin").post(timeout(1, personal.signin as Function));
 router.route("/details").get(securedRoute, personal.details);
 router.route("/signout").get(personal.signout);
 router.route("/forgot-password").post(personal.forgotPassword);

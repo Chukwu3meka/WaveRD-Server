@@ -29,12 +29,14 @@ const validator = ({ value, type, label, error = false }: Validator) => {
           };
         break;
       }
+
       case "password": {
         charLengthLimit(8, 16);
         const reg = /^(?=.*[A-Za-z])(?=.*\d).+$/;
         if (!reg.test(value)) throw { message: `${label} must have at least one letter/number.` };
         break;
       }
+
       case "handle": {
         charLengthLimit(3, 16);
 

@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 
-import validator from "../../utils/validator";
+import validate from "../../utils/validator";
 import { PROFILE } from "../../models/accounts";
 import { catchError, requestHasBody } from "../../utils/handlers";
 
 export const handleExistsFn = async (handle: string) => {
-  validator({ type: "handle", value: handle });
+  validate({ type: "handle", value: handle });
 
   const searchPhrase = new RegExp(`^${handle}$`); // ? FOR CASE INSENSITIVITY SEARCH
   const dbResponse = await PROFILE.findOne({ handle: { $regex: searchPhrase, $options: "i" } });

@@ -1,13 +1,18 @@
 import { CookieOptions } from "express";
 import { calcFutureDate } from "./handlers";
 
-export const cookiesOption: CookieOptions = {
+// const PORT = process.env.PORT || 5000;
+const PROD_ENV = process.env.NODE_ENV === "production";
+
+export const clientCookiesOption: CookieOptions = {
   path: "/",
   httpOnly: true,
   sameSite: "strict",
+  secure: PROD_ENV ? true : false,
+  domain: PROD_ENV ? ".soccermass.com" : `.localhost`,
+  // domain: PROD_ENV ? ".soccermass.com" : `localhost`,
+  // domain: PROD_ENV ? ".soccermass.com" : `localhost:${PORT}`,
   expires: calcFutureDate({ context: "days", interval: 180 }),
-  secure: process.env.NODE_ENV === "production" ? true : false,
-  domain: process.env.NODE_ENV === "production" ? ".soccermass.com" : "localhost",
 };
 
 export const themes = ["dark", "light"];

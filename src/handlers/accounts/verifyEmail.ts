@@ -1,11 +1,14 @@
 import { Request, Response } from "express";
-
+import validate from "../../utils/validator";
 import { PROFILE } from "../../models/accounts";
 import { catchError, requestHasBody } from "../../utils/handlers";
 
 export default async (req: Request, res: Response) => {
   try {
     requestHasBody({ body: req.query, required: ["gear"] });
+
+    // Validate request body before processing request
+    validate({ type: "comment", value: req.query.gear });
 
     const gear = req.query.gear as string,
       subGears = gear.split("-"),
@@ -23,9 +26,10 @@ export default async (req: Request, res: Response) => {
       }
     );
 
-    if (updated) return res.redirect(302, `${process.env.CLIENT_DOMAIN}/accounts/email-verification-success`);
+    if (updated) return res.redirect(302, `/accounts/email-verification-success`);
   } catch (err: any) {
-    res.redirect(302, `${process.env.CLIENT_DOMAIN}/accounts/email-verification-failed`);
+    // res.redirect(302, `${process.env.API_URL}/accounts/email-verification-failed`);
+    res.redirect(302, `/accounts/email-verification-failed`);
 
     err.respond = false;
     err.status = 409;

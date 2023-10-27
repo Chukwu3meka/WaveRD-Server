@@ -1,15 +1,21 @@
 import jwt from "jsonwebtoken";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 
 import pushMail from "../../utils/pushMail";
+import validate from "../../utils/validator";
 import { PROFILE } from "../../models/accounts";
-import { cookiesOption } from "../../utils/constants";
-import { catchError, hourDiff, calcFutureDate, requestHasBody, generateSession } from "../../utils/handlers";
+import { clientCookiesOption } from "../../utils/constants";
+import { catchError, hourDiff, calcFutureDate, requestHasBody, generateSession, sleep } from "../../utils/handlers";
 
-export default async (req: Request, res: Response) => {
+export default async (req: Request, res: Response, next: NextFunction) => {
   try {
     requestHasBody({ body: req.body, required: ["email", "password"] });
+
     const { email, password: authPassword } = req.body;
+
+    // Validate request body before processing request
+    validate({ type: "email", value: email });
+    validate({ type: "password", value: authPassword });
 
     const profile = await PROFILE.findOne({ email });
     if (!profile || !profile.auth || !profile.auth.verification || !profile.auth.failedAttempts || !profile.auth.otp)
@@ -88,7 +94,7 @@ export default async (req: Request, res: Response) => {
           address: email,
           subject: "Verify your email to activate Your SoccerMASS account",
           data: {
-            activationLink: `${process.env.SERVER_DOMAIN}/v1/accounts/verify-email?gear=${newOTP.code}`,
+            activationLink: `${process.env.API_URL}/v1/accounts/verify-email?gear=${newOTP.code}`,
             fullName,
           },
         });
@@ -110,7 +116,9 @@ export default async (req: Request, res: Response) => {
 
     await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", data: { fullName } });
 
-    res.status(200).cookie("SSID", SSIDJwtToken, cookiesOption).json(data);
+    res.status(200).cookie("SSID", SSIDJwtToken, clientCookiesOption).json(data);
+
+    console.timeEnd();
   } catch (err: any) {
     err.status = 401;
     return catchError({ res, err });
@@ -118,4 +126,4 @@ export default async (req: Request, res: Response) => {
 };
 
 // domain: req.headers.origin?.replace("http://", ".")?.replace("https://", ".")?.replace(/:\d+/, ""),
-// res.status(200).cookie("SSID", SSIDJwtToken, cookiesOption).cookie("USER", USERJwtToken, cookiesOption).json(data);
+// res.status(200).cookie("SSID", SSIDJwtToken, clientCookiesOption).cookie("USER", USERJwtToken, clientCookiesOption).json(data);

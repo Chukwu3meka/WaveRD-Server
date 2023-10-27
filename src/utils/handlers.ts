@@ -1,19 +1,24 @@
 import { v4 as uuid } from "uuid";
 import { ObjectId } from "mongoose";
-import { Request, Response } from "express";
 
 import { FAILED_REQUESTS } from "../models/console";
 import { CatchError } from "../interface/utils-handlers-interface";
 
-export const catchError = async ({ res, err }: CatchError) => {
+export const catchError = async ({ res, req, err }: CatchError) => {
   const { request = null, ...data } = res.req.body,
     { error = false, status = 400, message = null, respond = true } = err || [];
 
-  // // handle api calls rejected by requests middleware
-  if (message !== "invalid endpoint") await FAILED_REQUESTS.create({ error: err, data, request });
+  // console.log();
 
-  if (<string>process.env.NODE_ENV === "development")
-    console.error(request ? `${request.endpoint} <<<>>> ${JSON.stringify(message).replaceAll('"', "")}` : `${res.req.url} <<<>>> Invalid route`);
+  if (message !== "invalid endpoint") {
+    // handle api calls rejected by requests middleware
+    await FAILED_REQUESTS.create({ error: err, data, request });
+  }
+
+  if (<string>process.env.NODE_ENV === "development") {
+    console.log(request ? `${request.endpoint} <<<>>> ${JSON.stringify(message).replaceAll('"', "")}` : `${res.req.url} <<<>>> Invalid route`);
+  }
+
   if (respond) res.status(status).json({ success: false, message: error ? message : "Unable to process request", data: null });
 };
 
@@ -65,8 +70,8 @@ export const requestHasBody = ({ body, required, error = false }: { body: { [key
   // return { ...newBody };
 };
 
-// res.writeHead(302, { Location: process.env.CLIENT_DOMAIN }).end();
-export const redirectToWeb = (req: Request, res: Response) => res.redirect(302, `${process.env.CLIENT_DOMAIN}`);
+// res.writeHead(302, { Location: process.env.API_URL }).end();
+// export const redirectToWeb = (req: Request, res: Response) => res.redirect(302, `${process.env.API_URL}`);
 
 // function to generate the date for n  days from now:
 interface IcalcFutureDate {
@@ -129,3 +134,7 @@ export const getIdFromSession = (session: string) => {
 };
 
 export const capitalize = (word: string) => word && word[0].toUpperCase() + word.slice(1);
+
+// export const haltOnTimedout = (req: Request, res: Response, next: NextFunction) => {
+//   if (!req.timedout) next();
+// };

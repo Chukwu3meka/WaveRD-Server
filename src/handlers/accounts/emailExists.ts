@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 
-import validator from "../../utils/validator";
+import validate from "../../utils/validator";
 import { PROFILE } from "../../models/accounts";
 import { catchError, requestHasBody } from "../../utils/handlers";
 
 export const emailExistsFn = async (email: string) => {
-  validator({ type: "email", value: email });
+  validate({ type: "email", value: email });
   const dbResponse = await PROFILE.findOne({ email });
   return !!dbResponse;
 };
