@@ -37,6 +37,14 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
         req.body.request = { endpoint, version, domain, path };
 
+        // ? Trim Request body
+        const valuesToTrim = ["email", "name", "password", "handle"];
+        for (const value of valuesToTrim) {
+          if (req.body[value]) {
+            req.body[value] = req.body[value].trim();
+          }
+        }
+
         return next();
       }
 

@@ -9,13 +9,13 @@ import { catchError, requestHasBody } from "../../utils/handlers";
 
 export default async (req: Request, res: Response) => {
   try {
-    requestHasBody({ body: req.body, required: ["email", "password", "fullName", "handle"] });
-    const { email, password, fullName, handle } = req.body;
+    requestHasBody({ body: req.body, required: ["email", "password", "name", "handle"] });
+    const { email, password, name, handle } = req.body;
 
     // Validate request body before processing request
     validate({ type: "email", value: email });
     validate({ type: "handle", value: handle });
-    validate({ type: "fullName", value: fullName });
+    validate({ type: "name", value: name });
     validate({ type: "password", value: password });
 
     // ? check if email is taken alread
@@ -26,10 +26,10 @@ export default async (req: Request, res: Response) => {
     const handleTaken = await handleExistsFn(handle);
     if (handleTaken) throw { message: "Handle already in use, Kindly use a different handle", error: true };
 
-    return await PROFILE.create({ email, handle, fullName, "auth.password": password })
+    return await PROFILE.create({ email, handle, name, "auth.password": password })
       .then(async (dbResponse: any) => {
         const emailPayload = {
-          fullName,
+          name,
           handle,
           activationLink: `${process.env.API_URL}/v1/accounts/verify-email?gear=${dbResponse.auth.otp.code}`,
         };

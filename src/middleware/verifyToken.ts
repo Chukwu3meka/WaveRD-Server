@@ -2,9 +2,17 @@ import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 
 import { catchError, getIdFromSession } from "../utils/handlers";
+import { PROFILE } from "../models/accounts";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
+    try {
+      await PROFILE.updateOne({}, { $rename: { fullName: "name" } }, { multi: true });
+      console.log("Update successful");
+    } catch (error) {
+      console.error("Error updating documents:", error);
+    }
+
     const cookie = req.cookies.SSID;
     if (!cookie) throw { message: "User not Authenticated" };
 
@@ -14,13 +22,13 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       if (err) errMessage = "Invalid Cookie";
       if (!decoded) errMessage = "Token not available";
 
-      const { fullName, handle, session } = decoded;
+      const { name, handle, session } = decoded;
 
-      if (fullName && handle && session) {
+      if (name && handle && session) {
         const id = getIdFromSession(session);
         if (!id) throw { message: "Suspicious token" };
 
-        req.body = { ...req.body, auth: { id, fullName, handle } };
+        req.body = { ...req.body, auth: { id, name, handle } };
         errMessage = true;
         return;
       }

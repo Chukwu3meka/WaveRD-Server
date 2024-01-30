@@ -8,8 +8,6 @@ export const catchError = async ({ res, req, err }: CatchError) => {
   const { request = null, ...data } = res.req.body,
     { error = false, status = 400, message = null, respond = true } = err || [];
 
-  // console.log();
-
   if (message !== "invalid endpoint") {
     // handle api calls rejected by requests middleware
     await FAILED_REQUESTS.create({ error: err, data, request });
@@ -124,8 +122,16 @@ export const range = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-export const generateSession = (id: ObjectId) =>
-  `${Date.now()}-${uuid()}-${uuid()}-${uuid()}-${Date.now()}-${uuid()}-${uuid()}-${uuid()}-${Date.now()}-${id}-${String(range(0, 999999999)).padStart(9, "0")}`;
+export const generateSession = (id: ObjectId) => {
+  const randOne = Date.now(),
+    randDate = Date.now() + Date.now(),
+    randTwo = String(range(111111, 999999)),
+    randStart = String(range(1111111, 9999999)),
+    randStop = String(range(1111111111, 9999999999)),
+    randUuid = `${uuid()}-${uuid()}-${uuid()}-${uuid()}-${uuid()}`;
+
+  return `${randOne}-${uuid()}-${randUuid}-${randTwo}-${id}-${randStart}-${randDate}-${randStop}`;
+};
 
 export const getIdFromSession = (session: string) => {
   const subSessions = session.split("-");

@@ -1,5 +1,5 @@
-export default ({ fullName }: any) => `
-    Hi ${fullName},
+export default ({ name }: any) => `
+    Hi ${name},
     <br />
     <br />
     We'd like to inform you that your SoccerMASS account has been temporarily locked due to multiple unsuccessful login attempts. For security purposes, we have implemented a lock-out system to protect your account from unauthorized access.

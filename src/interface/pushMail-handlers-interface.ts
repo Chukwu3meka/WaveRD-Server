@@ -3,5 +3,5 @@ export interface PushMail {
   address: string;
   data?: object;
   account: "noreply" | "accounts" | "contactus";
-  template: "welcome" | "failedLogin" | "lockNotice" | "reVerifyEmail" | "successfulLogin" | "resetPassword" | "forgotPassword" | "dataDeletion";
+  template: "welcome" | "failedLogin" | "lockNotice" | "reVerifyEmail" | "successfulLogin" | "initiatePasswordReset" | "confirmPasswordReset" | "dataDeletion";
 }

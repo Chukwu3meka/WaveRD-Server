@@ -31,8 +31,8 @@ export default async (req: Request, res: Response) => {
       await pushMail({
         address: email,
         account: "accounts",
-        template: "resetPassword",
-        data: { fullName: profile.fullName },
+        template: "confirmPasswordReset",
+        data: { name: profile.name },
         subject: "SoccerMASS Password Reset Confirmation",
       });
     });

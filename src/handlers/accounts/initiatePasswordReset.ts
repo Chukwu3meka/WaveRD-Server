@@ -27,12 +27,12 @@ export default async (req: Request, res: Response) => {
     await PROFILE.findByIdAndUpdate(profile.id, { $set: { ["auth.otp"]: otp } }).then(async () => {
       await pushMail({
         account: "accounts",
-        template: "forgotPassword",
+        template: "initiatePasswordReset",
         address: email,
         subject: "SoccerMASS Password Reset Request",
         data: {
-          activationLink: `${process.env.API_URL}/accounts/reset-password?gear=${otp.code}`,
-          fullName: profile.fullName,
+          activationLink: `${process.env.CLIENT_URL}/accounts/password-reset/${otp.code}`,
+          name: profile.name,
         },
       });
     });

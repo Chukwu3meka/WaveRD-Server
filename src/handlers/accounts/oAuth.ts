@@ -23,7 +23,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
     const {
       id,
       handle,
-      fullName,
+      name,
       status: accountStatus,
       auth: {
         locked,
@@ -63,8 +63,8 @@ const oAuthFunc = async (req: Request, res: Response) => {
           address: email,
           subject: "Verify your email to activate Your SoccerMASS account",
           data: {
-            activationLink: `${process.env.CLIENT_URL}/v1/accounts/verify-email?gear=${newOTP.code}`,
-            fullName,
+            activationLink: `${process.env.API_URL}/v1/accounts/verify-email?gear=${newOTP.code}`,
+            name,
           },
         });
 
@@ -80,12 +80,12 @@ const oAuthFunc = async (req: Request, res: Response) => {
       };
     }
 
-    const SSIDJwtToken = jwt.sign({ session, fullName, handle }, process.env.SECRET as string, { expiresIn: "180 days" });
+    const SSIDJwtToken = jwt.sign({ session, name, handle }, process.env.SECRET as string, { expiresIn: "180 days" });
 
     await pushMail({
       address: email,
       account: "accounts",
-      data: { fullName },
+      data: { name },
       template: "successfulLogin",
       subject: `Successful Login to SoccerMASS via ${capitalize(auth)}`,
     });

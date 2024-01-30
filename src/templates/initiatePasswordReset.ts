@@ -1,5 +1,5 @@
-export default ({ fullName, activationLink }: any) => `
-    Hi ${fullName},
+export default ({ name, activationLink }: any) => `
+    Hi ${name},
     <br />
     <br />  
     We have received a request to reset the password for your account. If you did not request this, please ignore this email.

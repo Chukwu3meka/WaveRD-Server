@@ -1,5 +1,5 @@
-export default ({ fullName, activationLink }: any) => `
-    Dear ${fullName},
+export default ({ name, activationLink }: any) => `
+    Dear ${name},
     <br />
     <br />
     Thank you for signing up with us! To complete your registration and start enjoying our services, kindly verify your email address by clicking

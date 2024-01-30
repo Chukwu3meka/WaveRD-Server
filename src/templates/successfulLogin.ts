@@ -1,10 +1,8 @@
-export default ({ fullName }: any) => `
-    Dear ${fullName},
+export default ({ name }: any) => `
+    Dear ${name},
     <br />
     <br />
-    We'd like to inform you that a successful login was made to your SoccerMASS account on ${new Date().toDateString()} at ${
-  new Date().toLocaleString().split(",")[1]
-}.
+    We'd like to inform you that a successful login was made to your SoccerMASS account on ${new Date().toDateString()} at ${new Date().toLocaleString().split(",")[1]}.
     <br />
     <br />
     If this was not you, please take immediate action to secure your account by changing your password.

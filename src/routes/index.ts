@@ -12,8 +12,8 @@ import accounts from "./accounts";
 
 export default (app: Application) => {
   // app.use("/api/v1/console/", cors(corsOptions.accounts), console);
-  app.use("/v1/console/", console);
   // app.use("/api/v1/accounts/", cors(corsOptions.accounts), accounts); // <= public console
+  app.use("/v1/console/", console);
   app.use("/v1/accounts/", accounts); // <= public console
   app.use("/v1/apihub/", cors(corsOptions.accounts), apihub); // <= public console
 

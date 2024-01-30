@@ -1,5 +1,5 @@
-export default ({ fullName }: any) => `
-    Hi ${fullName},
+export default ({ name }: any) => `
+    Hi ${name},
     <br />
     <br />
     We'd like to inform you that you have initiated a permanent and irreversible deletion of your account. 
