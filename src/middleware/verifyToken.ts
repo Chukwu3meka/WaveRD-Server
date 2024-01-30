@@ -2,17 +2,9 @@ import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 
 import { catchError, getIdFromSession } from "../utils/handlers";
-import { PROFILE } from "../models/accounts";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
-    try {
-      await PROFILE.updateOne({}, { $rename: { fullName: "name" } }, { multi: true });
-      console.log("Update successful");
-    } catch (error) {
-      console.error("Error updating documents:", error);
-    }
-
     const cookie = req.cookies.SSID;
     if (!cookie) throw { message: "User not Authenticated" };
 

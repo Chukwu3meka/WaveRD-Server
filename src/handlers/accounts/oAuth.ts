@@ -90,7 +90,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
       subject: `Successful Login to SoccerMASS via ${capitalize(auth)}`,
     });
 
-    return res.cookie("SSID", SSIDJwtToken, clientCookiesOption).redirect(302, `${process.env.API_URL}`);
+    return res.cookie("SSID", SSIDJwtToken, clientCookiesOption).redirect(302, `${process.env.CLIENT_URL}`);
   } catch (err: any) {
     const message = err.error ? err.message : "We encountered an oAuth error. Kindly try again later or contact support if issue persists";
     return res.redirect(`${process.env.CLIENT_URL}/accounts/signin/?${auth}=${obfuscate(`${new Date()}`)}&response=${obfuscate(message)}`);
