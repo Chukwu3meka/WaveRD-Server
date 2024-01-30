@@ -8,7 +8,7 @@ const devOrigins = ["http://localhost:8081"];
 //   "https://www.soccermass.com",
 //   "https://dev.soccermass.com",
 // ];
-const prodOrigins = ["https://example.com", /\.soccermass\.com$/];
+const prodOrigins = ["https://soccermass.com", /\.soccermass\.com$/];
 
 const corsOptions = {
   credentials: true,
