@@ -3,7 +3,8 @@ const devOrigins = ["http://localhost:8081"];
 
 // ? SoccerMASS Production
 const prodOrigins = [
-  "https://www.soccermass.com", // "https://.soccermass.com",
+  // "https://www.soccermass.com", // "https://.soccermass.com",
+  "https://.soccermass.com",
 ];
 
 export const accounts = {
