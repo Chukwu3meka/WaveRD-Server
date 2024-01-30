@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 
+import validate from "../../utils/validator";
 import { PROFILE } from "../../models/accounts";
 import { CONTACT_US } from "../../models/console";
 import { catchError, requestHasBody } from "../../utils/handlers";
@@ -10,6 +11,12 @@ export default async (req: Request, res: Response) => {
   try {
     requestHasBody({ body: req.body, required: ["email", "handle", "comment", "password"] });
     const { email, handle, comment, password, auth } = req.body;
+
+    // Validate request body before processing request
+    validate({ type: "email", value: email });
+    validate({ type: "handle", value: handle });
+    validate({ type: "comment", value: comment });
+    validate({ type: "password", value: password });
 
     const profile: any = await PROFILE.findOne({ _id: auth.id, email });
     if (!profile || !profile.auth) throw { message: "Invalid Email/Password", error: true };
@@ -29,7 +36,7 @@ export default async (req: Request, res: Response) => {
       account: "accounts",
       template: "dataDeletion",
       subject: "SoccerMASS - Data Deletion",
-      data: { fullName: profile.fullName },
+      data: { name: profile.name },
     });
 
     const data = { success: true, message: `Data deletion initiated`, data: null };

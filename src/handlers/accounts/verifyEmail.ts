@@ -12,7 +12,9 @@ export default async (req: Request, res: Response) => {
 
     const gear = req.query.gear as string,
       subGears = gear.split("-"),
-      id = subGears[subGears.length - 2];
+      id = subGears[subGears.length - 4];
+
+    console.log({ id });
 
     if (!id) throw { message: "Account", error: true };
 
@@ -26,10 +28,9 @@ export default async (req: Request, res: Response) => {
       }
     );
 
-    if (updated) return res.redirect(302, `/accounts/email-verification-success`);
+    if (updated) return res.redirect(302, `${process.env.CLIENT_URL}/accounts/email-verification?status=success`);
   } catch (err: any) {
-    // res.redirect(302, `${process.env.API_URL}/accounts/email-verification-failed`);
-    res.redirect(302, `/accounts/email-verification-failed`);
+    res.redirect(302, `${process.env.CLIENT_URL}/accounts/email-verification?status=failed`);
 
     err.respond = false;
     err.status = 409;

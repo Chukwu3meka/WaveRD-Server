@@ -4,11 +4,11 @@ import signout from "./signout";
 import * as oAuth from "./oAuth";
 import emailExists from "./emailExists";
 import handleExists from "./handleExists";
-import details from "./details";
+import profile from "./profile";
 import theme from "./theme";
 import verifyEmail from "./verifyEmail";
-import forgotPassword from "./forgotPassword";
-import resetPassword from "./resetPassword";
+import initiatePasswordReset from "./initiatePasswordReset";
+import confirmPasswordReset from "./confirmPasswordReset";
 import dataDeletion from "./dataDeletion";
 
-export { theme, dataDeletion, oAuth, signout, resetPassword, verifyEmail, forgotPassword, details, handleExists, emailExists, signup, signin };
+export { theme, dataDeletion, oAuth, signout, confirmPasswordReset, verifyEmail, initiatePasswordReset, profile, handleExists, emailExists, signup, signin };

@@ -20,10 +20,10 @@ router.route("/verify-email").get(personal.verifyEmail);
 router.route("/signin").post(timeout(3), personal.signin);
 // router.route("/signin").post(personal.signin);
 // router.route("/signin").post(timeout(1, personal.signin as Function));
-router.route("/details").get(securedRoute, personal.details);
+router.route("/profile").get(securedRoute, personal.profile);
 router.route("/signout").get(personal.signout);
-router.route("/forgot-password").post(personal.forgotPassword);
-router.route("/reset-password").post(personal.resetPassword);
+router.route("/initiate-password-reset").post(personal.initiatePasswordReset);
+router.route("/confirm-password-reset").post(personal.confirmPasswordReset);
 router.route("/theme").post(securedRoute, personal.theme);
 router.route("/data-deletion").post(securedRoute, personal.dataDeletion);
 

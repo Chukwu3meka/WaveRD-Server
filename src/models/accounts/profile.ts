@@ -6,7 +6,7 @@ import { generateSession } from "../../utils/handlers";
 
 const ProfileSchema = new Schema(
   {
-    fullName: { type: String, required: true },
+    name: { type: String, required: true },
     created: { type: Date, default: Date.now() },
     email: { type: String, unique: true, required: false },
     role: { type: String, default: "user" }, // ? user || admin

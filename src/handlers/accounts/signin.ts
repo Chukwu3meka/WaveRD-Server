@@ -25,7 +25,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       id,
       role,
       handle,
-      fullName,
+      name,
       status: accountStatus,
       auth: {
         locked,
@@ -48,10 +48,10 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
       // Notify user on Login Attempt
       if ([5, 6].includes(failedAttempts))
-        await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt - SoccerMASS", data: { fullName } });
+        await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt - SoccerMASS", data: { name } });
 
       if (failedAttempts === 7)
-        await pushMail({ account: "accounts", template: "lockNotice", address: email, subject: "Account Lock Notice - SoccerMASS", data: { fullName } });
+        await pushMail({ account: "accounts", template: "lockNotice", address: email, subject: "Account Lock Notice - SoccerMASS", data: { name } });
 
       // Increment record on Database
       if (failedAttempts >= 7 && hoursElapsed < 1) {
@@ -95,7 +95,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
           subject: "Verify your email to activate Your SoccerMASS account",
           data: {
             activationLink: `${process.env.API_URL}/v1/accounts/verify-email?gear=${newOTP.code}`,
-            fullName,
+            name,
           },
         });
 
@@ -111,14 +111,12 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       };
     }
 
-    const SSIDJwtToken = jwt.sign({ session, fullName, handle }, process.env.SECRET as string, { expiresIn: "180 days" }),
-      data = { success: true, message: "Email/Password is Valid.", data: { role, fullName, handle } };
+    const SSIDJwtToken = jwt.sign({ session, name, handle }, process.env.SECRET as string, { expiresIn: "180 days" }),
+      data = { success: true, message: "Email/Password is Valid.", data: { role, name, handle } };
 
-    await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", data: { fullName } });
+    await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", data: { name } });
 
     res.status(200).cookie("SSID", SSIDJwtToken, clientCookiesOption).json(data);
-
-    console.timeEnd();
   } catch (err: any) {
     err.status = 401;
     return catchError({ res, err });
