@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import validate from "../../utils/validator";
+import validate from "../../utils/validate";
 import { PROFILE } from "../../models/accounts";
 import { CONTACT_US } from "../../models/console";
 import { catchError, requestHasBody } from "../../utils/handlers";
@@ -19,13 +19,13 @@ export default async (req: Request, res: Response) => {
     validate({ type: "password", value: password });
 
     const profile: any = await PROFILE.findOne({ _id: auth.id, email });
-    if (!profile || !profile.auth) throw { message: "Invalid Email/Password", error: true };
-    if (profile.auth.deletion) throw { message: "Data deletion already initiated", error: true };
+    if (!profile || !profile.auth) throw { message: "Invalid Email/Password", sendsendError: true };
+    if (profile.auth.deletion) throw { message: "Data deletion already initiated", sendsendError: true };
 
     const matchPassword = await PROFILE.comparePassword(password, profile.auth?.password);
-    if (!matchPassword) throw { message: "Invalid Email/Password", error: true };
+    if (!matchPassword) throw { message: "Invalid Email/Password", sendsendError: true };
 
-    if (handle !== profile.handle) throw { message: "Invalid Email/Password", error: true };
+    if (handle !== profile.handle) throw { message: "Invalid Email/Password", sendsendError: true };
 
     await PROFILE.findOneAndUpdate(auth.id, { $set: { ["auth.deletion"]: new Date() } });
 

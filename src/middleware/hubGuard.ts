@@ -7,7 +7,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const { "x-soccermass-host": host, "x-soccermass-key": key } = req.headers;
 
     // While in experimental phase
-    if (host !== "SoccerMASS-2018" || key !== "SoccerMASS-APIHUB-2023") throw { message: "Invalid Header API Host/Key", error: true };
+    if (host !== "SoccerMASS-2018" || key !== "SoccerMASS-APIHUB-2023") throw { message: "Invalid Header API Host/Key", sendsendError: true };
 
     return next();
   } catch (err: any) {

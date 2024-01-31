@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import pushMail from "../../utils/pushMail";
-import validate from "../../utils/validator";
+import validate from "../../utils/validate";
 import { PROFILE } from "../../models/accounts";
 import { catchError, hourDiff, requestHasBody } from "../../utils/handlers";
 
@@ -16,11 +16,11 @@ export default async (req: Request, res: Response) => {
     validate({ type: "password", value: password });
 
     const profile = await PROFILE.findOne({ email, ["auth.otp.code"]: gear });
-    if (!profile || !profile.auth || !profile.auth.otp) throw { message: "Invalid password reset link", error: true }; // <= verify that account exist, else throw an error
+    if (!profile || !profile.auth || !profile.auth.otp) throw { message: "Invalid password reset link", sendsendError: true }; // <= verify that account exist, else throw an error
 
     if (profile.auth.otp.purpose === "password reset") {
       const otpSentRecently = hourDiff(profile.auth.otp.time) > 3;
-      if (otpSentRecently) throw { message: "Password reset link has expired", error: true };
+      if (otpSentRecently) throw { message: "Password reset link has expired", sendsendError: true };
     }
 
     const hashedPassword = await PROFILE.hashPassword(password);

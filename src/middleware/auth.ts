@@ -5,7 +5,9 @@ import { catchError, getIdFromSession } from "../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
+    console.log("cookie", req.cookies.SSID);
     const cookie = req.cookies.SSID;
+
     if (!cookie) throw { message: "User not Authenticated" };
 
     let errMessage;
@@ -20,7 +22,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         const id = getIdFromSession(session);
         if (!id) throw { message: "Suspicious token" };
 
-        req.body = { ...req.body, auth: { id, name, handle } };
+        req.body = { ...req.body, auth: { id, name, handle, session } };
         errMessage = true;
         return;
       }

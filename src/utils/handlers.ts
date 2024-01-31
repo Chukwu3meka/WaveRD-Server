@@ -6,7 +6,7 @@ import { CatchError } from "../interface/utils-handlers-interface";
 
 export const catchError = async ({ res, req, err }: CatchError) => {
   const { request = null, ...data } = res.req.body,
-    { error = false, status = 400, message = null, respond = true } = err || [];
+    { sendError = false, status = 400, message = null, respond = true } = err || [];
 
   if (message !== "invalid endpoint") {
     // handle api calls rejected by requests middleware
@@ -17,7 +17,7 @@ export const catchError = async ({ res, req, err }: CatchError) => {
     console.log(request ? `${request.endpoint} <<<>>> ${JSON.stringify(message).replaceAll('"', "")}` : `${res.req.url} <<<>>> Invalid route`);
   }
 
-  if (respond) res.status(status).json({ success: false, message: error ? message : "Unable to process request", data: null });
+  if (respond) res.status(status).json({ success: false, message: sendError ? message : "Unable to process request", data: null });
 };
 
 export const sleep = async (seconds: number) => {
@@ -25,11 +25,11 @@ export const sleep = async (seconds: number) => {
   return new Promise((resolve) => setTimeout(resolve, duration));
 };
 
-export const requestHasBody = ({ body, required, error = false }: { body: { [key: string]: any }; required: string[]; error?: boolean }) => {
+export const requestHasBody = ({ body, required, sendError = false }: { body: { [key: string]: any }; required: string[]; sendError?: boolean }) => {
   // console.log({ body, required });
 
   for (const x of required) {
-    if (body[x] === undefined) throw { message: `${x} is not defined`, error: error };
+    if (body[x] === undefined) throw { message: `${x} is not defined`, sendError };
   }
 
   // const validate = require("./validator").validate;
@@ -135,7 +135,8 @@ export const generateSession = (id: ObjectId) => {
 
 export const getIdFromSession = (session: string) => {
   const subSessions = session.split("-");
-  const id = subSessions[subSessions.length - 2];
+  const id = subSessions[subSessions.length - 4];
+
   return id;
 };
 

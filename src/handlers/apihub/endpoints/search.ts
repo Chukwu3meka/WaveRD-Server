@@ -1,4 +1,4 @@
-import validator from "../../../utils/validator";
+import validator from "../../../utils/validate";
 import { ENDPOINTS } from "../../../models/apihub";
 import { catchError, requestHasBody } from "../../../utils/handlers";
 
@@ -7,11 +7,11 @@ import { Request, Response } from "express";
 
 export default async (req: Request, res: Response) => {
   try {
-    requestHasBody({ body: req.query, required: ["query"], error: true });
+    requestHasBody({ body: req.query, required: ["query"], sendError: true });
 
     const { query } = req.query;
 
-    validator({ type: "query", value: query, error: true });
+    validator({ type: "query", value: query, sendError: true });
 
     const result = await ENDPOINTS.aggregate([
       {
@@ -38,7 +38,7 @@ export default async (req: Request, res: Response) => {
 
     return res.status(200).json(data);
   } catch (err: any) {
-    if (err.error && err.type === "validator") {
+    if (err.sendError && err.type === "validate") {
       const data = { success: true, message: "Endpoints could not be retrieved", data: [] };
       return res.status(200).json(data);
     }

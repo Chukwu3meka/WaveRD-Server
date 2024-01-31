@@ -1,22 +1,19 @@
 import { Request, Response } from "express";
-import validate from "../../utils/validator";
+import validate from "../../utils/validate";
 import { PROFILE } from "../../models/accounts";
-import { catchError, requestHasBody } from "../../utils/handlers";
+import { catchError, getIdFromSession, requestHasBody } from "../../utils/handlers";
 
 export default async (req: Request, res: Response) => {
   try {
     requestHasBody({ body: req.query, required: ["gear"] });
 
+    const { gear } = req.query;
+
     // Validate request body before processing request
-    validate({ type: "comment", value: req.query.gear });
+    validate({ type: "comment", value: gear });
 
-    const gear = req.query.gear as string,
-      subGears = gear.split("-"),
-      id = subGears[subGears.length - 4];
-
-    console.log({ id });
-
-    if (!id) throw { message: "Account", error: true };
+    const id = getIdFromSession(gear as string);
+    if (!id) throw { message: "Account", sendsendError: true };
 
     const updated = await PROFILE.findOneAndUpdate(
       { _id: id, ["auth.otp.code"]: gear, ["auth.otp.purpose"]: "email verification", ["auth.verification.email"]: null },

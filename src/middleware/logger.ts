@@ -48,10 +48,10 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         return next();
       }
 
-      throw { message: "invalid endpoint", status: 503, error: true };
+      throw { message: "invalid endpoint", status: 503, sendsendError: true };
     }
 
-    throw { message: "invalid endpoint", status: 404, error: true };
+    throw { message: "invalid endpoint", status: 404, sendsendError: true };
   } catch (err: any) {
     return catchError({ res, err });
   }
