@@ -1,7 +1,7 @@
 import express from "express";
 
 // middleware
-import securedRoute from "../middleware/verifyToken";
+import securedRoute from "../middleware/auth";
 
 // handlers
 import * as handler from "../handlers/console";

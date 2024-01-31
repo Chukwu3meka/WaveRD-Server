@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import pushMail from "../../utils/pushMail";
-import validate from "../../utils/validator";
+import validate from "../../utils/validate";
 import { PROFILE } from "../../models/accounts";
 import { catchError, hourDiff, generateSession, calcFutureDate, requestHasBody } from "../../utils/handlers";
 
@@ -19,7 +19,7 @@ export default async (req: Request, res: Response) => {
 
     // if (profile.auth.otp.purpose === "password reset") {
     //   const hoursElapsed = hourDiff(profile.auth.otp.time);
-    //   if (hoursElapsed <= 1) throw { message: "Password reset link sent recently", error: true };
+    //   if (hoursElapsed <= 1) throw { message: "Password reset link sent recently", sendsendError: true };
     // }
 
     const otp = { time: new Date(), purpose: "password reset", code: generateSession(profile.id) };
@@ -39,7 +39,7 @@ export default async (req: Request, res: Response) => {
 
     return res.status(200).json(data);
   } catch (err: any) {
-    if (!err.error) {
+    if (!err.sendError) {
       res.status(200).json(data);
       err.respond = false;
     }

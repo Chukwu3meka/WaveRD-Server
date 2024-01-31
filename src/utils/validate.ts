@@ -2,10 +2,10 @@ interface Validator {
   value: any;
   type: "email" | "password" | "handle" | "name" | "comment" | "query";
   label?: string | null;
-  error?: boolean;
+  sendError?: boolean;
 }
 
-const validator = ({ value, type, label, error = false }: Validator) => {
+const validate = ({ value, type, label, sendError = false }: Validator) => {
   try {
     if (!label) label = type.charAt(0).toUpperCase() + type.slice(1);
     if (!`${value}`.trim().length) throw { message: `${label} cannot have only whitespace` };
@@ -59,7 +59,7 @@ const validator = ({ value, type, label, error = false }: Validator) => {
       }
 
       case "comment": {
-        charLengthLimit(20, 700);
+        charLengthLimit(3, 700);
 
         const reg = /^[a-zA-Z0-9,.!? -]*$/;
         if (!reg.test(value)) throw { message: `${label} can only have letters, Numbers, comma, dot, exclamation and question mark.` };
@@ -79,9 +79,9 @@ const validator = ({ value, type, label, error = false }: Validator) => {
     }
     // return true
   } catch (err) {
-    if (error) throw { error: true, type: "validator", description: err };
+    if (sendError) throw { sendsendError: true, type: "validate", description: err };
     throw err;
   }
 };
 
-export default validator;
+export default validate;

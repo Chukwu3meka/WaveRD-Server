@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import pushMail from "../../utils/pushMail";
-import validate from "../../utils/validator";
+import validate from "../../utils/validate";
 import { emailExistsFn } from "./emailExists";
 import { handleExistsFn } from "./handleExists";
 import { PROFILE } from "../../models/accounts";
@@ -20,11 +20,11 @@ export default async (req: Request, res: Response) => {
 
     // ? check if email is taken alread
     const emailTaken = await emailExistsFn(email);
-    if (emailTaken) throw { message: "Email already in use, Kindly use a different email address", error: true };
+    if (emailTaken) throw { message: "Email already in use, Kindly use a different email address", sendsendError: true };
 
     // ? check if handle is taken alread
     const handleTaken = await handleExistsFn(handle);
-    if (handleTaken) throw { message: "Handle already in use, Kindly use a different handle", error: true };
+    if (handleTaken) throw { message: "Handle already in use, Kindly use a different handle", sendsendError: true };
 
     return await PROFILE.create({ email, handle, name, "auth.password": password })
       .then(async (dbResponse: any) => {

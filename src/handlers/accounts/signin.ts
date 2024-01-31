@@ -2,10 +2,10 @@ import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 
 import pushMail from "../../utils/pushMail";
-import validate from "../../utils/validator";
+import validate from "../../utils/validate";
 import { PROFILE } from "../../models/accounts";
 import { clientCookiesOption } from "../../utils/constants";
-import { catchError, hourDiff, calcFutureDate, requestHasBody, generateSession, sleep } from "../../utils/handlers";
+import { catchError, hourDiff, calcFutureDate, requestHasBody, generateSession } from "../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -19,7 +19,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     const profile = await PROFILE.findOne({ email });
     if (!profile || !profile.auth || !profile.auth.verification || !profile.auth.failedAttempts || !profile.auth.otp)
-      throw { message: "Invalid Email/Password", error: true }; // <= verify that account exist, else throw an error
+      throw { message: "Invalid Email/Password", sendsendError: true }; // <= verify that account exist, else throw an error
 
     const {
       id,
@@ -38,7 +38,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     } = profile;
 
     if (accountStatus !== "active")
-      throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", error: true };
+      throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", sendsendError: true };
 
     const matchPassword = await PROFILE.comparePassword(authPassword, password);
 
@@ -50,7 +50,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       if ([5, 6].includes(failedAttempts))
         await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt - SoccerMASS", data: { name } });
 
-      if (failedAttempts === 7)
+      if (!(failedAttempts % 3))
         await pushMail({ account: "accounts", template: "lockNotice", address: email, subject: "Account Lock Notice - SoccerMASS", data: { name } });
 
       // Increment record on Database
@@ -63,13 +63,13 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         await PROFILE.findByIdAndUpdate(id, { $inc: { ["auth.failedAttempts.counter"]: 1 }, $set: { ["auth.failedAttempts.lastAttempt"]: new Date() } });
       }
 
-      throw { message: "Invalid Email/Password", error: true };
+      throw { message: "Invalid Email/Password", sendsendError: true };
     }
 
     // update acount lock/security settings
     if (locked) {
       const accLocked = hourDiff(locked) <= 1; // ? <= check if account has been locked for 1 hours
-      if (accLocked) throw { message: "Account is temporarily locked, Please try again later", error: true };
+      if (accLocked) throw { message: "Account is temporarily locked, Please try again later", sendsendError: true };
 
       await PROFILE.findByIdAndUpdate(id, { $set: { ["auth.locked"]: null, ["auth.failedAttempts.counter"]: 0, ["auth.failedAttempts.lastAttempt"]: null } });
     }
@@ -101,13 +101,13 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
         throw {
           message: "Kindly check your email inbox/spam for a verification email we just sent",
-          error: true,
+          sendsendError: true,
         };
       }
 
       throw {
         message: `Kindly check your inbox/spam for our latest verification email from SoccerMASS`,
-        error: true,
+        sendsendError: true,
       };
     }
 
