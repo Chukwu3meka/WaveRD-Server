@@ -11,7 +11,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     // // 63e54d3215e0ae5734cce9bc
     // const isClubIDValid = isValidObjectId(id);
-    // if (!isClubIDValid) throw { message: `Invalid Club ID provided`, sendsendError: true };
+    // if (!isClubIDValid) throw { message: `Invalid Club ID provided`, sendError: true };
 
     // return await CLUBS.findById(id)
     //   .then((clubData) => {

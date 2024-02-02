@@ -5,24 +5,22 @@ import { catchError, getIdFromSession } from "../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
-    console.log("cookie", req.cookies.SSID);
     const cookie = req.cookies.SSID;
-
     if (!cookie) throw { message: "User not Authenticated" };
 
     let errMessage;
 
-    jwt.verify(cookie, <string>process.env.SECRET, async (err: any, decoded: any) => {
+    jwt.verify(cookie, <string>process.env.JWT_SECRET, async (err: any, decoded: any) => {
       if (err) errMessage = "Invalid Cookie";
       if (!decoded) errMessage = "Token not available";
 
-      const { name, handle, session } = decoded;
+      const { session } = decoded;
 
-      if (name && handle && session) {
+      if (session) {
         const id = getIdFromSession(session);
         if (!id) throw { message: "Suspicious token" };
 
-        req.body = { ...req.body, auth: { id, name, handle, session } };
+        req.body = { ...req.body, auth: { id, session } };
         errMessage = true;
         return;
       }

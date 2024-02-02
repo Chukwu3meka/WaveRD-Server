@@ -13,7 +13,7 @@ export default async (req: Request, res: Response) => {
     validate({ type: "comment", value: gear });
 
     const id = getIdFromSession(gear as string);
-    if (!id) throw { message: "Account", sendsendError: true };
+    if (!id) throw { message: "Account", sendError: true };
 
     const updated = await PROFILE.findOneAndUpdate(
       { _id: id, ["auth.otp.code"]: gear, ["auth.otp.purpose"]: "email verification", ["auth.verification.email"]: null },

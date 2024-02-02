@@ -11,8 +11,9 @@ const ProfileSchema = new Schema(
     email: { type: String, unique: true, required: false },
     role: { type: String, default: "user" }, // ? user || admin
     status: { type: String, default: "active" }, // ? active || suspended
+    avatar: { type: String, default: "/images/layout/profile.webp" }, // ? avatar web location
     handle: { type: String, required: true }, // ? Unique but we don't want index created on this
-    theme: { type: String, required: true, default: "light" },
+    theme: { type: String, required: true },
     auth: {
       session: { type: String },
       locked: { type: Date, default: null },

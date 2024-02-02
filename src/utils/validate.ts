@@ -66,20 +66,20 @@ const validate = ({ value, type, label, sendError = false }: Validator) => {
         break;
       }
 
-      case "query": {
-        charLengthLimit(1, 50);
+      // case "query": {
+      //   charLengthLimit(1, 50);
 
-        // const reg = /^[\w\d]+(?:[,-.\s!]?[\w\d]+)*$/;
-        // if (!reg.test(value)) throw { message: `${label} can only have letters, Numbers, comma, dot, and exclamation.` };
-        break;
-      }
+      //   // const reg = /^[\w\d]+(?:[,-.\s!]?[\w\d]+)*$/;
+      //   // if (!reg.test(value)) throw { message: `${label} can only have letters, Numbers, comma, dot, and exclamation.` };
+      //   break;
+      // }
 
       default:
         throw { message: "Validation failed" };
     }
     // return true
   } catch (err) {
-    if (sendError) throw { sendsendError: true, type: "validate", description: err };
+    if (sendError) throw { sendError: true, type: "validate", description: err };
     throw err;
   }
 };
