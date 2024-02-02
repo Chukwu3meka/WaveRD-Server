@@ -13,7 +13,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     if (!isClubIDValid) throw { message: `Invalid Endpoint ID provided` };
 
     const result = await ENDPOINTS.findOne({ _id: id }, { _id: 0, id: "$_id", title: 1, description: 1, snippets: 1, response: 1 });
-    if (!result) throw { message: "Unable to retrieve Endpoint", sendsendError: true };
+    if (!result) throw { message: "Unable to retrieve Endpoint", sendError: true };
 
     const data = { success: true, data: result, message: "Endpoint Successfully retrieved" };
 

@@ -19,13 +19,15 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     const profile = await PROFILE.findOne({ email });
     if (!profile || !profile.auth || !profile.auth.verification || !profile.auth.failedAttempts || !profile.auth.otp)
-      throw { message: "Invalid Email/Password", sendsendError: true }; // <= verify that account exist, else throw an error
+      throw { message: "Invalid Email/Password", sendError: true }; // <= verify that account exist, else throw an error
 
     const {
       id,
       role,
       handle,
       name,
+      theme,
+      avatar,
       status: accountStatus,
       auth: {
         locked,
@@ -38,7 +40,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     } = profile;
 
     if (accountStatus !== "active")
-      throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", sendsendError: true };
+      throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", sendError: true };
 
     const matchPassword = await PROFILE.comparePassword(authPassword, password);
 
@@ -63,13 +65,13 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         await PROFILE.findByIdAndUpdate(id, { $inc: { ["auth.failedAttempts.counter"]: 1 }, $set: { ["auth.failedAttempts.lastAttempt"]: new Date() } });
       }
 
-      throw { message: "Invalid Email/Password", sendsendError: true };
+      throw { message: "Invalid Email/Password", sendError: true };
     }
 
     // update acount lock/security settings
     if (locked) {
       const accLocked = hourDiff(locked) <= 1; // ? <= check if account has been locked for 1 hours
-      if (accLocked) throw { message: "Account is temporarily locked, Please try again later", sendsendError: true };
+      if (accLocked) throw { message: "Account is temporarily locked, Please try again later", sendError: true };
 
       await PROFILE.findByIdAndUpdate(id, { $set: { ["auth.locked"]: null, ["auth.failedAttempts.counter"]: 0, ["auth.failedAttempts.lastAttempt"]: null } });
     }
@@ -101,18 +103,18 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
         throw {
           message: "Kindly check your email inbox/spam for a verification email we just sent",
-          sendsendError: true,
+          sendError: true,
         };
       }
 
       throw {
         message: `Kindly check your inbox/spam for our latest verification email from SoccerMASS`,
-        sendsendError: true,
+        sendError: true,
       };
     }
 
-    const SSIDJwtToken = jwt.sign({ session, name, handle }, process.env.SECRET as string, { expiresIn: "180 days" }),
-      data = { success: true, message: "Email/Password is Valid.", data: { role, name, handle } };
+    const SSIDJwtToken = jwt.sign({ session }, process.env.JWT_SECRET as string, { expiresIn: "180 days" }),
+      data = { success: true, message: "Email/Password is Valid.", data: { theme, role, name, handle, avatar } };
 
     await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", data: { name } });
 

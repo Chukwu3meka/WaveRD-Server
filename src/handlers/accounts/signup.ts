@@ -1,16 +1,18 @@
 import { Request, Response } from "express";
-
 import pushMail from "../../utils/pushMail";
 import validate from "../../utils/validate";
 import { emailExistsFn } from "./emailExists";
+import { themes } from "../../utils/constants";
 import { handleExistsFn } from "./handleExists";
 import { PROFILE } from "../../models/accounts";
 import { catchError, requestHasBody } from "../../utils/handlers";
 
 export default async (req: Request, res: Response) => {
   try {
-    requestHasBody({ body: req.body, required: ["email", "password", "name", "handle"] });
-    const { email, password, name, handle } = req.body;
+    requestHasBody({ body: req.body, required: ["email", "password", "name", "handle", "theme"] });
+    const { theme, email, password, name, handle } = req.body;
+
+    if (!themes.includes(theme)) throw { message: "Invalid theme used", sendError: true };
 
     // Validate request body before processing request
     validate({ type: "email", value: email });
@@ -20,13 +22,13 @@ export default async (req: Request, res: Response) => {
 
     // ? check if email is taken alread
     const emailTaken = await emailExistsFn(email);
-    if (emailTaken) throw { message: "Email already in use, Kindly use a different email address", sendsendError: true };
+    if (emailTaken) throw { message: "Email already in use, Kindly use a different email address", sendError: true };
 
     // ? check if handle is taken alread
     const handleTaken = await handleExistsFn(handle);
-    if (handleTaken) throw { message: "Handle already in use, Kindly use a different handle", sendsendError: true };
+    if (handleTaken) throw { message: "Handle already in use, Kindly use a different handle", sendError: true };
 
-    return await PROFILE.create({ email, handle, name, "auth.password": password })
+    return await PROFILE.create({ email, handle, name, "auth.password": password, theme })
       .then(async (dbResponse: any) => {
         const emailPayload = {
           name,

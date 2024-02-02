@@ -19,7 +19,7 @@ export default async (req: Request, res: Response) => {
 
     // if (profile.auth.otp.purpose === "password reset") {
     //   const hoursElapsed = hourDiff(profile.auth.otp.time);
-    //   if (hoursElapsed <= 1) throw { message: "Password reset link sent recently", sendsendError: true };
+    //   if (hoursElapsed <= 1) throw { message: "Password reset link sent recently", sendError: true };
     // }
 
     const otp = { time: new Date(), purpose: "password reset", code: generateSession(profile.id) };

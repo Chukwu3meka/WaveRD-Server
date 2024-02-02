@@ -6,7 +6,7 @@ import { catchError } from "../../../utils/handlers";
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { limit = 20 } = req.query;
-    if (limit && Number(limit) > 20) throw { message: "Limit must not exceed 20", sendsendError: true };
+    if (limit && Number(limit) > 20) throw { message: "Limit must not exceed 20", sendError: true };
 
     const result = await CLUBS.aggregate([
       { $sample: { size: Number(limit) } },
@@ -34,7 +34,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       { $limit: Number(limit) },
     ]);
 
-    if (!result) throw { message: "Unable to retrieve Players", sendsendError: true };
+    if (!result) throw { message: "Unable to retrieve Players", sendError: true };
 
     const data = { success: true, data: result, message: "Players Successfully retrieved" };
 

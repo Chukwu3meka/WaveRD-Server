@@ -18,7 +18,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
 
     const profile = await PROFILE.findOne({ email });
     if (!profile || !profile.auth || !profile.auth.verification || !profile.auth.failedAttempts || !profile.auth.otp)
-      throw { message: "Email not associated with any account", sendsendError: true }; // <= verify that account exist, else throw an error
+      throw { message: "Email not associated with any account", sendError: true }; // <= verify that account exist, else throw an error
 
     const {
       id,
@@ -34,12 +34,12 @@ const oAuthFunc = async (req: Request, res: Response) => {
     } = profile;
 
     if (accountStatus !== "active")
-      throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", sendsendError: true };
+      throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", sendError: true };
 
     // update acount lock/security settings
     if (locked) {
       const hoursElapsed = hourDiff(locked) <= 1; // ? <= check if account has been locked for 1 hours
-      if (hoursElapsed) throw { message: "Account is temporarily locked, Please try again later", sendsendError: true };
+      if (hoursElapsed) throw { message: "Account is temporarily locked, Please try again later", sendError: true };
 
       await PROFILE.findByIdAndUpdate(id, { $set: { ["auth.locked"]: null, ["auth.failedAttempts.counter"]: 0, ["auth.failedAttempts.lastAttempt"]: null } });
     }
@@ -70,17 +70,17 @@ const oAuthFunc = async (req: Request, res: Response) => {
 
         throw {
           message: "Verify your email to activate Your SoccerMASS account, kindly check your email inbox/spam for the most recent verification email from us",
-          sendsendError: true,
+          sendError: true,
         };
       }
 
       throw {
         message: `Kindly check your inbox/spam for our latest verification email that was sent ${hoursElapsed + 3 ? "few hours" : "less than an hour"} ago`,
-        sendsendError: true,
+        sendError: true,
       };
     }
 
-    const SSIDJwtToken = jwt.sign({ session, name, handle }, process.env.SECRET as string, { expiresIn: "180 days" });
+    const SSIDJwtToken = jwt.sign({ session }, process.env.JWT_SECRET as string, { expiresIn: "180 days" });
 
     await pushMail({
       address: email,
