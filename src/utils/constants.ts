@@ -7,7 +7,7 @@ const PROD_ENV = process.env.NODE_ENV === "production";
 export const clientCookiesOption: CookieOptions = {
   path: "/",
   httpOnly: true,
-  sameSite: "lax",
+  sameSite: "strict",
   secure: PROD_ENV ? true : false,
   domain: PROD_ENV ? ".soccermass.com" : `.localhost`,
   // domain: PROD_ENV ? ".soccermass.com" : `localhost`,
