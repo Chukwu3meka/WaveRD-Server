@@ -7,6 +7,7 @@ import cookieSession from "cookie-session";
 
 import routeHandlers from "./routes";
 import logger from "./middleware/logger";
+import header from "./middleware/header";
 import passport from "./middleware/passport";
 
 const PORT = process.env.PORT || 5000,
@@ -27,6 +28,7 @@ const server = async () => {
     app.use(passport.initialize());
     app.use(passport.session());
 
+    app.use(header);
     app.use(logger);
     routeHandlers(app);
 
