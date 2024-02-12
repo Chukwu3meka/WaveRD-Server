@@ -28,7 +28,7 @@ const server = async () => {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    app.use(header);
+    app.use(header); // <= Add no index for search engines
     app.use(logger);
     routeHandlers(app);
 

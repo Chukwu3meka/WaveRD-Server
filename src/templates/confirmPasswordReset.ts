@@ -7,7 +7,7 @@ export default ({ name }: any) => `
     If you did not request a password reset, kindly <a href="https://www.soccermass.com/accounts/password-reset">reset your password</a> immediately. 
     <br />
     <br />
-    Thank you for using our service. If you have any questions or need assistance, please don't hesitate to reach out to us <a href="https://www.soccermass.com/info/contact">here</a>.
+    Thank you for using our service. If you have any questions or need assistance, please don't hesitate to reach out to us <a href="https://www.soccermass.com/info/contact-us">here</a>.
     <br />
     <br />
     Kind Regards,

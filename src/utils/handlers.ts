@@ -17,6 +17,8 @@ export const catchError = async ({ res, req, err }: CatchError) => {
     console.log(request ? `${request.endpoint} <<<>>> ${JSON.stringify(message).replaceAll('"', "")}` : `${res.req.url} <<<>>> Invalid route`);
   }
 
+  console.log({ sendError });
+
   if (respond) res.status(status).json({ success: false, message: sendError ? message : "Unable to process request", data: null });
 };
 

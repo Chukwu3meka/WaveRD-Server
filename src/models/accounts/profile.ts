@@ -24,6 +24,10 @@ const ProfileSchema = new Schema(
         counter: { type: Number, default: 0 },
         lastAttempt: { type: Date, default: null },
       },
+      lastLogin: {
+        counter: { type: Number, default: 0 },
+        lastAttempt: { type: Date, default: Date.now() },
+      },
 
       otp: {
         code: { type: String, default: null },

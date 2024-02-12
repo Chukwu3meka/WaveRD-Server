@@ -10,7 +10,7 @@ export default ({ name }: any) => `
     If you did not initiate this action, we kindly recommend you <a href="https://www.soccermass.com/accounts/signin">sign in</a> immediately.
     <br />
     <br />
-    Feel free to contact our support team <a href="https://www.soccermass.com/info/contact">here</a> for further assistance.
+    Feel free to contact our support team <a href="https://www.soccermass.com/info/contact-us">here</a> for further assistance.
     <br />
     <br />
     Thank you for your attention to this matter.
