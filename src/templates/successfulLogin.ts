@@ -8,7 +8,7 @@ export default ({ name }: any) => `
     If this was not you, please take immediate action to secure your account by changing your password.
     <br />
     <br />    
-    Thank you for using our service. If you have any questions or concerns, please don't hesitate to reach out to us <a href="https://www.soccermass.com/info/contact">here</a>.
+    Thank you for using our service. If you have any questions or concerns, please don't hesitate to reach out to us <a href="https://www.soccermass.com/info/contact-us">here</a>.
     <br />
     <br />
     Best regards

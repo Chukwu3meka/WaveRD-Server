@@ -1,10 +1,13 @@
 import { format } from "date-fns";
 import { Request, Response, NextFunction } from "express";
 
-import { catchError } from "../utils/handlers";
+import { catchError, sleep } from "../utils/handlers";
 import { ALL_REQUEST, DAILY_REQUEST_STAT } from "../models/console";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
+  // ? Simulate production delay due to network latency
+  if (process.env.NODE_ENV === "development") await sleep(0.5);
+
   try {
     const { method, url: endpoint } = req,
       localTime = format(new Date(), "pp"),

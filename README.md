@@ -38,7 +38,7 @@ All packages installed are key to this app running smoothly and we graciously th
 ## 💰 Support Me 👋
 
 <p align="center">
-<a href="https://www.buymeacoffee.com/chukwuemeka" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="70" ></a>
+<a href="https://www.buymeacoffee.com/chukwu3meka" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="70" ></a>
 </p>
 
 ## Getting Started

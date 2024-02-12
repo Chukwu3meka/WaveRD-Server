@@ -8,7 +8,7 @@ export default ({ name }: any) => `
     If you did not initiate this login attempt, we recommend you reset your password immediately. To reset your password, please follow the instructions in our password reset link <a href="https://www.soccermass.com/accounts/password-reset">here</a>.
     <br />
     <br />
-    If you did initiate the login attempt and are still having trouble accessing your account, please contact our support team <a href="https://www.soccermass.com/info/contact">here</a> for further assistance.
+    If you did initiate the login attempt and are still having trouble accessing your account, please contact our support team <a href="https://www.soccermass.com/info/contact-us">here</a> for further assistance.
     <br />
     <br />
     Thank you for your attention to this matter.
