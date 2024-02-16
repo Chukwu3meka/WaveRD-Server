@@ -19,6 +19,7 @@ const ProfileSchema = new Schema(
       locked: { type: Date, default: null },
       deletion: { type: Date, default: null },
       password: { type: String, required: true },
+      inactivity: { type: Date, default: null },
 
       failedAttempts: {
         counter: { type: Number, default: 0 },

@@ -5,7 +5,7 @@ import pushMail from "../../utils/pushMail";
 import validate from "../../utils/validate";
 import { PROFILE } from "../../models/accounts";
 import { clientCookiesOption } from "../../utils/constants";
-import { catchError, hourDiff, calcFutureDate, requestHasBody, generateSession } from "../../utils/handlers";
+import { catchError, hourDiff, calcFutureDate, requestHasBody, generateSession, preventProfileBruteForce } from "../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -28,56 +28,14 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       name,
       theme,
       avatar,
-      status: accountStatus,
       auth: {
-        locked,
         session,
-        password,
         verification: { email: emailVerified },
-        failedAttempts: { counter, lastAttempt },
         otp: { purpose: otpPurpose, time: otpTime },
       },
     } = profile;
 
-    if (accountStatus !== "active")
-      throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", sendError: true };
-
-    const matchPassword = await PROFILE.comparePassword(authPassword, password);
-
-    if (!matchPassword) {
-      const failedAttempts = counter + 1,
-        hoursElapsed = hourDiff(lastAttempt);
-
-      // Notify user on Login Attempt
-      if ([5, 6].includes(failedAttempts))
-        await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt - SoccerMASS", data: { name } });
-
-      if (!(failedAttempts % 3))
-        await pushMail({ account: "accounts", template: "lockNotice", address: email, subject: "Account Lock Notice - SoccerMASS", data: { name } });
-
-      // Increment record on Database
-      if (failedAttempts >= 7 && hoursElapsed < 1) {
-        await PROFILE.findByIdAndUpdate(id, {
-          $inc: { ["auth.failedAttempts.counter"]: 1 },
-          $set: { ["auth.locked"]: new Date(), ["auth.failedAttempts.lastAttempt"]: new Date() },
-        });
-      } else {
-        await PROFILE.findByIdAndUpdate(id, { $inc: { ["auth.failedAttempts.counter"]: 1 }, $set: { ["auth.failedAttempts.lastAttempt"]: new Date() } });
-      }
-
-      throw { message: "Invalid Email/Password", sendError: true };
-    }
-
-    // update acount lock/security settings
-    if (locked) {
-      const accLocked = hourDiff(locked) <= 1; // ? <= check if account has been locked for 1 hours
-      if (accLocked) throw { message: "Account is temporarily locked, Please try again later", sendError: true };
-
-      await PROFILE.findByIdAndUpdate(id, {
-        $inc: { ["auth.lastLogin.counter"]: 1 },
-        $set: { ["auth.locked"]: null, ["auth.failedAttempts.counter"]: 0, ["auth.failedAttempts.lastAttempt"]: null, ["auth.lastLogin.lastAttempt"]: Date.now() },
-      });
-    }
+    await preventProfileBruteForce({ password: authPassword, profile });
 
     // Check if account email is verified
     if (!emailVerified) {

@@ -20,9 +20,9 @@ export default async (req: Request, res: Response) => {
 
     if (!profile) throw { message: "Can't find associated profile", sendError: true };
     if (profile.status !== "active") throw { message: "Account not active", sendError: true };
+    await PROFILE.findByIdAndUpdate({ id }, { ["auth.inactivity"]: session });
 
     const { role, name, handle, theme, avatar } = profile;
-
     const data = { success: true, message: `Profile details retrieved successfully`, data: { theme, role, name, handle, avatar } };
 
     return res.status(200).json(data);
