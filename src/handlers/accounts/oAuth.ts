@@ -5,7 +5,7 @@ import pushMail from "../../utils/pushMail";
 import validator from "../../utils/validate";
 import { PROFILE } from "../../models/accounts";
 import { clientCookiesOption } from "../../utils/constants";
-import { capitalize, catchError, hourDiff, generateSession, calcFutureDate, obfuscate } from "../../utils/handlers";
+import { capitalize, catchError, hourDiff, generateSession, calcFutureDate, obfuscate, preventProfileBruteForce } from "../../utils/handlers";
 
 import { PushMail } from "../../interface/pushMail-handlers-interface";
 
@@ -33,19 +33,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
       },
     } = profile;
 
-    if (accountStatus !== "active")
-      throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", sendError: true };
-
-    // update acount lock/security settings
-    if (locked) {
-      const hoursElapsed = hourDiff(locked) <= 1; // ? <= check if account has been locked for 1 hours
-      if (hoursElapsed) throw { message: "Account is temporarily locked, Please try again later", sendError: true };
-
-      await PROFILE.findByIdAndUpdate(id, {
-        $inc: { ["auth.lastLogin.counter"]: 1 },
-        $set: { ["auth.locked"]: null, ["auth.failedAttempts.counter"]: 0, ["auth.failedAttempts.lastAttempt"]: null, ["auth.lastLogin.lastAttempt"]: Date.now() },
-      });
-    }
+    await preventProfileBruteForce({ password: false, profile });
 
     // Check if account email is verified
     if (!emailVerified) {

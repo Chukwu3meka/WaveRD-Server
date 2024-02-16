@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import validate from "../../utils/validate";
 import { PROFILE } from "../../models/accounts";
 import { CONTACT_US } from "../../models/console";
-import { catchError, requestHasBody } from "../../utils/handlers";
+import { catchError, preventProfileBruteForce, requestHasBody } from "../../utils/handlers";
 
 import pushMail from "../../utils/pushMail";
 
@@ -15,28 +15,26 @@ export default async (req: Request, res: Response) => {
     // Validate request body before processing request
     validate({ type: "email", value: email });
     validate({ type: "handle", value: handle });
-    validate({ type: "comment", value: comment });
     validate({ type: "password", value: password });
+    if (comment) validate({ type: "comment", value: comment });
 
-    const profile: any = await PROFILE.findOne({ _id: auth.id, email });
-    if (!profile || !profile.auth) throw { message: "Invalid Email/Password", sendError: true };
-    if (profile.auth.deletion) throw { message: "Data deletion already initiated", sendError: true };
+    const profile = await PROFILE.findById(auth.id);
+    if (!profile) throw { message: "User Profile does not exists", sendError: true };
+    if (profile.email !== email) throw { message: "Profile mismatch", sendError: true };
 
-    const matchPassword = await PROFILE.comparePassword(password, profile.auth?.password);
-    if (!matchPassword) throw { message: "Invalid Email/Password", sendError: true };
+    await preventProfileBruteForce({ password, profile });
 
-    if (handle !== profile.handle) throw { message: "Invalid Email/Password", sendError: true };
+    if (profile.auth?.deletion) throw { message: "Data deletion already initiated", sendError: true };
 
     await PROFILE.findOneAndUpdate(auth.id, { $set: { ["auth.deletion"]: new Date() } });
-
-    await CONTACT_US.create({ category: "Data Deletion", comment, email });
+    await CONTACT_US.create({ category: "Data Deletion", comment: comment || "", email });
 
     await pushMail({
       address: email,
       account: "accounts",
       template: "dataDeletion",
-      subject: "SoccerMASS - Data Deletion",
       data: { name: profile.name },
+      subject: "SoccerMASS - Data Deletion",
     });
 
     const data = { success: true, message: `Data deletion initiated`, data: null };

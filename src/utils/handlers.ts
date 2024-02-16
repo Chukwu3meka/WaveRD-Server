@@ -1,8 +1,12 @@
 import { v4 as uuid } from "uuid";
 import { ObjectId } from "mongoose";
+import { InferSchemaType } from "mongoose";
 
 import { FAILED_REQUESTS } from "../models/console";
 import { CatchError } from "../interface/utils-handlers-interface";
+import { PROFILE } from "../models/accounts";
+import pushMail from "./pushMail";
+import { CalcFutureDate, PreventProfileBruteForce, RequestHasBody } from "../interface/utils/handlers.interface";
 
 export const catchError = async ({ res, req, err }: CatchError) => {
   const { request = null, ...data } = res.req.body,
@@ -17,7 +21,7 @@ export const catchError = async ({ res, req, err }: CatchError) => {
     console.log(request ? `${request.endpoint} <<<>>> ${JSON.stringify(message).replaceAll('"', "")}` : `${res.req.url} <<<>>> Invalid route`);
   }
 
-  console.log({ sendError });
+  // console.log({ sendError });
 
   if (respond) res.status(status).json({ success: false, message: sendError ? message : "Unable to process request", data: null });
 };
@@ -27,7 +31,7 @@ export const sleep = async (seconds: number) => {
   return new Promise((resolve) => setTimeout(resolve, duration));
 };
 
-export const requestHasBody = ({ body, required, sendError = false }: { body: { [key: string]: any }; required: string[]; sendError?: boolean }) => {
+export const requestHasBody = ({ body, required, sendError = false }: RequestHasBody) => {
   // console.log({ body, required });
 
   for (const x of required) {
@@ -70,16 +74,7 @@ export const requestHasBody = ({ body, required, sendError = false }: { body: { 
   // return { ...newBody };
 };
 
-// res.writeHead(302, { Location: process.env.API_URL }).end();
-// export const redirectToWeb = (req: Request, res: Response) => res.redirect(302, `${process.env.API_URL}`);
-
-// function to generate the date for n  days from now:
-interface IcalcFutureDate {
-  context: "days" | "hours";
-  interval: number;
-}
-
-export const calcFutureDate = ({ interval, context }: IcalcFutureDate): Date => {
+export const calcFutureDate = ({ interval, context }: CalcFutureDate): Date => {
   const currentTime = new Date();
 
   switch (context) {
@@ -144,6 +139,68 @@ export const getIdFromSession = (session: string) => {
 
 export const capitalize = (word: string) => word && word[0].toUpperCase() + word.slice(1);
 
+export const preventProfileBruteForce = async ({ profile, password: authPassword }: PreventProfileBruteForce) => {
+  const {
+    id,
+    name,
+    email,
+    status: accountStatus,
+    auth: {
+      locked,
+      password,
+      failedAttempts: { counter, lastAttempt },
+    },
+  } = profile;
+
+  if (accountStatus !== "active") {
+    throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", sendError: true };
+  }
+
+  if (authPassword !== false) {
+    const matchPassword = await PROFILE.comparePassword(authPassword, password);
+
+    if (!matchPassword) {
+      const failedAttempts = counter + 1,
+        hoursElapsed = hourDiff(lastAttempt);
+
+      // Notify user on Login Attempt
+      if ([5, 6].includes(failedAttempts))
+        await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt - SoccerMASS", data: { name } });
+
+      if (!(failedAttempts % 3))
+        await pushMail({ account: "accounts", template: "lockNotice", address: email, subject: "Account Lock Notice - SoccerMASS", data: { name } });
+
+      // Increment record on Database
+      if (failedAttempts >= 7 && hoursElapsed < 1) {
+        await PROFILE.findByIdAndUpdate(id, {
+          $inc: { ["auth.failedAttempts.counter"]: 1 },
+          $set: { ["auth.locked"]: new Date(), ["auth.failedAttempts.lastAttempt"]: new Date() },
+        });
+      } else {
+        await PROFILE.findByIdAndUpdate(id, { $inc: { ["auth.failedAttempts.counter"]: 1 }, $set: { ["auth.failedAttempts.lastAttempt"]: new Date() } });
+      }
+
+      throw { message: "Invalid Email/Password", sendError: true };
+    }
+  }
+
+  // update acount lock/security settings
+  if (locked) {
+    const accLocked = hourDiff(locked) <= 1; // ? <= check if account has been locked for 1 hours
+    if (accLocked) throw { message: "Account is temporarily locked, Please try again later", sendError: true };
+
+    await PROFILE.findByIdAndUpdate(id, {
+      $inc: { ["auth.lastLogin.counter"]: 1 },
+      $set: { ["auth.locked"]: null, ["auth.failedAttempts.counter"]: 0, ["auth.failedAttempts.lastAttempt"]: null, ["auth.lastLogin.lastAttempt"]: Date.now() },
+    });
+  }
+};
+
 // export const haltOnTimedout = (req: Request, res: Response, next: NextFunction) => {
 //   if (!req.timedout) next();
 // };
+
+// res.writeHead(302, { Location: process.env.API_URL }).end();
+// export const redirectToWeb = (req: Request, res: Response) => res.redirect(302, `${process.env.API_URL}`);
+
+// function to generate the date for n  days from now:
