@@ -12,8 +12,6 @@ export default async (req: Request, res: Response) => {
     if (!tempId) throw { message: "Session ID is Invalid" };
     if (!session) throw { message: "Session ID is Invalid" };
 
-    // // const id = new ObjectId(tempId);
-
     const id = new ObjectId(tempId);
     if (!isValidObjectId(id)) throw { message: "Session ID is invalid" };
 
