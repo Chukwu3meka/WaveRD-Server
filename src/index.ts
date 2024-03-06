@@ -10,10 +10,11 @@ import logger from "./middleware/logger";
 import header from "./middleware/header";
 import passport from "./middleware/passport";
 
+import twitterPassport from "./middleware/twitterPassport";
+
 const PORT = process.env.PORT || 5000,
   SERVER_SECRET_KEY = process.env.SECRET,
-  DEV_ENV = process.env.NODE_ENV === "development",
-  NODE_ENV = DEV_ENV ? "DEVELOPMENT" : "PRODUCTION";
+  NODE_ENV = process.env.NODE_ENV === "development" ? "DEVELOPMENT" : "PRODUCTION";
 
 const server = async () => {
   try {
@@ -25,6 +26,7 @@ const server = async () => {
     app.use(cookieSession({ secret: SERVER_SECRET_KEY }));
 
     // Apply the middleware to all incoming requests
+    app.use(twitterPassport);
     app.use(passport.initialize());
     app.use(passport.session());
 
@@ -34,7 +36,7 @@ const server = async () => {
 
     app.listen(PORT, () => console.info(`SoccerMASS ${NODE_ENV} Server running on PORT:::${PORT}`));
   } catch (error: any) {
-    console.log("SoccerMASS Server Error", (DEV_ENV && (error.message as string)) || error);
+    console.log("SoccerMASS Server Error", (NODE_ENV === "DEVELOPMENT" && (error.message as string)) || error);
   }
 };
 
