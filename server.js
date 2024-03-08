@@ -11,9 +11,9 @@ app.use(require("cors")());
 
 const routes = require("./routes");
 const server = require("http").Server(app);
-const io = (module.exports.io = require("socket.io")(server));
+// const io = (module.exports.io = require("socket.io")(server));
 
-const socketManager = require("./handlers/socketManager");
+// const socketManager = require("./handlers/socketManager");
 
 app.use(require("cookie-parser")());
 app.use(require("body-parser").urlencoded({ extended: true }));
@@ -31,6 +31,6 @@ app.use("/admin/", routes.Admin);
 app.use("/player/", routes.Player);
 app.use("/profile/", routes.Profile);
 
-io.on("connection", socketManager);
+// io.on("connection", socketManager);
 
 server.listen(PORT, () => console.log(`SoccerMASS:::listening on port ${PORT}`));

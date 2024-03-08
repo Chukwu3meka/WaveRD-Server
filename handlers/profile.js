@@ -18,14 +18,7 @@ const { massList } = require("../source/constants");
 
 exports.signup = async (req, res, next) => {
   try {
-    const { mass, division, club, handle, password, email } = validateRequestBody(req.body, [
-      "mass",
-      "division",
-      "club",
-      "handle",
-      "password",
-      "email",
-    ]);
+    const { mass, division, club, handle, password, email } = validateRequestBody(req.body, ["mass", "division", "club", "handle", "password", "email"]);
 
     if (!massList.includes(mass)) throw "invalid mass";
 
@@ -80,12 +73,12 @@ exports.signup = async (req, res, next) => {
 
     await Profile.create({
       mass,
-      division,
       club,
       email,
-      password,
-      session,
       handle,
+      session,
+      password,
+      division,
       stat: { registered: dateRegistered },
       clubsManaged: [{ club }],
     })

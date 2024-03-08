@@ -589,6 +589,8 @@ module.exports.acceptOffer = async ({ from, to, fee, player, ackMsg, mass, Playe
 };
 
 module.exports.varReplacer = (str = "") => {
+  console.log("ADSAFDSFDSFD");
+
   const regexp = new RegExp(/@\((.*?)\)/, "g");
   const matches = str.matchAll(regexp);
 
