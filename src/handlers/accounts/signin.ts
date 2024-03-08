@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
-import { Request, Response, NextFunction } from "express";
-
 import pushMail from "../../utils/pushMail";
 import validate from "../../utils/validate";
+
 import { PROFILE } from "../../models/accounts";
+import { Request, Response, NextFunction } from "express";
 import { clientCookiesOption } from "../../utils/constants";
 import { catchError, hourDiff, calcFutureDate, requestHasBody, generateSession, preventProfileBruteForce } from "../../utils/handlers";
 

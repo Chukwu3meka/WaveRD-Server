@@ -20,11 +20,11 @@ export default async (req: Request, res: Response) => {
     validate({ type: "name", value: name });
     validate({ type: "password", value: password });
 
-    // ? check if email is taken alread
+    // ? check if email is taken already
     const emailTaken = await emailExistsFn(email);
     if (emailTaken) throw { message: "Email already in use, Kindly use a different email address", sendError: true };
 
-    // ? check if handle is taken alread
+    // ? check if handle is taken already
     const handleTaken = await handleExistsFn(handle);
     if (handleTaken) throw { message: "Handle already in use, Kindly use a different handle", sendError: true };
 

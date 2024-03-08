@@ -1,6 +1,5 @@
 import { v4 as uuid } from "uuid";
 import { ObjectId } from "mongoose";
-import { InferSchemaType } from "mongoose";
 
 import { FAILED_REQUESTS } from "../models/console";
 import { CatchError } from "../interface/utils-handlers-interface";
