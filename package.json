@@ -6,12 +6,12 @@
   "scripts": {
     "build": "tsc",
     "tsc": "tsc --watch",
-    "node-start": "node ./dist/index.js",
+    "start": "node ./dist/index.js",
     "gateway-dev": "node ../gateway/index.js",
     "gateway": "pm2 start ../gateway/index.js -i 1 -f",
     "test": "echo \"Error: no test specified\" && exit 1",
     "gateway-fail-safe": "pm2 start ../gateway/index.js -i -1",
-    "start": "pm2 start process.json --name soccermass_server",
+    "pm2-start": "pm2 start process.json --name soccermass_server",
     "kill-server": "pm2 kill && pm2 stop all && npx kill-port 8081",
     "dev": "pm2 kill && pm2 stop all && npx kill-port 8081 && pm2 start tsc.sh &&  pm2 monit"
   },
