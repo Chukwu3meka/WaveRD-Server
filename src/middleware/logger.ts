@@ -1,7 +1,6 @@
 import { format } from "date-fns";
+import { catchError, } from "../utils/handlers";
 import { Request, Response, NextFunction } from "express";
-
-import { catchError, sleep } from "../utils/handlers";
 import { ALL_REQUEST, DAILY_REQUEST_STAT } from "../models/console";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
