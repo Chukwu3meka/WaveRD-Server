@@ -10,8 +10,7 @@ export default async (req: Request, res: Response) => {
     requestHasBody({ body: req.query, required: ["query"], sendError: true });
 
     const { query } = req.query;
-
-    validator({ type: "query", value: query, sendError: true });
+    validator({ type: "comment", value: query, sendError: true });
 
     const result = await ENDPOINTS.aggregate([
       {

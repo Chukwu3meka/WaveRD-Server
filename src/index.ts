@@ -9,7 +9,6 @@ import routeHandlers from "./routes";
 import logger from "./middleware/logger";
 import header from "./middleware/header";
 import passport from "./middleware/passport";
-
 import twitterPassport from "./middleware/twitterPassport";
 
 const PORT = process.env.PORT || 5000,
@@ -25,12 +24,11 @@ const server = async () => {
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(cookieSession({ secret: SERVER_SECRET_KEY }));
 
-    // Apply the middleware to all incoming requests
-    app.use(twitterPassport);
+    app.use(twitterPassport); // <= fix error with twitter passport
     app.use(passport.initialize());
     app.use(passport.session());
-
     app.use(header); // <= Add no index for search engines
+    
     app.use(logger);
     routeHandlers(app);
 

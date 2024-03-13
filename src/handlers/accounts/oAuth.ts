@@ -5,7 +5,15 @@ import pushMail from "../../utils/pushMail";
 import validator from "../../utils/validate";
 import { PROFILE } from "../../models/accounts";
 import { clientCookiesOption } from "../../utils/constants";
-import { capitalize, catchError, hourDiff, generateSession, calcFutureDate, obfuscate, preventProfileBruteForce } from "../../utils/handlers";
+import {
+  capitalize,
+  catchError,
+  hourDiff,
+  generateSession,
+  calcFutureDate,
+  obfuscate,
+  preventProfileBruteForce,
+} from "../../utils/handlers";
 
 import { PushMail } from "../../interface/pushMail-handlers-interface";
 
@@ -60,13 +68,16 @@ const oAuthFunc = async (req: Request, res: Response) => {
         });
 
         throw {
-          message: "Verify your email to activate Your SoccerMASS account, kindly check your email inbox/spam for the most recent verification email from us",
+          message:
+            "Verify your email to activate Your SoccerMASS account, kindly check your email inbox/spam for the most recent verification email from us",
           sendError: true,
         };
       }
 
       throw {
-        message: `Kindly check your inbox/spam for our latest verification email that was sent ${hoursElapsed + 3 ? "few hours" : "less than an hour"} ago`,
+        message: `Kindly check your inbox/spam for our latest verification email that was sent ${
+          hoursElapsed + 3 ? "few hours" : "less than an hour"
+        } ago`,
         sendError: true,
       };
     }
@@ -74,17 +85,21 @@ const oAuthFunc = async (req: Request, res: Response) => {
     const SSIDJwtToken = jwt.sign({ session }, process.env.JWT_SECRET as string, { expiresIn: "180 days" });
 
     await pushMail({
+      data: { name },
       address: email,
       account: "accounts",
-      data: { name },
       template: "successfulLogin",
       subject: `Successful Login to SoccerMASS via ${capitalize(auth)}`,
     });
 
-    return res.cookie("SSID", SSIDJwtToken, clientCookiesOption).redirect(302, `${process.env.CLIENT_URL}`);
+    return res.status(200).cookie("SSID", SSIDJwtToken, clientCookiesOption).redirect(302, `${process.env.CLIENT_URL}?auth=${auth}`);
   } catch (err: any) {
-    const message = err.sendError ? err.message : "We encountered an oAuth error. Kindly try again later or contact support if issue persists";
-    return res.redirect(`${process.env.CLIENT_URL}/accounts/signin/?${auth}=${obfuscate(`${new Date()}`)}&response=${obfuscate(message)}`);
+    const message = err.sendError
+      ? err.message
+      : "We encountered an oAuth error. Kindly try again later or contact support if issue persists";
+    return res.redirect(
+      `${process.env.CLIENT_URL}/accounts/signin/?${auth}=${obfuscate(`${new Date()}`)}&response=${obfuscate(message)}`
+    );
   }
 };
 
