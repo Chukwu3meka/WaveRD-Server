@@ -3,11 +3,6 @@ import twitterPassport from "passport-twitter";
 import facebookPassport from "passport-facebook";
 import googlePassport from "passport-google-oauth20";
 
-// let trustProxy = false;
-// if (process.env.DYNO) trustProxy = true;
-
-// const baseUrl = process.env.NODE_ENV === "production" ? "https://api.soccermass.com/v1/accounts" : "http://localhost:8081/api/v1/accounts";
-
 const returnEmail = (profile: any, cb: any) => {
   if (profile.emails) {
     const email = profile.emails[0].value;
@@ -16,7 +11,6 @@ const returnEmail = (profile: any, cb: any) => {
   throw { message: "email not found" };
 };
 
-// verify that env files are available
 passport.use(
   new facebookPassport.Strategy(
     {

@@ -8,17 +8,17 @@ module.exports = {
       watch_options: {
         followSymlinks: false,
       },
-      instances: 3,
+      // instances: 3,
     },
     {
       name: "Compiler",
-      instances: 3,
+      // instances: 3,
       script: "./start-tsc.sh",
     },
     {
       name: "Gateway",
       script: "../gateway/index.js",
-      instances: 3,
+      // instances: 4,
     },
   ],
 };
