@@ -17,9 +17,10 @@ export const catchError = async ({ res, req, err }: CatchError) => {
   }
 
   if (<string>process.env.NODE_ENV === "development") {
-    console.log(request ? `${request.endpoint} <<<>>> ${JSON.stringify(message).replaceAll('"', "")}` : `${res.req.url} <<<>>> Invalid route`);
+    console.log(
+      request ? `${request.endpoint} <<<>>> ${JSON.stringify(message).replaceAll('"', "")}` : `${res.req.url} <<<>>> Invalid route`
+    );
   }
-
   // console.log({ sendError });
 
   if (respond) res.status(status).json({ success: false, message: sendError ? message : "Unable to process request", data: null });
@@ -136,7 +137,14 @@ export const getIdFromSession = (session: string) => {
   return id;
 };
 
-export const capitalize = (word: string) => word && word[0].toUpperCase() + word.slice(1);
+export const capitalize = (phrase: string) => {
+  if (!phrase) return null;
+
+  return phrase
+    .split(" ")
+    .map((word) => word[0].toUpperCase() + word.slice(1))
+    .join(" ");
+};
 
 export const preventProfileBruteForce = async ({ profile, password: authPassword }: PreventProfileBruteForce) => {
   const {
@@ -152,7 +160,10 @@ export const preventProfileBruteForce = async ({ profile, password: authPassword
   } = profile;
 
   if (accountStatus !== "active") {
-    throw { message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation", sendError: true };
+    throw {
+      message: "Reach out to us for assistance in reactivating your account or to inquire about the cause of deactivation",
+      sendError: true,
+    };
   }
 
   if (authPassword !== false) {
@@ -164,10 +175,22 @@ export const preventProfileBruteForce = async ({ profile, password: authPassword
 
       // Notify user on Login Attempt
       if ([5, 6].includes(failedAttempts))
-        await pushMail({ account: "accounts", template: "failedLogin", address: email, subject: "Failed Login Attempt - SoccerMASS", data: { name } });
+        await pushMail({
+          account: "accounts",
+          template: "failedLogin",
+          address: email,
+          subject: "Failed Login Attempt - SoccerMASS",
+          data: { name },
+        });
 
       if (!(failedAttempts % 3))
-        await pushMail({ account: "accounts", template: "lockNotice", address: email, subject: "Account Lock Notice - SoccerMASS", data: { name } });
+        await pushMail({
+          account: "accounts",
+          template: "lockNotice",
+          address: email,
+          subject: "Account Lock Notice - SoccerMASS",
+          data: { name },
+        });
 
       // Increment record on Database
       if (failedAttempts >= 7 && hoursElapsed < 1) {
@@ -176,7 +199,10 @@ export const preventProfileBruteForce = async ({ profile, password: authPassword
           $set: { ["auth.locked"]: new Date(), ["auth.failedAttempts.lastAttempt"]: new Date() },
         });
       } else {
-        await PROFILE.findByIdAndUpdate(id, { $inc: { ["auth.failedAttempts.counter"]: 1 }, $set: { ["auth.failedAttempts.lastAttempt"]: new Date() } });
+        await PROFILE.findByIdAndUpdate(id, {
+          $inc: { ["auth.failedAttempts.counter"]: 1 },
+          $set: { ["auth.failedAttempts.lastAttempt"]: new Date() },
+        });
       }
 
       throw { message: "Invalid Email/Password", sendError: true };
@@ -190,7 +216,12 @@ export const preventProfileBruteForce = async ({ profile, password: authPassword
 
     await PROFILE.findByIdAndUpdate(id, {
       $inc: { ["auth.lastLogin.counter"]: 1 },
-      $set: { ["auth.locked"]: null, ["auth.failedAttempts.counter"]: 0, ["auth.failedAttempts.lastAttempt"]: null, ["auth.lastLogin.lastAttempt"]: Date.now() },
+      $set: {
+        ["auth.locked"]: null,
+        ["auth.failedAttempts.counter"]: 0,
+        ["auth.failedAttempts.lastAttempt"]: null,
+        ["auth.lastLogin.lastAttempt"]: Date.now(),
+      },
     });
   }
 };

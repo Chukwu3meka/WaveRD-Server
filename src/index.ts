@@ -1,19 +1,21 @@
 import "dotenv/config";
 
+import { sleep } from "./utils/handlers";
+
 import express from "express";
 import bodyParser from "body-parser";
-import cookieParser from "cookie-parser";
-import cookieSession from "cookie-session";
-
 import routeHandlers from "./routes";
 import logger from "./middleware/logger";
 import header from "./middleware/header";
+import cookieParser from "cookie-parser";
+import timeout from "./middleware/timeout";
+import cookieSession from "cookie-session";
 import passport from "./middleware/passport";
 import twitterPassport from "./middleware/twitterPassport";
 
 const PORT = process.env.PORT || 5000,
   SERVER_SECRET_KEY = process.env.SECRET,
-  NODE_ENV = process.env.NODE_ENV === "development" ? "DEVELOPMENT" : "PRODUCTION";
+  NODE_ENV = process.env.NODE_ENV === "development" ? "DEV" : "PROD";
 
 const server = async () => {
   try {
@@ -28,13 +30,18 @@ const server = async () => {
     app.use(passport.initialize());
     app.use(passport.session());
     app.use(header); // <= Add no index for search engines
-    
+
+    // app.use(timeout);
+
+    // // ? Simulate production delay due to network latency
+    // if (process.env.NODE_ENV === "development") await sleep(0.1);
+
     app.use(logger);
     routeHandlers(app);
 
-    app.listen(PORT, () => console.info(`SoccerMASS ${NODE_ENV} Server running on PORT:::${PORT}`));
+    app.listen(PORT, () => console.info(`SoccerMASS ${NODE_ENV} running on PORT:::${PORT}`));
   } catch (error: any) {
-    console.log("SoccerMASS Server Error", (NODE_ENV === "DEVELOPMENT" && (error.message as string)) || error);
+    console.log(`SoccerMASS ${NODE_ENV} Error`, (NODE_ENV === "DEV" && (error.message as string)) || error);
   }
 };
 
