@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { catchError, sleep } from "../utils/handlers";
+import { catchError } from "../utils/handlers";
 import { Request, Response, NextFunction } from "express";
 import { ALL_REQUEST, DAILY_REQUEST_STAT } from "../models/console";
 

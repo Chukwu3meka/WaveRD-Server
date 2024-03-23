@@ -1,10 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { CATEGORIES, ENDPOINTS } from "../../models/apihub";
-import { catchError } from "../../utils/handlers";
+import { catchError, sleep } from "../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await ENDPOINTS.aggregate([{ $group: { _id: "$category", count: { $count: {} } } }]);
+    const hasLimitParam = Object.hasOwn(req.query, "limit");
+    if (!hasLimitParam) throw { message: "Limit not specified", sendError: true };
+
+    const limit = parseInt(req.query.limit as any);
+    if (limit < 1) throw { message: "Invalid limit specified", sendError: true };
+
+    const result = await ENDPOINTS.aggregate([{ $group: { _id: "$category", count: { $count: {} } } }, { $limit: limit }]);
 
     const categories = [];
 
@@ -14,6 +20,8 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const data = { success: true, data: categories, message: "Endpoints Successfully retrieved" };
+
+    await sleep(0.9);
 
     return res.status(200).json(data);
   } catch (err: any) {

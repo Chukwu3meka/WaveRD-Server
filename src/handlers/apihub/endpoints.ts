@@ -103,7 +103,7 @@ export default async (req: Request, res: Response) => {
       message: result.length ? "Endpoints similar to Search Phrase retrieved" : "Could not match endpoints with search phrase",
     };
 
-    await sleep(3);
+    // await sleep(3);
 
     return res.status(200).json(data);
   } catch (err: any) {

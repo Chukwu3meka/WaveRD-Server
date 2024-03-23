@@ -12,6 +12,7 @@ import timeout from "./middleware/timeout";
 import cookieSession from "cookie-session";
 import passport from "./middleware/passport";
 import twitterPassport from "./middleware/twitterPassport";
+import disableCache from "./middleware/disableCache";
 
 const PORT = process.env.PORT || 5000,
   SERVER_SECRET_KEY = process.env.SECRET,
@@ -34,7 +35,6 @@ const server = async () => {
     // app.use(timeout);
 
     // // ? Simulate production delay due to network latency
-    // if (process.env.NODE_ENV === "development") await sleep(0.1);
 
     app.use(logger);
     routeHandlers(app);
