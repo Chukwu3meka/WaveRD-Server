@@ -15,13 +15,13 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const categories = [];
 
     for (const category of result) {
-      const data = await CATEGORIES.findById(category._id, { updated: 0, __v: 0 });
+      const data = await CATEGORIES.findById(category._id, { _id: false, id: "$_id", category: true, title: true });
       categories.push(data);
     }
 
     const data = { success: true, data: categories, message: "Endpoints Successfully retrieved" };
 
-    await sleep(0.9);
+    await sleep(0.3);
 
     return res.status(200).json(data);
   } catch (err: any) {
