@@ -61,7 +61,7 @@ const validate = ({ value, type, label, sendError = false }: Validator) => {
       case "comment": {
         charLengthLimit(3, 700);
 
-        const reg = /^[a-zA-Z0-9,.!?()\-=+/]*$/;
+        const reg = /^[a-zA-Z0-9,.!? -]*$/;
         if (!reg.test(value)) throw { message: `${label} can only have letters, Numbers, comma, dot, exclamation and question mark.` };
         break;
       }
@@ -77,6 +77,7 @@ const validate = ({ value, type, label, sendError = false }: Validator) => {
       default:
         throw { message: "Validation failed" };
     }
+
     // return true
   } catch (err) {
     if (sendError) throw { sendError: true, type: "validate", description: err };

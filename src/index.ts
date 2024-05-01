@@ -1,18 +1,14 @@
 import "dotenv/config";
 
-import { sleep } from "./utils/handlers";
-
 import express from "express";
 import bodyParser from "body-parser";
 import routeHandlers from "./routes";
 import logger from "./middleware/logger";
 import header from "./middleware/header";
 import cookieParser from "cookie-parser";
-import timeout from "./middleware/timeout";
 import cookieSession from "cookie-session";
 import passport from "./middleware/passport";
 import twitterPassport from "./middleware/twitterPassport";
-import disableCache from "./middleware/disableCache";
 
 const PORT = process.env.PORT || 5000,
   SERVER_SECRET_KEY = process.env.SECRET,
@@ -31,10 +27,6 @@ const server = async () => {
     app.use(passport.initialize());
     app.use(passport.session());
     app.use(header); // <= Add no index for search engines
-
-    // app.use(timeout);
-
-    // // ? Simulate production delay due to network latency
 
     app.use(logger);
     routeHandlers(app);

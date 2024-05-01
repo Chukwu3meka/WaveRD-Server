@@ -6,13 +6,12 @@ import { catchError, requestHasBody } from "../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
-    requestHasBody({ body: req.params, required: ["id"], sendError: true });
-    const { id } = req.params;
+    requestHasBody({ body: req.params, required: ["path"], sendError: true });
+    const { path } = req.params;
 
-    const isClubIDValid = isValidObjectId(id);
-    if (!isClubIDValid) throw { message: `Invalid Endpoint ID provided` };
+    if (!path) throw { message: `Invalid Path provided` };
 
-    const result = await ENDPOINTS.findOne({ _id: id }, { _id: 0, id: "$_id", title: 1, description: 1, snippets: 1, response: 1 });
+    const result = await ENDPOINTS.findOne({ path }, { _id: 0, id: "$_id", title: 1, description: 1, snippets: 1, response: 1 });
     if (!result) throw { message: "Unable to retrieve Endpoint", sendError: true };
 
     const data = { success: true, data: result, message: "Endpoint Successfully retrieved" };

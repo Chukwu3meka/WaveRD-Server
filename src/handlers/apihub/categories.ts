@@ -1,6 +1,6 @@
+import { catchError } from "../../utils/handlers";
 import { NextFunction, Request, Response } from "express";
 import { CATEGORIES, ENDPOINTS } from "../../models/apihub";
-import { catchError, sleep } from "../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -20,8 +20,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const data = { success: true, data: categories, message: "Endpoints Successfully retrieved" };
-
-    await sleep(0.3);
 
     return res.status(200).json(data);
   } catch (err: any) {
