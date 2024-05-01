@@ -1,13 +1,9 @@
-// clubs
-import club from "./clubs/club";
-import randomClubs from "./clubs/random";
+export * from "./clubs";
+export * from "./players";
 
 // endpoints
-import endpoint from "./endpoints/endpoint";
-import endpoints from "./endpoints/endpoints";
-import searchEndpoints from "./endpoints/search";
+import endpoint from "./endpoint";
+import endpoints from "./endpoints";
+import categories from "./categories";
 
-// players
-import randomPlayers from "./players/random";
-
-export { club, randomClubs, searchEndpoints, endpoints, endpoint, randomPlayers };
+export { endpoints, categories, endpoint };

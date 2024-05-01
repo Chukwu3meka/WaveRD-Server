@@ -77,6 +77,7 @@ const validate = ({ value, type, label, sendError = false }: Validator) => {
       default:
         throw { message: "Validation failed" };
     }
+
     // return true
   } catch (err) {
     if (sendError) throw { sendError: true, type: "validate", description: err };
