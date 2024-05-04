@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-import { consoleDatabase } from "../database";
+import { infoDatabase } from "../database";
 
 const ContactUsSchema = new Schema({
   contact: { type: String, required: true },
@@ -10,6 +10,6 @@ const ContactUsSchema = new Schema({
   date: { type: String, default: new Date().toDateString() },
 });
 
-const DailyStatModel = consoleDatabase.model("Contact_Us", ContactUsSchema);
+const DailyStatModel = infoDatabase.model("Contact_Us", ContactUsSchema);
 
 export default DailyStatModel;

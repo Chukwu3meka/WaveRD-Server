@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { CONTACT_US } from "../../models/console";
+import { CONTACT_US } from "../../models/info";
 import { contactPreferences } from "../../utils/constants";
 import { catchError, requestHasBody } from "../../utils/handlers";
 
@@ -10,7 +10,8 @@ export default async (req: Request, res: Response) => {
     const { category, comment, contact, preference } = req.body;
 
     if (!contactPreferences.includes(preference)) throw { message: "Preference is invalid", sendError: true };
-    if (!["others", "advertising", "technical", "suggestion", "service"].includes(category)) throw { message: "Invalid category specified", sendError: true };
+    if (!["others", "advertising", "technical", "suggestion", "service"].includes(category))
+      throw { message: "Invalid category specified", sendError: true };
 
     await CONTACT_US.create({ category, comment, contact, preference });
 

@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-
 import { catchError, getIdFromSession } from "../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {

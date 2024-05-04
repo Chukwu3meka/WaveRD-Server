@@ -4,7 +4,7 @@ import express from "express";
 import passport from "../middleware/passport";
 // import timeout from "connect-timeout";
 import timeout from "../middleware/timeout";
-import auth from "../middleware/auth";
+import routeGuard from "../middleware/routeGuard";
 
 // handlers
 import * as personal from "../handlers/accounts";
@@ -21,12 +21,12 @@ router.route("/verify-email").get(personal.verifyEmail);
 router.route("/signin").post(personal.signin);
 // router.route("/signin").post(personal.signin);
 // router.route("/signin").post(timeout(1, personal.signin as Function));
-router.route("/profile").get(auth, personal.profile);
+router.route("/profile").get(routeGuard, personal.profile);
 router.route("/signout").get(personal.signout);
 router.route("/initiate-password-reset").post(personal.initiatePasswordReset);
 router.route("/confirm-password-reset").post(personal.confirmPasswordReset);
-router.route("/theme").post(auth, personal.theme);
-router.route("/data-deletion").post(auth, personal.dataDeletion);
+router.route("/theme").post(routeGuard, personal.theme);
+router.route("/data-deletion").post(routeGuard, personal.dataDeletion);
 
 // router.route("/:club/players").get(club.clubPlayers);
 

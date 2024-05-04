@@ -1,14 +1,15 @@
-import express from "express";
-
-// middleware
-import securedRoute from "../middleware/auth";
-
-// handlers
+import { codes } from "../utils/codes";
 import * as handler from "../handlers/console";
+import express, { Request, Response } from "express";
 
 const router = express.Router({ caseSensitive: true, strict: true });
 
-router.route("/contact-us").post(handler.contactUs);
-router.route("/keep-awake").get(handler.keepAwake);
+// Routes
+router.route("/moderator/endpoints").get(handler.endpoints);
+
+// ? fallback route
+router.route("/*").get((req: Request, res: Response) => {
+  return res.status(200).json({ success: true, message: new Date().toDateString(), data: codes["Invalid Console Route"] });
+});
 
 export default router;

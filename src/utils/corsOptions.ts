@@ -1,8 +1,8 @@
 // ? SoccerMASS Development Web
 const devOrigins = [
   "http://localhost:8081",
-  "http://localhost:3001",
-  "http://localhost:3000",
+  // "http://localhost:3001",
+  // "http://localhost:3000",
   //
 ];
 

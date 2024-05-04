@@ -1,3 +1,6 @@
+// Used to keep SoccerMASS API always running
+// https://console.cron-job.org/jobs
+
 import { Request, Response } from "express";
 
 import { catchError } from "../../utils/handlers";
