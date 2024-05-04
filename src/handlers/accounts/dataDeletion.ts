@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import validate from "../../utils/validate";
 import { PROFILE } from "../../models/accounts";
-import { CONTACT_US } from "../../models/console";
+import { CONTACT_US } from "../../models/info";
 import { catchError, preventProfileBruteForce, requestHasBody } from "../../utils/handlers";
 
 import pushMail from "../../utils/pushMail";

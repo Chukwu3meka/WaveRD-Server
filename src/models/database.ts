@@ -41,7 +41,8 @@ interface IlogMessage {
   label: string;
   event: string;
 }
-const logMessage = ({ label, event }: IlogMessage) => `MongoDB ${label} Database Connection Events} ::: ${connectionEvents[event as keyof IConnectionEvents]}`;
+const logMessage = ({ label, event }: IlogMessage) =>
+  `MongoDB ${label} Database Connection Events} ::: ${connectionEvents[event as keyof IConnectionEvents]}`;
 
 const modelGenerator = (DB_NAME: string) => {
   return mongoose
@@ -58,9 +59,10 @@ const modelGenerator = (DB_NAME: string) => {
     .on("disconnecting", () => logMessage({ label: DB_NAME, event: "disconnecting" }));
 };
 
+const infoDatabase = modelGenerator("INFO"); // ? <= Client Database
 const apihubDatabase = modelGenerator("APIHUB"); // ? <= API Hub Database
-const consoleDatabase = modelGenerator("CONSOLE"); // ? <= Admin/Moderators Database
+const consoleDatabase = modelGenerator("CONSOLE"); // ? <= Moderators Database
 const managerDatabase = modelGenerator("MANAGER"); // ? <= Soccer Manager Database
-const accountsDatabase = modelGenerator("ACCOUNTS"); // ? <= Accounts  Database
+const accountsDatabase = modelGenerator("ACCOUNTS"); // ? <= Auth and Accounts  Database
 
-export { accountsDatabase, consoleDatabase, apihubDatabase, managerDatabase };
+export { accountsDatabase, consoleDatabase, infoDatabase, apihubDatabase, managerDatabase };

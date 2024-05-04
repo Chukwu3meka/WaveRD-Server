@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { catchError } from "../utils/handlers";
 import { Request, Response, NextFunction } from "express";
-import { ALL_REQUEST, DAILY_REQUEST_STAT } from "../models/console";
+import { ALL_REQUEST, DAILY_REQUEST_STAT } from "../models/info";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -18,13 +18,12 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       if (version && domain && path) {
         await ALL_REQUEST.create({ version, domain, path });
 
-        if (req.body && req.body.email) req.body.email = req.body.email.toLowerCase(); // ? Make email lower case for all request
-
         //  ? "Daily Records of Server Stat"
         await DAILY_REQUEST_STAT.findOneAndUpdate(
           { date: new Date().toDateString() },
           {
             $inc: {
+              info: domain === "info" ? 1 : 0,
               apihub: domain === "apihub" ? 1 : 0,
               manager: domain === "manager" ? 1 : 0,
               console: domain === "console" ? 1 : 0,
@@ -40,7 +39,11 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         const valuesToTrim = ["email", "name", "password", "handle"];
         for (const value of valuesToTrim) {
           if (req.body[value]) {
-            req.body[value] = req.body[value].trim();
+            if (value === "email") {
+              req.body[value] = req.body[value].trim().toLowerCase();
+            } else {
+              req.body[value] = req.body[value].trim();
+            }
           }
         }
 

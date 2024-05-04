@@ -1,7 +1,7 @@
 import { v4 as uuid } from "uuid";
 import { ObjectId } from "mongoose";
 
-import { FAILED_REQUESTS } from "../models/console";
+import { FAILED_REQUESTS } from "../models/info";
 import { CatchError } from "../interface/utils-handlers-interface";
 import { PROFILE } from "../models/accounts";
 import pushMail from "./pushMail";
@@ -17,9 +17,7 @@ export const catchError = async ({ res, req, err }: CatchError) => {
   }
 
   if (<string>process.env.NODE_ENV === "development") {
-    console.log(
-      request ? `${request.endpoint} <<<>>> ${JSON.stringify(message).replaceAll('"', "")}` : `${res.req.url} <<<>>> Invalid route`
-    );
+    console.warn(request ? `${request.endpoint} <<<>>> ${JSON.stringify(message).replaceAll('"', "")}` : `${res.req.url} <<<>>> Invalid route`);
   }
   // console.log({ sendError });
 

@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { consoleDatabase } from "../database";
+import { infoDatabase } from "../database";
 
 const AllRequestsSchema = new Schema({
   path: { type: String },
@@ -8,6 +8,6 @@ const AllRequestsSchema = new Schema({
   version: { type: String, required: true },
 });
 
-const AllRequestsModel = consoleDatabase.model("All_Requests", AllRequestsSchema);
+const AllRequestsModel = infoDatabase.model("All_Requests", AllRequestsSchema);
 
 export default AllRequestsModel;
