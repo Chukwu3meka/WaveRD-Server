@@ -1,1 +1,3 @@
-export * from "./moderator";
+import endpoints from "./endpoints";
+
+export { endpoints };

@@ -232,3 +232,45 @@ export const preventProfileBruteForce = async ({ profile, password: authPassword
 // export const redirectToWeb = (req: Request, res: Response) => res.redirect(302, `${process.env.API_URL}`);
 
 // function to generate the date for n  days from now:
+
+export const verifyImageFile = (file: File): Promise<boolean> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      const image = new Image();
+      image.src = event.target?.result as string;
+
+      image.onload = () => {
+        resolve(true); // File is a valid image
+      };
+
+      image.onerror = () => {
+        resolve(false); // File is not an image
+      };
+    };
+
+    reader.readAsDataURL(file);
+  });
+};
+
+export const verifyFileAsPDF = (file: File): Promise<boolean> => {
+  return new Promise<boolean>((resolve) => {
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      const uint = new Uint8Array(reader.result as ArrayBuffer).subarray(0, 4);
+      let header = "";
+
+      for (let i = 0; i < uint.length; i++) {
+        header += uint[i].toString(16);
+      }
+
+      // Check if the file's header matches the PDF magic number "25504446" (hex for "%PDF")
+      const isPDF = header === "25504446";
+      resolve(isPDF);
+    };
+
+    reader.readAsArrayBuffer(file);
+  });
+};

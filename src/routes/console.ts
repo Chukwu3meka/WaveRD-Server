@@ -5,7 +5,7 @@ import express, { Request, Response } from "express";
 const router = express.Router({ caseSensitive: true, strict: true });
 
 // Routes
-router.route("/moderator/endpoints").get(handler.endpoints);
+router.route("/endpoints").get(handler.endpoints);
 
 // ? fallback route
 router.route("/*").get((req: Request, res: Response) => {

@@ -1,8 +1,8 @@
-import validator from "../../../utils/validate";
+import validator from "../../utils/validate";
 
 import { Request, Response } from "express";
-import { ENDPOINTS } from "../../../models/apihub";
-import { catchError, range, requestHasBody } from "../../../utils/handlers";
+import { ENDPOINTS } from "../../models/apihub";
+import { catchError, range, requestHasBody } from "../../utils/handlers";
 
 export default async (req: Request, res: Response) => {
   try {
