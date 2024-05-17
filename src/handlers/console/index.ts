@@ -1,3 +1,6 @@
-import endpoints from "./endpoints";
+import endpoint from "./apihub/endpoint";
+import endpoints from "./apihub/endpoints";
+import composeEndpoint from "./apihub/composeEndpoint";
+import endpointTitleExists from "./apihub/endpointTitleExists";
 
-export { endpoints };
+export { endpoint, endpoints, endpointTitleExists, composeEndpoint };

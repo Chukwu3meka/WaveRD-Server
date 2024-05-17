@@ -4,16 +4,8 @@ import { NextFunction, Request, Response } from "express";
 import pushMail from "../../utils/pushMail";
 import validator from "../../utils/validate";
 import { PROFILE } from "../../models/accounts";
-import { clientCookiesOption } from "../../utils/constants";
-import {
-  capitalize,
-  catchError,
-  hourDiff,
-  generateSession,
-  calcFutureDate,
-  obfuscate,
-  preventProfileBruteForce,
-} from "../../utils/handlers";
+import { CLIENT_COOKIES_OPTION } from "../../utils/constants";
+import { capitalize, catchError, hourDiff, generateSession, calcFutureDate, obfuscate, mitigateProfileBruteForce } from "../../utils/handlers";
 
 import { PushMail } from "../../interface/pushMail-handlers-interface";
 
@@ -41,7 +33,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
       },
     } = profile;
 
-    await preventProfileBruteForce({ password: false, profile });
+    await mitigateProfileBruteForce({ password: false, profile });
 
     // Check if account email is verified
     if (!emailVerified) {
@@ -92,14 +84,10 @@ const oAuthFunc = async (req: Request, res: Response) => {
       subject: `Successful Login to SoccerMASS via ${capitalize(auth)}`,
     });
 
-    return res.status(200).cookie("SSID", SSIDJwtToken, clientCookiesOption).redirect(302, `${process.env.CLIENT_URL}?auth=${auth}`);
+    return res.status(200).cookie("SSID", SSIDJwtToken, CLIENT_COOKIES_OPTION).redirect(302, `${process.env.CLIENT_URL}?auth=${auth}`);
   } catch (err: any) {
-    const message = err.sendError
-      ? err.message
-      : "We encountered an oAuth error. Kindly try again later or contact support if issue persists";
-    return res.redirect(
-      `${process.env.CLIENT_URL}/accounts/signin/?${auth}=${obfuscate(`${new Date()}`)}&response=${obfuscate(message)}`
-    );
+    const message = err.sendError ? err.message : "We encountered an oAuth error. Kindly try again later or contact support if issue persists";
+    return res.redirect(`${process.env.CLIENT_URL}/accounts/signin/?${auth}=${obfuscate(`${new Date()}`)}&response=${obfuscate(message)}`);
   }
 };
 

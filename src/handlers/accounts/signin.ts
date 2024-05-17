@@ -4,8 +4,8 @@ import validate from "../../utils/validate";
 
 import { PROFILE } from "../../models/accounts";
 import { Request, Response, NextFunction } from "express";
-import { clientCookiesOption } from "../../utils/constants";
-import { catchError, hourDiff, calcFutureDate, requestHasBody, generateSession, preventProfileBruteForce } from "../../utils/handlers";
+import { CLIENT_COOKIES_OPTION } from "../../utils/constants";
+import { catchError, hourDiff, calcFutureDate, requestHasBody, generateSession, mitigateProfileBruteForce } from "../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -35,7 +35,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       },
     } = profile;
 
-    await preventProfileBruteForce({ password: authPassword, profile });
+    await mitigateProfileBruteForce({ password: authPassword, profile });
 
     // Check if account email is verified
     if (!emailVerified) {
@@ -79,7 +79,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", data: { name } });
 
-    res.status(200).cookie("SSID", SSIDJwtToken, clientCookiesOption).json(data);
+    res.status(200).cookie("SSID", SSIDJwtToken, CLIENT_COOKIES_OPTION).json(data);
   } catch (err: any) {
     err.status = 401;
     return catchError({ res, err });
@@ -87,4 +87,4 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 };
 
 // domain: req.headers.origin?.replace("http://", ".")?.replace("https://", ".")?.replace(/:\d+/, ""),
-// res.status(200).cookie("SSID", SSIDJwtToken, clientCookiesOption).cookie("USER", USERJwtToken, clientCookiesOption).json(data);
+// res.status(200).cookie("SSID", SSIDJwtToken, CLIENT_COOKIES_OPTION).cookie("USER", USERJwtToken, CLIENT_COOKIES_OPTION).json(data);

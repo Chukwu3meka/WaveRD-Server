@@ -1,7 +1,5 @@
-import { NextFunction, Request, Response } from "express";
-
-import { isValidObjectId } from "mongoose";
 import { ENDPOINTS } from "../../models/apihub";
+import { NextFunction, Request, Response } from "express";
 import { catchError, requestHasBody } from "../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {

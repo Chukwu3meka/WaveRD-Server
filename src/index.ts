@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { styleText } from "util";
 
 import express from "express";
 import bodyParser from "body-parser";
@@ -24,14 +25,27 @@ const server = async () => {
     app.use(cookieSession({ secret: SERVER_SECRET_KEY }));
 
     app.use(twitterPassport); // <= fix error with twitter passport
-    app.use(passport.initialize());
-    app.use(passport.session());
+    app.use(passport.initialize()); // <=
+    app.use(passport.session()); // <=
     app.use(header); // <= Add no index for search engines
+    app.use(logger); // <=
 
-    app.use(logger);
-    routeHandlers(app);
+    switch (NODE_ENV) {
+      case "PROD":
+        if (!process.env.API_VERSION) throw {};
+        routeHandlers(app);
+        break;
 
-    app.listen(PORT, () => console.info(`SoccerMASS ${NODE_ENV} running on PORT:::${PORT}`));
+      case "DEV":
+        process.env.API_VERSION = "v1";
+        routeHandlers(app);
+        break;
+
+      default:
+        break;
+    }
+
+    app.listen(PORT, () => console.info(styleText("green", `SoccerMASS ${NODE_ENV} running on PORT:::${PORT}`)));
   } catch (error: any) {
     console.log(`SoccerMASS ${NODE_ENV} Error`, (NODE_ENV === "DEV" && (error.message as string)) || error);
   }

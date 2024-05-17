@@ -1,20 +1,21 @@
-import cors from "cors";
 import { Application } from "express";
-import corsOptions from "../utils/corsOptions"; // <= utils
-import consoleGuard from "../middleware/consoleGuard";
-// import { createProxyMiddleware } from "http-proxy-middleware";
 
-// routes
+import hub from "./hub";
+import cors from "cors";
 import info from "./info";
 import apihub from "./apihub";
 import console from "./console";
 import accounts from "./accounts";
+import hubGuard from "../middleware/hubGuard";
+import corsOptions from "../utils/corsOptions";
+import consoleGuard from "../middleware/consoleGuard";
 
 export default (app: Application) => {
-  app.use("/v1/info/", cors(corsOptions), info);
-  app.use("/v1/apihub/", cors(corsOptions), apihub);
-  app.use("/v1/accounts/", cors(corsOptions), accounts);
-  app.use("/v1/console/", cors(corsOptions), consoleGuard, console);
+  app.use(`/${process.env.API_VERSION}/info/`, cors(corsOptions), info);
+  app.use(`/${process.env.API_VERSION}/apihub/`, cors(corsOptions), apihub);
+  app.use(`/${process.env.API_VERSION}/accounts/`, cors(corsOptions), accounts);
+  app.use(`/${process.env.API_VERSION}/hub/`, cors(corsOptions), hubGuard, hub);
+  app.use(`/${process.env.API_VERSION}/console/`, cors(corsOptions), consoleGuard, console);
 
   // app.use("/api/v1/console/", cors(corsOptions.accounts), console);
   // app.use("/api/v1/accounts/", cors(corsOptions.accounts), accounts); // <= public console

@@ -1,4 +1,4 @@
-export interface PreventProfileBruteForce {
+export interface MitigateProfileBruteForce {
   profile: any;
   password: string | false;
 }

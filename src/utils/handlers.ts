@@ -5,7 +5,7 @@ import { FAILED_REQUESTS } from "../models/info";
 import { CatchError } from "../interface/utils-handlers-interface";
 import { PROFILE } from "../models/accounts";
 import pushMail from "./pushMail";
-import { CalcFutureDate, PreventProfileBruteForce, RequestHasBody } from "../interface/utils/handlers.interface";
+import { CalcFutureDate, MitigateProfileBruteForce, RequestHasBody } from "../interface/utils/handlers.interface";
 
 export const catchError = async ({ res, req, err }: CatchError) => {
   const { request = null, ...data } = res.req.body,
@@ -25,7 +25,7 @@ export const catchError = async ({ res, req, err }: CatchError) => {
 };
 
 export const sleep = async (seconds: number) => {
-  const duration = seconds * 60 * 60;
+  const duration = seconds * 1000;
   return new Promise((resolve) => setTimeout(resolve, duration));
 };
 
@@ -144,7 +144,7 @@ export const capitalize = (phrase: string) => {
     .join(" ");
 };
 
-export const preventProfileBruteForce = async ({ profile, password: authPassword }: PreventProfileBruteForce) => {
+export const mitigateProfileBruteForce = async ({ profile, password: authPassword }: MitigateProfileBruteForce) => {
   const {
     id,
     name,
