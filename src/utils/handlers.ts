@@ -1,10 +1,10 @@
+import pushMail from "./pushMail";
+
 import { v4 as uuid } from "uuid";
 import { ObjectId } from "mongoose";
-
+import { PROFILE } from "../models/accounts";
 import { FAILED_REQUESTS } from "../models/info";
 import { CatchError } from "../interface/utils-handlers-interface";
-import { PROFILE } from "../models/accounts";
-import pushMail from "./pushMail";
 import { CalcFutureDate, MitigateProfileBruteForce, RequestHasBody } from "../interface/utils/handlers.interface";
 
 export const catchError = async ({ res, req, err }: CatchError) => {

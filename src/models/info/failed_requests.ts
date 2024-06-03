@@ -3,10 +3,10 @@ import { Schema } from "mongoose";
 import { infoDatabase } from "../database";
 
 const FailedRequestsSchema = new Schema({
-  error: { type: Object, required: true },
   data: { type: Object, required: true },
+  error: { type: Object, required: true },
   request: { type: Object, required: true },
-  time: { type: String, default: Date.now() },
+  time: { type: Date, default: Date.now() },
 });
 
 const FailedRequestsModel = infoDatabase.model("Failed_Requests", FailedRequestsSchema);

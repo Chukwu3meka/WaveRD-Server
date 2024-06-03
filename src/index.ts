@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { styleText } from "util";
+import { FAILED_REQUESTS } from "./models/info";
 
 import express from "express";
 import bodyParser from "body-parser";
@@ -10,7 +11,6 @@ import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
 import passport from "./middleware/passport";
 import twitterPassport from "./middleware/twitterPassport";
-import { FAILED_REQUESTS } from "./models/info";
 
 const PORT = process.env.PORT || 5000,
   SERVER_SECRET_KEY = process.env.SECRET,
@@ -31,27 +31,13 @@ const server = async () => {
     app.use(header); // <= Add no index for search engines
     app.use(logger); // <=
 
-    switch (NODE_ENV) {
-      case "PROD":
-        if (!process.env.API_VERSION) throw {};
-        routeHandlers(app);
-        break;
-
-      case "DEV":
-        process.env.API_VERSION = "v1";
-        routeHandlers(app);
-        break;
-
-      default:
-        break;
-    }
+    if (!process.env.API_VERSION) throw {};
+    routeHandlers(app);
 
     app.listen(PORT, () => console.info(styleText("green", `Wave Research ${NODE_ENV} running on PORT:::${PORT}`)));
   } catch (error: any) {
-    console.log(`Wave Research ${NODE_ENV} Error`, (NODE_ENV === "DEV" && (error.message as string)) || error);
-    console.log(`Wave Research ${NODE_ENV} Error`, (error.message as string) || error);
-
-    await FAILED_REQUESTS.create({ data: error.message as string, error, request: NODE_ENV, time: new Date() });
+    if (NODE_ENV === "DEV") console.log(`Wave Research`, (error.message as string) || error);
+    await FAILED_REQUESTS.create({ data: (error.message as string) || "not available", error: error || null, request: NODE_ENV });
   }
 };
 
