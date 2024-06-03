@@ -13,7 +13,7 @@ export const endpointTitleExistsFn = async (title: string) => {
 };
 
 const composeHandler = async ({ path, method }: { path: string; method: string }) => {
-  if (path.startsWith(`/${process.env.API_VERSION}/public/`) && HTTP_METHODS.includes(method)) {
+  if (path.startsWith(`/${process.env.STABLE_VERSION}/public/`) && HTTP_METHODS.includes(method)) {
     const startTime = Date.now(),
       endpointResponse = await fetch(process.env.API_URL + path, {
         /* credentials: "include", tells browser will include credentials in the request,

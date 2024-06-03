@@ -31,7 +31,7 @@ const server = async () => {
     app.use(header); // <= Add no index for search engines
     app.use(logger); // <=
 
-    if (!process.env.API_VERSION) throw {};
+    if (!process.env.STABLE_VERSION) throw {};
     routeHandlers(app);
 
     app.listen(PORT, () => console.info(styleText("green", `Wave Research ${NODE_ENV} running on PORT:::${PORT}`)));
