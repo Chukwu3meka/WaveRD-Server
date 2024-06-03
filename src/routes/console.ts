@@ -8,7 +8,10 @@ const router = express.Router({ caseSensitive: true, strict: true });
 router.route("/apihub/endpoints").get(handler.endpoints);
 router.route("/apihub/endpoints/:id").get(handler.endpoint);
 router.route("/apihub/endpoint-title-exists").post(handler.endpointTitleExists);
-router.route("/apihub/compose-api").post(handler.composeEndpoint);
+router.route("/apihub/compose-endpoint").post(handler.composeEndpoint);
+router.route("/apihub/save-endpoint").post(handler.saveEndpoints);
+router.route("/apihub/toggle-endpoint-visibility").post(handler.toggleEndpointVisibility);
+router.route("/apihub/delete-endpoint").post(handler.deleteEndpoint);
 
 // ? fallback route
 router.route("/*").get((req: Request, res: Response) => {

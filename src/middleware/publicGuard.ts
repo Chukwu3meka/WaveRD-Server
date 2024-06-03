@@ -4,6 +4,8 @@ import { catchError } from "../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
+    console.log(req.headers);
+
     const { "x-soccermass-host": host, "x-soccermass-key": key } = req.headers;
 
     // While in experimental phase

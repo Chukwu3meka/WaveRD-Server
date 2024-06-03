@@ -4,14 +4,14 @@ import { Request, Response } from "express";
 import { ENDPOINTS } from "../../../models/apihub";
 import { catchError, requestHasBody } from "../../../utils/handlers";
 
-export const endpointTitleExistsFn = async (title: string) => {
+const endpointTitleExistsFn = async (title: string) => {
   validate({ type: "comment", value: title, sendError: true, label: "Title" });
 
   const dbResponse = await ENDPOINTS.findOne({ title });
   return !!dbResponse;
 };
 
-export default async (req: Request, res: Response) => {
+const endpointTitleExists = async (req: Request, res: Response) => {
   try {
     requestHasBody({ body: req.body, required: ["title"] });
 
@@ -29,3 +29,5 @@ export default async (req: Request, res: Response) => {
     return catchError({ res, err });
   }
 };
+
+export { endpointTitleExistsFn, endpointTitleExists as default };

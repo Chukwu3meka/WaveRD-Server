@@ -32,6 +32,7 @@ export default async (req: Request, res: Response) => {
         // ? https://www.mongodb.com/community/forums/t/cursor-pagination-using-objectid-timestamp-field-in-mongodb/122170/2
 
         const result = await ENDPOINTS.aggregate([
+          { $match: { visibility: true } },
           { $sort: { lastUpdated: -1, _id: 1 } },
           { $skip: page * size },
           { $limit: size },
@@ -42,7 +43,7 @@ export default async (req: Request, res: Response) => {
               path: true,
               title: true,
               latency: true,
-              category: true,
+              reference: true,
               bookmarks: true,
               description: true,
               lastUpdated: true,
@@ -54,8 +55,8 @@ export default async (req: Request, res: Response) => {
 
         const data = {
           success: true,
-          data: { size, page, totalElements: resultCount[0].totalElements, content: result },
           message: result.length ? "Endpoints retrieved successfully" : "Failed to retrieve any endpoint",
+          data: { size, page, totalElements: resultCount[0] ? resultCount[0].totalElements : 0, content: result },
         };
 
         return res.status(200).json(data);
@@ -84,7 +85,7 @@ export default async (req: Request, res: Response) => {
         // ? Single fetch with skip and limit returns unexpected result
         // ? https://www.mongodb.com/community/forums/t/cursor-pagination-using-objectid-timestamp-field-in-mongodb/122170/2
 
-        const filterParam = { category: new BSON.ObjectId(category) };
+        const filterParam = { category: new BSON.ObjectId(category), visibility: true };
 
         const result = await ENDPOINTS.aggregate([
           { $match: filterParam },
@@ -98,7 +99,7 @@ export default async (req: Request, res: Response) => {
               path: true,
               title: true,
               latency: true,
-              category: true,
+              reference: true,
               bookmarks: true,
               description: true,
               lastUpdated: true,
@@ -110,8 +111,8 @@ export default async (req: Request, res: Response) => {
 
         const data = {
           success: true,
-          data: { size, page, totalElements: resultCount[0].totalElements, content: result },
           message: result.length ? "Endpoints retrieved successfully" : "Failed to retrieve any endpoint",
+          data: { size, page, totalElements: resultCount[0] ? resultCount[0].totalElements : 0, content: result },
         };
 
         return res.status(200).json(data);
@@ -206,7 +207,7 @@ export default async (req: Request, res: Response) => {
               path: true,
               latency: true,
               description: 1,
-              category: true,
+              reference: true,
               bookmarks: true,
               lastUpdated: true,
               meta: "$$SEARCH_META",
@@ -217,7 +218,7 @@ export default async (req: Request, res: Response) => {
 
         const data = {
           success: true,
-          data: { size, totalElements: result[0].meta.count.total, content: result },
+          data: { size, totalElements: result[0] ? result[0].meta.count.total : 0, content: result },
           message: result.length ? "Endpoints similar to Search Phrase retrieved" : "Could not match endpoints with search phrase",
         };
 

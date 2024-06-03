@@ -13,7 +13,6 @@ export default async (req: Request, res: Response) => {
     if (!isValidObjectId(id)) throw { message: "Selected Endpoint Invalid" };
 
     const queryResponse = await ENDPOINTS.findById(id, {
-      _id: false,
       id: "$_id",
       title: true,
       path: true,
@@ -24,6 +23,7 @@ export default async (req: Request, res: Response) => {
       snippets: true,
       description: true,
     });
+
     if (!queryResponse) throw { message: "Cannot find data for selected Endpoint" };
 
     const data = {

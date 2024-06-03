@@ -8,7 +8,7 @@ const ProfileSchema = new Schema(
   {
     name: { type: String, required: true },
     created: { type: Date, default: Date.now() },
-    email: { type: String, unique: true, required: false },
+    email: { type: String, unique: true, lowercase: true, trim: true, required: false },
     role: { type: String, default: "user" }, // ? user || admin
     status: { type: String, default: "active" }, // ? active || suspended
     avatar: { type: String, default: "/images/layout/profile.webp" }, // ? avatar web location

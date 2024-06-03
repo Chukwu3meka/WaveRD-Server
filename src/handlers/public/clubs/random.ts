@@ -24,7 +24,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         $project: {
           _id: 0,
           title: 1,
-          id: "$_id",
+          reference: "$_id",
           stadium: 1,
           manager: 1,
           location: 1,

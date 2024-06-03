@@ -274,3 +274,14 @@ export const verifyFileAsPDF = (file: File): Promise<boolean> => {
     reader.readAsArrayBuffer(file);
   });
 };
+
+export const textToId = (phrase: string) => {
+  if (!phrase) throw { message: "Unable to transform string" };
+
+  // return phrase
+  //   .split(" ")
+  //   .map((word) => word.toLowerCase())
+  //   .join("-");
+
+  return phrase.replace(/\s+/g, "-").toLowerCase();
+};

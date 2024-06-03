@@ -1,20 +1,20 @@
 import { Application } from "express";
 
-import hub from "./hub";
+import hub from "./public";
 import cors from "cors";
 import info from "./info";
 import apihub from "./apihub";
 import console from "./console";
 import accounts from "./accounts";
-import hubGuard from "../middleware/hubGuard";
 import corsOptions from "../utils/corsOptions";
+import publicGuard from "../middleware/publicGuard";
 import consoleGuard from "../middleware/consoleGuard";
 
 export default (app: Application) => {
   app.use(`/${process.env.API_VERSION}/info/`, cors(corsOptions), info);
   app.use(`/${process.env.API_VERSION}/apihub/`, cors(corsOptions), apihub);
   app.use(`/${process.env.API_VERSION}/accounts/`, cors(corsOptions), accounts);
-  app.use(`/${process.env.API_VERSION}/hub/`, cors(corsOptions), hubGuard, hub);
+  app.use(`/${process.env.API_VERSION}/public/`, cors(corsOptions), publicGuard, hub);
   app.use(`/${process.env.API_VERSION}/console/`, cors(corsOptions), consoleGuard, console);
 
   // app.use("/api/v1/console/", cors(corsOptions.accounts), console);

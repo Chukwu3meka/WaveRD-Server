@@ -47,6 +47,7 @@ export default async (req: Request, res: Response) => {
               latency: true,
               category: true,
               bookmarks: true,
+              visibility: true,
               description: true,
               lastUpdated: true,
             },
@@ -69,6 +70,7 @@ export default async (req: Request, res: Response) => {
               latency: true,
               category: true,
               bookmarks: true,
+              visibility: true,
               description: true,
               lastUpdated: true,
             },
@@ -81,8 +83,8 @@ export default async (req: Request, res: Response) => {
 
     const data = {
       success: true,
-      data: { size, page, totalElements: resultCount[0].totalElements, content: result },
       message: result.length ? "Endpoints retrieved successfully" : "Failed to retrieve any endpoint",
+      data: { size, page, totalElements: resultCount[0] ? resultCount[0].totalElements : 0, content: result },
     };
 
     return res.status(200).json(data);
