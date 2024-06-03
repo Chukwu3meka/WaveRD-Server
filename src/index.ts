@@ -45,9 +45,9 @@ const server = async () => {
         break;
     }
 
-    app.listen(PORT, () => console.info(styleText("green", `SoccerMASS ${NODE_ENV} running on PORT:::${PORT}`)));
+    app.listen(PORT, () => console.info(styleText("green", `Wave Research ${NODE_ENV} running on PORT:::${PORT}`)));
   } catch (error: any) {
-    console.log(`SoccerMASS ${NODE_ENV} Error`, (NODE_ENV === "DEV" && (error.message as string)) || error);
+    console.log(`Wave Research ${NODE_ENV} Error`, (NODE_ENV === "DEV" && (error.message as string)) || error);
   }
 };
 

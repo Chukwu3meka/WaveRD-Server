@@ -119,9 +119,9 @@ export default async ({ account, template, address, subject, data = {} }: PushMa
                               <tbody>
                                 <tr>
                                   <td>
-                                    <a href="https://soccermass.com" target="_blank">
+                                    <a href="https://waverd.com" target="_blank">
                                       <img
-                                        src="https://soccermass.com/images/layout/soccermass.webp"
+                                        src="https://waverd.com/images/layout/waverd.webp"
                                         style="
                                           border: 0;
                                           border-radius: 50%;
@@ -180,7 +180,7 @@ export default async ({ account, template, address, subject, data = {} }: PushMa
                                   <tr>
                                     <td align="center" style="font-size: 0px; padding: 10px 25px; word-break: break-word">
                                       <div style="font-family: helvetica; font-size: 24px; font-weight: 700; line-height: 1; text-align: center; color: #448b44">
-                                        SoccerMASS
+                                        Wave Research
                                       </div>
                                     </td>
                                   </tr>
@@ -193,10 +193,10 @@ export default async ({ account, template, address, subject, data = {} }: PushMa
                                             <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-radius: 3px; width: 30px">
                                               <tr>
                                                 <td style="font-size: 0; height: 30px; vertical-align: middle; width: 30px">
-                                                  <a href="https://web.facebook.com/soccermass" target="_blank">
+                                                  <a href="https://web.facebook.com/waverd" target="_blank">
                                                     <img
                                                       height="30"
-                                                      src="https://soccermass.com/images/social/facebook.png"
+                                                      src="https://waverd.com/images/social/facebook.png"
                                                       style="border-radius: 3px; display: block"
                                                       width="30" />
                                                   </a>
@@ -213,10 +213,10 @@ export default async ({ account, template, address, subject, data = {} }: PushMa
                                             <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-radius: 3px; width: 30px">
                                               <tr>
                                                 <td style="font-size: 0; height: 30px; vertical-align: middle; width: 30px">
-                                                  <a href="https://twitter.com/SoccerMASSinc" target="_blank">
+                                                  <a href="https://twitter.com/Chukwu3meka" target="_blank">
                                                     <img
                                                       height="30"
-                                                      src="https://soccermass.com/images/social/twitter.png"
+                                                      src="https://waverd.com/images/social/twitter.png"
                                                       style="border-radius: 3px; display: block"
                                                       width="30" />
                                                   </a>
@@ -233,10 +233,10 @@ export default async ({ account, template, address, subject, data = {} }: PushMa
                                             <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-radius: 3px; width: 30px">
                                               <tr>
                                                 <td style="font-size: 0; height: 30px; vertical-align: middle; width: 30px">
-                                                  <a href="https://www.instagram.com/SoccerMASSinc" target="_blank">
+                                                  <a href="https://www.instagram.com/Chukwuemeka_Maduekwe" target="_blank">
                                                     <img
                                                       height="30"
-                                                      src="https://soccermass.com/images/social/instagram.png"
+                                                      src="https://waverd.com/images/social/instagram.png"
                                                       style="border-radius: 3px; display: block"
                                                       width="30" />
                                                   </a>
@@ -253,10 +253,10 @@ export default async ({ account, template, address, subject, data = {} }: PushMa
                                             <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-radius: 3px; width: 30px">
                                               <tr>
                                                 <td style="font-size: 0; height: 30px; vertical-align: middle; width: 30px">
-                                                  <a href="https://www.linkedin.com/company/soccermass" target="_blank">
+                                                  <a href="https://www.linkedin.com/company/waverd" target="_blank">
                                                     <img
                                                       height="30"
-                                                      src="https://soccermass.com/images/social/linkedin.png"
+                                                      src="https://waverd.com/images/social/linkedin.png"
                                                       style="border-radius: 3px; display: block"
                                                       width="30" />
                                                   </a>
@@ -276,7 +276,7 @@ export default async ({ account, template, address, subject, data = {} }: PushMa
                                                   <a href="https://wa.me/qr/5KYEVNBVLVVSI1" target="_blank">
                                                     <img
                                                       height="30"
-                                                      src="https://soccermass.com/images/social/whatsapp.png"
+                                                      src="https://waverd.com/images/social/whatsapp.png"
                                                       style="border-radius: 3px; display: block"
                                                       width="30" />
                                                   </a>
@@ -296,7 +296,7 @@ export default async ({ account, template, address, subject, data = {} }: PushMa
                                                   <a href="tel:+234(706)-441-7213" target="_blank">
                                                     <img
                                                       height="30"
-                                                      src="https://soccermass.com/images/social/phone.png"
+                                                      src="https://waverd.com/images/social/phone.png"
                                                       style="border-radius: 3px; display: block"
                                                       width="30" />
                                                   </a>
@@ -316,7 +316,7 @@ export default async ({ account, template, address, subject, data = {} }: PushMa
                                           You've received this email because of your recent activity on our website. If you prefer not to receive any more emails from us,
                                           kindly unsubscribe
                                           <strong
-                                            ><a target="_blank" href="https://soccermass.com/profile/subscriptions" style="text-decoration: none; color: rgb(68, 139, 68)"
+                                            ><a target="_blank" href="https://waverd.com/profile/subscriptions" style="text-decoration: none; color: rgb(68, 139, 68)"
                                               >here</a
                                             ></strong
                                           >.

@@ -52,7 +52,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
           account: "accounts",
           template: "reVerifyEmail",
           address: email,
-          subject: "Verify your email to activate Your SoccerMASS account",
+          subject: "Verify your email to activate Your Wave Research account",
           data: {
             activationLink: `${process.env.API_URL}/v1/accounts/verify-email?gear=${newOTP.code}`,
             name,
@@ -61,7 +61,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
 
         throw {
           message:
-            "Verify your email to activate Your SoccerMASS account, kindly check your email inbox/spam for the most recent verification email from us",
+            "Verify your email to activate Your Wave Research account, kindly check your email inbox/spam for the most recent verification email from us",
           sendError: true,
         };
       }
@@ -81,7 +81,7 @@ const oAuthFunc = async (req: Request, res: Response) => {
       address: email,
       account: "accounts",
       template: "successfulLogin",
-      subject: `Successful Login to SoccerMASS via ${capitalize(auth)}`,
+      subject: `Successful Login to Wave Research via ${capitalize(auth)}`,
     });
 
     return res.status(200).cookie("SSID", SSIDJwtToken, CLIENT_COOKIES_OPTION).redirect(302, `${process.env.CLIENT_URL}?auth=${auth}`);

@@ -24,7 +24,7 @@ export default async (req: Request, res: Response) => {
       description: true,
     });
 
-    if (!queryResponse) throw { message: "Cannot find data for selected Endpoint" };
+    if (!queryResponse) throw { message: "Cannot find data for selected Endpoint", sendError: true };
 
     const data = {
       success: true,

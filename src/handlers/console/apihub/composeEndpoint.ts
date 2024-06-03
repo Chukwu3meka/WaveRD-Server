@@ -30,8 +30,8 @@ const composeHandler = async ({ path, method }: { path: string; method: string }
 
         headers: {
           "Content-Type": "application/json",
-          "x-soccermass-host": "SoccerMASS-2018",
-          "x-soccermass-key": "SoccerMASS-APIHUB-2023",
+          "x-waverd-host": "Wave-Research-2018",
+          "x-waverd-key": "Wave-Research-APIHUB-2023",
         },
       })
         .then(async (res) => {
@@ -61,7 +61,6 @@ const composeEndpoint = async (req: Request, res: Response) => {
     requestHasBody({ body: req.body, required: ["method", "path"] });
 
     const { method, path } = req.body;
-
 
     // 405
 

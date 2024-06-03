@@ -29,7 +29,7 @@ export default async (req: Request, res: Response) => {
         account: "accounts",
         template: "initiatePasswordReset",
         address: email,
-        subject: "SoccerMASS Password Reset Request",
+        subject: "Wave Research Password Reset Request",
         data: {
           activationLink: `${process.env.CLIENT_URL}/accounts/password-reset/${otp.code}`,
           name: profile.name,

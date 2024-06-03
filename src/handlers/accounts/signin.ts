@@ -55,7 +55,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
           account: "accounts",
           template: "reVerifyEmail",
           address: email,
-          subject: "Verify your email to activate Your SoccerMASS account",
+          subject: "Verify your email to activate Your Wave Research account",
           data: {
             activationLink: `${process.env.API_URL}/v1/accounts/verify-email?gear=${newOTP.code}`,
             name,
@@ -69,7 +69,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       }
 
       throw {
-        message: `Kindly check your inbox/spam for our latest verification email from SoccerMASS`,
+        message: `Kindly check your inbox/spam for our latest verification email from Wave Research`,
         sendError: true,
       };
     }
@@ -77,7 +77,13 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const SSIDJwtToken = jwt.sign({ session }, process.env.JWT_SECRET as string, { expiresIn: "180 days" }),
       data = { success: true, message: "Email/Password is Valid.", data: { theme, role, name, handle, avatar } };
 
-    await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", data: { name } });
+    await pushMail({
+      account: "accounts",
+      template: "successfulLogin",
+      address: email,
+      subject: "Successful Login to Wave Research",
+      data: { name },
+    });
 
     res.status(200).cookie("SSID", SSIDJwtToken, CLIENT_COOKIES_OPTION).json(data);
   } catch (err: any) {

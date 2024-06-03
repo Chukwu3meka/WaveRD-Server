@@ -177,7 +177,7 @@ export const mitigateProfileBruteForce = async ({ profile, password: authPasswor
           account: "accounts",
           template: "failedLogin",
           address: email,
-          subject: "Failed Login Attempt - SoccerMASS",
+          subject: "Failed Login Attempt - Wave Research",
           data: { name },
         });
 
@@ -186,7 +186,7 @@ export const mitigateProfileBruteForce = async ({ profile, password: authPasswor
           account: "accounts",
           template: "lockNotice",
           address: email,
-          subject: "Account Lock Notice - SoccerMASS",
+          subject: "Account Lock Notice - Wave Research",
           data: { name },
         });
 

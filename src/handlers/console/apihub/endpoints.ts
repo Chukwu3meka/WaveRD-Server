@@ -84,7 +84,7 @@ export default async (req: Request, res: Response) => {
     const data = {
       success: true,
       message: result.length ? "Endpoints retrieved successfully" : "Failed to retrieve any endpoint",
-      data: { size, page, totalElements: resultCount[0] ? resultCount[0].totalElements : 0, content: result },
+      data: { size, page, totalElements: resultCount ? (resultCount[0] ? resultCount[0].totalElements : 0) : 0, content: result },
     };
 
     return res.status(200).json(data);

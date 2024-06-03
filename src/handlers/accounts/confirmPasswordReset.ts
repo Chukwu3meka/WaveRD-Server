@@ -33,7 +33,7 @@ export default async (req: Request, res: Response) => {
         account: "accounts",
         template: "confirmPasswordReset",
         data: { name: profile.name },
-        subject: "SoccerMASS Password Reset Confirmation",
+        subject: "Wave Research Password Reset Confirmation",
       });
     });
 

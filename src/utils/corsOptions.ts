@@ -1,4 +1,4 @@
-// ? SoccerMASS Development Web
+// ? Wave Research Development Web
 const devOrigins = [
   "http://localhost:8081",
   // "http://localhost:3001",
@@ -6,14 +6,14 @@ const devOrigins = [
   //
 ];
 
-// ? SoccerMASS Production
+// ? Wave Research Production
 // const prodOrigins = [
-//   // "https://www.soccermass.com", // "https://.soccermass.com",
-//   "https://soccermass.com",
-//   "https://www.soccermass.com",
-//   "https://dev.soccermass.com",
+//   // "https://www.waverd.com", // "https://.waverd.com",
+//   "https://waverd.com",
+//   "https://www.waverd.com",
+//   "https://dev.waverd.com",
 // ];
-const prodOrigins = ["https://soccermass.com", /\.soccermass\.com$/];
+const prodOrigins = ["https://waverd.com", /\.waverd\.com$/];
 
 const corsOptions = {
   credentials: true,

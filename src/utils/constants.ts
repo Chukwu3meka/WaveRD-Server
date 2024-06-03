@@ -9,9 +9,9 @@ export const CLIENT_COOKIES_OPTION: CookieOptions = {
   httpOnly: true,
   sameSite: "strict",
   secure: PROD_ENV ? true : false,
-  domain: PROD_ENV ? ".soccermass.com" : `.localhost`,
-  // domain: PROD_ENV ? ".soccermass.com" : `localhost`,
-  // domain: PROD_ENV ? ".soccermass.com" : `localhost:${PORT}`,
+  domain: PROD_ENV ? ".waverd.com" : `.localhost`,
+  // domain: PROD_ENV ? ".waverd.com" : `localhost`,
+  // domain: PROD_ENV ? ".waverd.com" : `localhost:${PORT}`,
   expires: calcFutureDate({ context: "days", interval: 180 }),
 };
 
