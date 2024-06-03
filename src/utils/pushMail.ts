@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
-import { PushMail } from "../interface/pushMail-handlers-interface";
 import * as templates from "../templates";
+import { PushMail } from "../interface/pushMail-handlers-interface";
 
 export default async ({ account, template, address, subject, data = {} }: PushMail) => {
   const emailAccount = account === "noreply" ? "NO_REPLY_EMAIL" : account === "accounts" ? "ACCOUNTS_EMAIL" : "CONTACT_US_EMAIL",
