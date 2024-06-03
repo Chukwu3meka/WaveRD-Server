@@ -1,4 +1,4 @@
-// Used to keep SoccerMASS API always running
+// Used to keep Wave Research API always running
 // https://console.cron-job.org/jobs
 
 import { Request, Response } from "express";

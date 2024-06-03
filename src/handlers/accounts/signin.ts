@@ -4,8 +4,8 @@ import validate from "../../utils/validate";
 
 import { PROFILE } from "../../models/accounts";
 import { Request, Response, NextFunction } from "express";
-import { clientCookiesOption } from "../../utils/constants";
-import { catchError, hourDiff, calcFutureDate, requestHasBody, generateSession, preventProfileBruteForce } from "../../utils/handlers";
+import { CLIENT_COOKIES_OPTION } from "../../utils/constants";
+import { catchError, hourDiff, calcFutureDate, requestHasBody, generateSession, mitigateProfileBruteForce } from "../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -35,7 +35,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       },
     } = profile;
 
-    await preventProfileBruteForce({ password: authPassword, profile });
+    await mitigateProfileBruteForce({ password: authPassword, profile });
 
     // Check if account email is verified
     if (!emailVerified) {
@@ -55,7 +55,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
           account: "accounts",
           template: "reVerifyEmail",
           address: email,
-          subject: "Verify your email to activate Your SoccerMASS account",
+          subject: "Verify your email to activate Your Wave Research account",
           data: {
             activationLink: `${process.env.API_URL}/v1/accounts/verify-email?gear=${newOTP.code}`,
             name,
@@ -69,7 +69,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       }
 
       throw {
-        message: `Kindly check your inbox/spam for our latest verification email from SoccerMASS`,
+        message: `Kindly check your inbox/spam for our latest verification email from Wave Research`,
         sendError: true,
       };
     }
@@ -77,9 +77,15 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const SSIDJwtToken = jwt.sign({ session }, process.env.JWT_SECRET as string, { expiresIn: "180 days" }),
       data = { success: true, message: "Email/Password is Valid.", data: { theme, role, name, handle, avatar } };
 
-    await pushMail({ account: "accounts", template: "successfulLogin", address: email, subject: "Successful Login to SoccerMASS", data: { name } });
+    await pushMail({
+      account: "accounts",
+      template: "successfulLogin",
+      address: email,
+      subject: "Successful Login to Wave Research",
+      data: { name },
+    });
 
-    res.status(200).cookie("SSID", SSIDJwtToken, clientCookiesOption).json(data);
+    res.status(200).cookie("SSID", SSIDJwtToken, CLIENT_COOKIES_OPTION).json(data);
   } catch (err: any) {
     err.status = 401;
     return catchError({ res, err });
@@ -87,4 +93,4 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 };
 
 // domain: req.headers.origin?.replace("http://", ".")?.replace("https://", ".")?.replace(/:\d+/, ""),
-// res.status(200).cookie("SSID", SSIDJwtToken, clientCookiesOption).cookie("USER", USERJwtToken, clientCookiesOption).json(data);
+// res.status(200).cookie("SSID", SSIDJwtToken, CLIENT_COOKIES_OPTION).cookie("USER", USERJwtToken, CLIENT_COOKIES_OPTION).json(data);

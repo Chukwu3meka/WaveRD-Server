@@ -1,6 +1,7 @@
+import validate from "../../utils/validate";
+
 import { ObjectId } from "mongodb";
 import { isValidObjectId } from "mongoose";
-import validate from "../../utils/validate";
 import { Request, Response } from "express";
 import { PROFILE } from "../../models/accounts";
 import { catchError } from "../../utils/handlers";

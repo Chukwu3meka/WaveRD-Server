@@ -11,7 +11,7 @@ export default ({ name, activationLink }: any) => `
     If clicking the link didn't work, kindly copy and paste the link ${activationLink} into your browser. Please note that this link is only valid for 3 hours.
     <br />
     <br />
-    Thank you for using our service. If you have any questions or need assistance, please don't hesitate to reach out to us <a href="https://www.soccermass.com/info/contact-us">here</a>.
+    Thank you for using our service. If you have any questions or need assistance, please don't hesitate to reach out to us <a href="https://www.waverd.com/info/contact-us">here</a>.
     <br />
     <br />
     Best Regards,

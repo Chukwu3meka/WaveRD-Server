@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { CONTACT_US } from "../../models/info";
-import { contactPreferences } from "../../utils/constants";
+import { CONTACT_PREFERENCES } from "../../utils/constants";
 import { catchError, requestHasBody } from "../../utils/handlers";
 
 export default async (req: Request, res: Response) => {
@@ -9,7 +9,7 @@ export default async (req: Request, res: Response) => {
     requestHasBody({ body: req.body, required: ["category", "comment"] });
     const { category, comment, contact, preference } = req.body;
 
-    if (!contactPreferences.includes(preference)) throw { message: "Preference is invalid", sendError: true };
+    if (!CONTACT_PREFERENCES.includes(preference)) throw { message: "Preference is invalid", sendError: true };
     if (!["others", "advertising", "technical", "suggestion", "service"].includes(category))
       throw { message: "Invalid category specified", sendError: true };
 

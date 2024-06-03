@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import validate from "../../utils/validate";
 import { PROFILE } from "../../models/accounts";
 import { CONTACT_US } from "../../models/info";
-import { catchError, preventProfileBruteForce, requestHasBody } from "../../utils/handlers";
+import { catchError, mitigateProfileBruteForce, requestHasBody } from "../../utils/handlers";
 
 import pushMail from "../../utils/pushMail";
 
@@ -22,7 +22,7 @@ export default async (req: Request, res: Response) => {
     if (!profile) throw { message: "User Profile does not exists", sendError: true };
     if (profile.email !== email) throw { message: "Profile mismatch", sendError: true };
 
-    await preventProfileBruteForce({ password, profile });
+    await mitigateProfileBruteForce({ password, profile });
 
     if (profile.auth?.deletion) throw { message: "Data deletion already initiated", sendError: true };
 
@@ -34,7 +34,7 @@ export default async (req: Request, res: Response) => {
       account: "accounts",
       template: "dataDeletion",
       data: { name: profile.name },
-      subject: "SoccerMASS - Data Deletion",
+      subject: "Wave Research - Data Deletion",
     });
 
     const data = { success: true, message: `Data deletion initiated`, data: null };

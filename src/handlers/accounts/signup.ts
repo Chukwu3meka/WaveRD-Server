@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import pushMail from "../../utils/pushMail";
 import validate from "../../utils/validate";
 import { emailExistsFn } from "./emailExists";
-import { themes } from "../../utils/constants";
+import { THEMES } from "../../utils/constants";
 import { handleExistsFn } from "./handleExists";
 import { PROFILE } from "../../models/accounts";
 import { catchError, requestHasBody } from "../../utils/handlers";
@@ -12,7 +12,7 @@ export default async (req: Request, res: Response) => {
     requestHasBody({ body: req.body, required: ["email", "password", "name", "handle", "theme"] });
     const { theme, email, password, name, handle } = req.body;
 
-    if (!themes.includes(theme)) throw { message: "Invalid theme used", sendError: true };
+    if (!THEMES.includes(theme)) throw { message: "Invalid theme used", sendError: true };
 
     // Validate request body before processing request
     validate({ type: "email", value: email });
@@ -36,7 +36,7 @@ export default async (req: Request, res: Response) => {
           activationLink: `${process.env.API_URL}/v1/accounts/verify-email?gear=${dbResponse.auth.otp.code}`,
         };
 
-        await pushMail({ account: "accounts", template: "welcome", address: email, subject: "Welcome to SoccerMASS", data: emailPayload });
+        await pushMail({ account: "accounts", template: "welcome", address: email, subject: "Welcome to Wave Research", data: emailPayload });
 
         const data = { success: true, message: "Account created successfully", data: null };
 

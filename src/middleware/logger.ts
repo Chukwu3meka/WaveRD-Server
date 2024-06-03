@@ -1,3 +1,4 @@
+import { styleText } from "util";
 import { format } from "date-fns";
 import { catchError } from "../utils/handlers";
 import { Request, Response, NextFunction } from "express";
@@ -9,7 +10,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       localTime = format(new Date(), "pp"),
       displayTime = localTime.split(" ")[0];
 
-    console.log(`${displayTime} ${method} >> ${endpoint}`);
+    console.log(styleText("italic", `${displayTime} ${method} >> ${endpoint}`));
 
     if (endpoint.startsWith("/v1/")) {
       const [, version, domain, ...fullPath] = endpoint.split("/"),

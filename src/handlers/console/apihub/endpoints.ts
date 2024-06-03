@@ -3,6 +3,7 @@ import validator from "../../../utils/validate";
 import { Request, Response } from "express";
 import { ENDPOINTS } from "../../../models/apihub";
 import { catchError, range, requestHasBody } from "../../../utils/handlers";
+import { SIZES } from "../../../utils/constants";
 
 export default async (req: Request, res: Response) => {
   try {
@@ -22,7 +23,7 @@ export default async (req: Request, res: Response) => {
       page = parseInt(req.query.page as any);
 
     if (page < 0) throw { message: "Invalid Page Number specified", sendError: true };
-    if (![20].includes(size)) throw { message: "Invalid Size specified", sendError: true };
+    if (!SIZES.includes(size)) throw { message: "Invalid Size specified", sendError: true };
 
     // ? Single fetch with skip and limit returns unexpected result
     // ? https://www.mongodb.com/community/forums/t/cursor-pagination-using-objectid-timestamp-field-in-mongodb/122170/2
@@ -46,6 +47,7 @@ export default async (req: Request, res: Response) => {
               latency: true,
               category: true,
               bookmarks: true,
+              visibility: true,
               description: true,
               lastUpdated: true,
             },
@@ -68,6 +70,7 @@ export default async (req: Request, res: Response) => {
               latency: true,
               category: true,
               bookmarks: true,
+              visibility: true,
               description: true,
               lastUpdated: true,
             },
@@ -80,8 +83,8 @@ export default async (req: Request, res: Response) => {
 
     const data = {
       success: true,
-      data: { size, page, totalElements: resultCount[0].totalElements, content: result },
       message: result.length ? "Endpoints retrieved successfully" : "Failed to retrieve any endpoint",
+      data: { size, page, totalElements: resultCount ? (resultCount[0] ? resultCount[0].totalElements : 0) : 0, content: result },
     };
 
     return res.status(200).json(data);

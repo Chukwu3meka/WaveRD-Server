@@ -1,5 +1,5 @@
-export * from "./clubs";
-export * from "./players";
+export * from "../public/clubs";
+export * from "../public";
 
 // endpoints
 import endpoint from "./endpoint";

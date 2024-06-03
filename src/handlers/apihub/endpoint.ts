@@ -1,18 +1,20 @@
-import { NextFunction, Request, Response } from "express";
-
-import { isValidObjectId } from "mongoose";
 import { ENDPOINTS } from "../../models/apihub";
+import { NextFunction, Request, Response } from "express";
 import { catchError, requestHasBody } from "../../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
-    requestHasBody({ body: req.params, required: ["path"], sendError: true });
-    const { path } = req.params;
+    requestHasBody({ body: req.params, required: ["title"], sendError: true });
+    const { title } = req.params;
 
-    if (!path) throw { message: `Invalid Path provided` };
+    if (!title) throw { message: `Invalid Title provided` };
 
-    const result = await ENDPOINTS.findOne({ path }, { _id: 0, id: "$_id", title: 1, description: 1, snippets: 1, response: 1 });
+    const result = await ENDPOINTS.findOne(
+      { reference: title },
+      { _id: 0, id: "$_id", title: 1, description: 1, snippets: 1, response: 1, visibility: 1, path: 1 }
+    );
     if (!result) throw { message: "Unable to retrieve Endpoint", sendError: true };
+    if (!result.visibility) throw { message: "Endpoint is currently not accessible", sendError: true };
 
     const data = { success: true, data: result, message: "Endpoint Successfully retrieved" };
 

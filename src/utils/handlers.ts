@@ -5,7 +5,7 @@ import { FAILED_REQUESTS } from "../models/info";
 import { CatchError } from "../interface/utils-handlers-interface";
 import { PROFILE } from "../models/accounts";
 import pushMail from "./pushMail";
-import { CalcFutureDate, PreventProfileBruteForce, RequestHasBody } from "../interface/utils/handlers.interface";
+import { CalcFutureDate, MitigateProfileBruteForce, RequestHasBody } from "../interface/utils/handlers.interface";
 
 export const catchError = async ({ res, req, err }: CatchError) => {
   const { request = null, ...data } = res.req.body,
@@ -25,7 +25,7 @@ export const catchError = async ({ res, req, err }: CatchError) => {
 };
 
 export const sleep = async (seconds: number) => {
-  const duration = seconds * 60 * 60;
+  const duration = seconds * 1000;
   return new Promise((resolve) => setTimeout(resolve, duration));
 };
 
@@ -144,7 +144,7 @@ export const capitalize = (phrase: string) => {
     .join(" ");
 };
 
-export const preventProfileBruteForce = async ({ profile, password: authPassword }: PreventProfileBruteForce) => {
+export const mitigateProfileBruteForce = async ({ profile, password: authPassword }: MitigateProfileBruteForce) => {
   const {
     id,
     name,
@@ -177,7 +177,7 @@ export const preventProfileBruteForce = async ({ profile, password: authPassword
           account: "accounts",
           template: "failedLogin",
           address: email,
-          subject: "Failed Login Attempt - SoccerMASS",
+          subject: "Failed Login Attempt - Wave Research",
           data: { name },
         });
 
@@ -186,7 +186,7 @@ export const preventProfileBruteForce = async ({ profile, password: authPassword
           account: "accounts",
           template: "lockNotice",
           address: email,
-          subject: "Account Lock Notice - SoccerMASS",
+          subject: "Account Lock Notice - Wave Research",
           data: { name },
         });
 
@@ -232,3 +232,56 @@ export const preventProfileBruteForce = async ({ profile, password: authPassword
 // export const redirectToWeb = (req: Request, res: Response) => res.redirect(302, `${process.env.API_URL}`);
 
 // function to generate the date for n  days from now:
+
+export const verifyImageFile = (file: File): Promise<boolean> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      const image = new Image();
+      image.src = event.target?.result as string;
+
+      image.onload = () => {
+        resolve(true); // File is a valid image
+      };
+
+      image.onerror = () => {
+        resolve(false); // File is not an image
+      };
+    };
+
+    reader.readAsDataURL(file);
+  });
+};
+
+export const verifyFileAsPDF = (file: File): Promise<boolean> => {
+  return new Promise<boolean>((resolve) => {
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      const uint = new Uint8Array(reader.result as ArrayBuffer).subarray(0, 4);
+      let header = "";
+
+      for (let i = 0; i < uint.length; i++) {
+        header += uint[i].toString(16);
+      }
+
+      // Check if the file's header matches the PDF magic number "25504446" (hex for "%PDF")
+      const isPDF = header === "25504446";
+      resolve(isPDF);
+    };
+
+    reader.readAsArrayBuffer(file);
+  });
+};
+
+export const textToId = (phrase: string) => {
+  if (!phrase) throw { message: "Unable to transform string" };
+
+  // return phrase
+  //   .split(" ")
+  //   .map((word) => word.toLowerCase())
+  //   .join("-");
+
+  return phrase.replace(/\s+/g, "-").toLowerCase();
+};
