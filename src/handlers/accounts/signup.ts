@@ -33,7 +33,7 @@ export default async (req: Request, res: Response) => {
         const emailPayload = {
           name,
           handle,
-          activationLink: `${process.env.API_URL}/v1/accounts/verify-email?gear=${dbResponse.auth.otp.code}`,
+          activationLink: `${process.env.BASE_URL}${process.env.STABLE_VERSION}/accounts/verify-email?gear=${dbResponse.auth.otp.code}`,
         };
 
         await pushMail({ account: "accounts", template: "welcome", address: email, subject: "Welcome to Wave Research", data: emailPayload });

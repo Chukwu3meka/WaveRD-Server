@@ -11,11 +11,11 @@ import publicGuard from "../middleware/publicGuard";
 import consoleGuard from "../middleware/consoleGuard";
 
 export default (app: Application) => {
-  app.use(`/${process.env.STABLE_VERSION}/info/`, cors(corsOptions), info);
-  app.use(`/${process.env.STABLE_VERSION}/apihub/`, cors(corsOptions), apihub);
-  app.use(`/${process.env.STABLE_VERSION}/accounts/`, cors(corsOptions), accounts);
-  app.use(`/${process.env.STABLE_VERSION}/public/`, cors(corsOptions), publicGuard, hub);
-  app.use(`/${process.env.STABLE_VERSION}/console/`, cors(corsOptions), consoleGuard, console);
+  app.use(`${process.env.STABLE_VERSION}/info/`, cors(corsOptions), info);
+  app.use(`${process.env.STABLE_VERSION}/apihub/`, cors(corsOptions), apihub);
+  app.use(`${process.env.STABLE_VERSION}/accounts/`, cors(corsOptions), accounts);
+  app.use(`${process.env.STABLE_VERSION}/public/`, cors(corsOptions), publicGuard, hub);
+  app.use(`${process.env.STABLE_VERSION}/console/`, cors(corsOptions), consoleGuard, console);
 
   // app.use("/api/v1/console/", cors(corsOptions.accounts), console);
   // app.use("/api/v1/accounts/", cors(corsOptions.accounts), accounts); // <= public console
