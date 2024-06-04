@@ -57,7 +57,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
           address: email,
           subject: "Verify your email to activate Your Wave Research account",
           data: {
-            activationLink: `${process.env.API_URL}/v1/accounts/verify-email?gear=${newOTP.code}`,
+            activationLink: `${process.env.BASE_URL}${process.env.STABLE_VERSION}/accounts/verify-email?gear=${newOTP.code}`,
             name,
           },
         });

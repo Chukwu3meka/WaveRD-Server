@@ -18,7 +18,7 @@ passport.use(
       profileFields: ["id", "emails", "name"],
       clientID: process.env.FACEBOOK_CLIENT_ID as string,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
-      callbackURL: `${process.env.API_URL}/v1/accounts/facebook/callback`,
+      callbackURL: `${process.env.BASE_URL}${process.env.STABLE_VERSION}/accounts/facebook/callback`,
     },
     (accessToken, refreshToken, profile, cb) => returnEmail(profile, cb)
   )
@@ -29,7 +29,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-      callbackURL: `${process.env.API_URL}/v1/accounts/google/callback`,
+      callbackURL: `${process.env.BASE_URL}${process.env.STABLE_VERSION}/accounts/google/callback`,
     },
     (accessToken: any, refreshToken: any, profile: any, cb: any) => returnEmail(profile, cb)
   )
@@ -41,7 +41,7 @@ passport.use(
       // proxy: trustProxy,
       consumerKey: process.env.TWITTER_CONSUMER_KEY as string,
       consumerSecret: process.env.TWITTER_CONSUMER_SECRET as string,
-      callbackURL: `${process.env.API_URL}/v1/accounts/twitter/callback`,
+      callbackURL: `${process.env.BASE_URL}${process.env.STABLE_VERSION}/accounts/twitter/callback`,
       userProfileURL: "https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true",
     },
     (accessToken, refreshToken, profile, cb) => returnEmail(profile, cb)

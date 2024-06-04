@@ -228,8 +228,8 @@ export const mitigateProfileBruteForce = async ({ profile, password: authPasswor
 //   if (!req.timedout) next();
 // };
 
-// res.writeHead(302, { Location: process.env.API_URL }).end();
-// export const redirectToWeb = (req: Request, res: Response) => res.redirect(302, `${process.env.API_URL}`);
+// res.writeHead(302, { Location: process.env.BASE_URL }).end();
+// export const redirectToWeb = (req: Request, res: Response) => res.redirect(302, `${process.env.BASE_URL}`);
 
 // function to generate the date for n  days from now:
 

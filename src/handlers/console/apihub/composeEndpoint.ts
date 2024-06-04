@@ -13,9 +13,9 @@ export const endpointTitleExistsFn = async (title: string) => {
 };
 
 const composeHandler = async ({ path, method }: { path: string; method: string }) => {
-  if (path.startsWith(`/${process.env.STABLE_VERSION}/public/`) && HTTP_METHODS.includes(method)) {
+  if (path.startsWith(`${process.env.STABLE_VERSION}/public/`) && HTTP_METHODS.includes(method)) {
     const startTime = Date.now(),
-      endpointResponse = await fetch(process.env.API_URL + path, {
+      endpointResponse = await fetch(process.env.BASE_URL + path, {
         /* credentials: "include", tells browser will include credentials in the request,
   The server must respond with the appropriate CORS headers, including:
   Access-Control-Allow-Origin and Access-Control-Allow-Credentials,

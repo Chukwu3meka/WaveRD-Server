@@ -30,6 +30,8 @@ router.route("/data-deletion").post(routeGuard, personal.dataDeletion);
 
 // router.route("/:club/players").get(club.clubPlayers);
 
+// const passport = require("../middleware/passport").default;
+
 router.route("/twitter").get(passport.authenticate("twitter"));
 router.route("/google").get(passport.authenticate("google", { scope: ["email"] }));
 router.route("/facebook").get(passport.authenticate("facebook", { scope: ["email"] }));

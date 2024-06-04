@@ -12,7 +12,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     console.log(styleText("italic", `${displayTime} ${method} >> ${endpoint}`));
 
-    if (endpoint.startsWith("/v1/")) {
+    if (endpoint.startsWith(process.env.STABLE_VERSION!)) {
       const [, version, domain, ...fullPath] = endpoint.split("/"),
         path = fullPath.join("");
 
@@ -54,7 +54,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       throw { message: "invalid endpoint", status: 503, sendError: true };
     }
 
-    throw { message: "invalid endpoint", status: 404, sendError: true };
+    throw { message: "Application version error", status: 403, sendError: true };
   } catch (err: any) {
     return catchError({ res, err });
   }
