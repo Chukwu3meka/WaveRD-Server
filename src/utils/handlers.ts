@@ -13,7 +13,7 @@ export const catchError = async ({ res, req, err }: CatchError) => {
 
   if (message !== "invalid endpoint") {
     // handle api calls rejected by requests middleware
-    await FAILED_REQUESTS.create({ error: err, data, request });
+    await FAILED_REQUESTS.create({ error: err, data, request: request || "undefined" });
   }
 
   if (<string>process.env.NODE_ENV === "development") {

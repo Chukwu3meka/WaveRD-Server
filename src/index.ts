@@ -38,10 +38,12 @@ const init_server = async () => {
 
     routeHandlers(APP);
 
-    APP.listen(PORT, () => console.info(styleText("green", `Wave Research ${NODE_ENV} @ ${process.env.BASE_URL}${process.env.STABLE_VERSION}'`)));
+    APP.listen(PORT, () =>
+      console.info(styleText("green", `Wave Research ${NODE_ENV} ${process.env.BASE_URL}@${process.env.STABLE_VERSION?.substring(1)}`))
+    );
   } catch (error: any) {
     if (NODE_ENV === "Development") console.log(`Wave Research`, (error.message as string) || error);
-    await FAILED_REQUESTS.create({ data: (error.message as string) || "not available", error: error || null, request: NODE_ENV });
+    await FAILED_REQUESTS.create({ data: (error.message as string) || "not available", error: error || null, request: NODE_ENV || "undefined" });
   }
 };
 
