@@ -26,6 +26,9 @@ export default async (req: Request, res: Response) => {
 
     if (!queryResponse) throw { message: "Cannot find data for selected Endpoint", sendError: true };
 
+    // // Strip version and public from path
+    // const path = queryResponse.path.replace(`${process.env.STABLE_VERSION}/public/`, "");
+
     const data = {
       success: true,
       data: queryResponse,

@@ -67,7 +67,7 @@ export default async (req: Request, res: Response) => {
       const res = await ENDPOINTS.create({ ...payload, visibility: true });
       resId = res._id;
     } else {
-      const res = await ENDPOINTS.findByIdAndUpdate(new ObjectId(id), { $set: payload });
+      const res = await ENDPOINTS.findByIdAndUpdate(new ObjectId(id), { $set: { ...payload, lastUpdated: new Date() } });
       resId = res?._id;
     }
 
