@@ -1,8 +1,8 @@
 import { styleText } from "util";
 import { format } from "date-fns";
-import { catchError } from "../utils/handlers";
+import { catchError, formatDate } from "../utils/handlers";
 import { Request, Response, NextFunction } from "express";
-import { ALL_REQUEST, DAILY_REQUEST_STAT } from "../models/info";
+import { ALL_REQUEST, DAILY_STAT } from "../models/info";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -14,14 +14,14 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     if (endpoint.startsWith(process.env.STABLE_VERSION!)) {
       const [, version, domain, ...fullPath] = endpoint.split("/"),
-        path = fullPath.join("");
+        path = fullPath.join("/");
 
       if (version && domain && path) {
-        await ALL_REQUEST.create({ version, domain, path });
+        await ALL_REQUEST.create({ version, domain, path, date: formatDate(new Date()) });
 
         //  ? "Daily Records of Server Stat"
-        await DAILY_REQUEST_STAT.findOneAndUpdate(
-          { date: new Date().toDateString() },
+        await DAILY_STAT.findOneAndUpdate(
+          { date: `${new Date().getUTCFullYear()}-${(new Date().getUTCMonth() + 1).toString().padStart(2, "0")}-${new Date().getUTCDate()}` },
           {
             $inc: {
               info: domain === "info" ? 1 : 0,

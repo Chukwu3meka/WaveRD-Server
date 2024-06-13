@@ -13,7 +13,7 @@ export const catchError = async ({ res, req, err }: CatchError) => {
 
   if (message !== "invalid endpoint") {
     // handle api calls rejected by requests middleware
-    await FAILED_REQUESTS.create({ error: err, data, request: request || "undefined" });
+    await FAILED_REQUESTS.create({ error: err, data, request: request || "undefined", date: formatDate(new Date()) });
   }
 
   if (<string>process.env.NODE_ENV === "development") {
@@ -284,4 +284,13 @@ export const textToId = (phrase: string) => {
   //   .join("-");
 
   return phrase.replace(/\s+/g, "-").toLowerCase();
+};
+
+export const formatDate = (date: string | Date) => {
+  const d = new Date(date),
+    year = d.getFullYear(),
+    day = d.getDate().toString().padStart(2, "0"),
+    month = (d.getMonth() + 1).toString().padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 };
