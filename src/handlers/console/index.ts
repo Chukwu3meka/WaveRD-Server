@@ -6,6 +6,10 @@ import toggleEndpointVisibility from "./apihub/toggleEndpointVisibility";
 import composeEndpoint, { composeHandler } from "./apihub/composeEndpoint";
 import endpointTitleExists, { endpointTitleExistsFn } from "./apihub/endpointTitleExists";
 
+import dailyStatistics from "./logs/daily-statistics";
+import allRequests from "./logs/all-requests";
+import failedRequests from "./logs/failed-requests";
+
 export {
   endpoint,
   toggleEndpointVisibility,
@@ -16,4 +20,9 @@ export {
   endpoints,
   endpointTitleExists,
   composeEndpoint,
+
+  // Wave Logs
+  dailyStatistics,
+  allRequests,
+  failedRequests,
 };

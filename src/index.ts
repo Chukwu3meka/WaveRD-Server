@@ -1,7 +1,7 @@
 import "dotenv/config";
 
 import { styleText } from "util";
-import { capitalize } from "./utils/handlers";
+import { capitalize, formatDate } from "./utils/handlers";
 import { FAILED_REQUESTS } from "./models/info";
 
 import express from "express";
@@ -43,7 +43,13 @@ const init_server = async () => {
     );
   } catch (error: any) {
     if (NODE_ENV === "Development") console.log(`Wave Research`, (error.message as string) || error);
-    await FAILED_REQUESTS.create({ data: (error.message as string) || "not available", error: error || null, request: NODE_ENV || "undefined" });
+
+    await FAILED_REQUESTS.create({
+      error: error || null,
+      date: formatDate(new Date()),
+      request: NODE_ENV || "undefined",
+      data: (error.message as string) || "not available",
+    });
   }
 };
 

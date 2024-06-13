@@ -3,7 +3,7 @@ import { Schema } from "mongoose";
 import { infoDatabase } from "../database";
 
 const DailyStatSchema = new Schema({
-  date: { type: Date, default: Date.now() },
+  date: { type: String, required: true },
   info: { type: Number, required: true, default: 0 },
   apihub: { type: Number, required: true, default: 0 },
   console: { type: Number, required: true, default: 0 },
