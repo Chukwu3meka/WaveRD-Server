@@ -12,7 +12,7 @@ export default async (req: Request, res: Response) => {
   try {
     requestHasBody({ body: req.body, required: ["id", "category", "title", "description", "path", "method", "snippets"], sendError: true });
 
-    const { id, category, title, description, path, method, snippets } = req.body;
+    const { id, category, title, description, path, method, snippets: tempSnippets } = req.body;
 
     validate({ value: id, type: "comment", sendError: true, label: "ID" });
     validate({ value: title, type: "comment", sendError: true, label: "Title" });
@@ -21,13 +21,15 @@ export default async (req: Request, res: Response) => {
     validate({ value: method, type: "alphaNumeric", sendError: true, label: "Method" });
     validate({ value: description, type: "comment", sendError: true, label: "Description" });
 
-    if (!Array.isArray(snippets)) throw { sendError: true, message: "Snippet is not an array" };
+    if (!Array.isArray(tempSnippets)) throw { sendError: true, message: "Snippet is not an array" };
     if (!HTTP_METHODS.includes(method)) throw { sendError: true, message: "Method not allowed", type: "method" };
 
-    for (const data of snippets) {
-      validate({ value: data.id, type: "comment", sendError: true, label: data.id + " Snippet ID" });
-      validate({ value: data.snippet, type: "comment", sendError: true, label: data.id + " Snippet" });
-      validate({ value: data.title, type: "comment", sendError: true, label: data.id + " Snippet Title" });
+    const snippets = tempSnippets.filter((snippet) => Boolean(snippet.code));
+    if (snippets.length <= 3) throw { sendError: true, message: "Add at least Three Snippets to proceed" };
+
+    for (const data of snippets.filter((snippet) => Boolean(snippet.code))) {
+      validate({ value: data.code, type: "comment", sendError: true, label: data.title + " Snippet Code" });
+      validate({ value: data.title, type: "comment", sendError: true, label: data.title + " Snippet Title" });
     }
 
     if (id === "new") {

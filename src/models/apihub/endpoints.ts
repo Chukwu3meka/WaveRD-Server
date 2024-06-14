@@ -14,11 +14,7 @@ const EndpointSchema = new Schema({
   bookmarks: { type: Number, default: 0, min: 0 },
   lastUpdated: { type: Date, default: new Date() },
   visibility: { type: Boolean, required: true, default: true },
-  snippets: [
-    { id: { type: String, required: true }, title: { type: String, required: true }, snippet: { type: String, required: true } },
-    // curl: { title: { type: String, required: true }, snippet: { type: String, required: true } },
-    // fetch: { title: { type: String, required: true }, snippet: { type: String, required: true } },
-  ],
+  snippets: [{ title: { type: String, required: true }, code: { type: String, required: true } }],
 });
 
 const EndpointModel = apihubDatabase.model("Endpoints", EndpointSchema);
