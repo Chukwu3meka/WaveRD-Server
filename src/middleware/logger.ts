@@ -34,6 +34,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
           { upsert: true }
         );
 
+        req.body.auth = { id: null, session: null };
         req.body.request = { endpoint, version, domain, path };
 
         // ? Trim Request body

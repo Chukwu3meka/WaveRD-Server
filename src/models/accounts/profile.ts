@@ -56,12 +56,8 @@ const ProfileSchema = new Schema(
 ProfileSchema.pre("save", async function (next) {
   try {
     if (this.auth && this.auth.otp && this.isModified("auth.password")) {
-      this.auth.otp = {
-        code: generateSession(this.id),
-        purpose: "email verification",
-        time: new Date(),
-      };
       this.auth.session = generateSession(this.id); // <= generate login session
+      this.auth.otp = { code: generateSession(this.id), purpose: "email verification", time: new Date() };
       this.auth.password = await bcrypt.hash(this.auth.password, 10); // <= Hash password if its a new account
     }
     return next();
