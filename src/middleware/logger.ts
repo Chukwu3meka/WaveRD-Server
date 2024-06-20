@@ -20,8 +20,9 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         await ALL_REQUEST.create({ version, domain, path, date: formatDate(new Date()) });
 
         //  ? "Daily Records of Server Stat"
+
         await DAILY_STAT.findOneAndUpdate(
-          { date: `${new Date().getUTCFullYear()}-${(new Date().getUTCMonth() + 1).toString().padStart(2, "0")}-${new Date().getUTCDate()}` },
+          { date: formatDate(new Date()) },
           {
             $inc: {
               info: domain === "info" ? 1 : 0,
