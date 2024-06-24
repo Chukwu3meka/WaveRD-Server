@@ -1,16 +1,19 @@
 import { Application } from "express";
+import { codes } from "../utils/codes";
 
 import infoRoute from "./info";
+import gamesRoute from "./games";
 import publicRoute from "./public";
 import apihubRoute from "./apihub";
 import consoleRoute from "./console";
-import gamesRoute from "./games";
+import fallbackRoute from "./fallback";
 import accountsRoute from "./accounts";
 
 import cors from "cors";
 import corsOptions from "../utils/corsOptions";
 import routeGuard from "../middleware/routeGuard";
 import publicGuard from "../middleware/publicGuard";
+import express, { Request, Response } from "express";
 import consoleGuard from "../middleware/consoleGuard";
 
 export default (app: Application) => {
@@ -26,4 +29,7 @@ export default (app: Application) => {
 
   // app.use("*", createProxyMiddleware({ target: "http://localhost:3000", changeOrigin: true })); // ? Fallback URL redirects to client (web page)
   // app.use("*", createProxyMiddleware({ target: "localhost:3000", changeOrigin: true })); // ? Fallback URL redirects to client (web page)
+
+  // ? fallback route
+  app.use(`/*`, cors(corsOptions), fallbackRoute);
 };

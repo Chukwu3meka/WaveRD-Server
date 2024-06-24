@@ -7,4 +7,7 @@ export const codes = {
 
   // ? b
   "Invalid Console Route": "20240503b000",
+  "Route not Found": "20240621b001",
+
+  // ? c
 };
