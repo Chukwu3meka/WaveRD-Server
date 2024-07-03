@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { infoDatabase } from "../database";
+import { gamesDatabase } from "../database";
 
 const ProfileSchema = new Schema({
   mass: { type: String, required: true },
@@ -11,6 +11,6 @@ const ProfileSchema = new Schema({
   clubsManaged: [{ club: { type: String, required: true }, date: { type: Date, default: Date.now } }],
 });
 
-const ProfileModel = infoDatabase.model("Profile", ProfileSchema);
+const ProfileModel = gamesDatabase.model("Profile", ProfileSchema);
 
 export default ProfileModel;

@@ -10,6 +10,8 @@ import dailyStatistics from "./logs/daily-statistics";
 import allRequests from "./logs/all-requests";
 import failedRequests from "./logs/failed-requests";
 
+import createGameWorld from "./games/createGameWorld";
+
 export {
   endpoint,
   toggleEndpointVisibility,
@@ -25,4 +27,7 @@ export {
   dailyStatistics,
   allRequests,
   failedRequests,
+
+  // Games
+  createGameWorld,
 };

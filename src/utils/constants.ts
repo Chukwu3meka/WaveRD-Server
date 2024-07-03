@@ -22,3 +22,7 @@ export const CONTACT_PREFERENCES = ["email", "whatsapp"];
 export const SIZES = [10, 20, 50, 75, 100];
 
 export const HTTP_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"];
+
+export const DIVISIONS = ["one", "two"];
+
+// export const COUNTRIES = ["england_one", "spain_one", "germany_one", "italy_one", "france_one", "brazil_one", "portugal_one", "netherlands_one"];

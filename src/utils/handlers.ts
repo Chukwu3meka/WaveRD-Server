@@ -7,21 +7,29 @@ import { FAILED_REQUESTS } from "../models/info";
 import { CatchError } from "../interface/utils-handlers-interface";
 import { CalcFutureDate, MitigateProfileBruteForce, RequestHasBody } from "../interface/utils/handlers.interface";
 
-export const catchError = async ({ res, req, err }: CatchError) => {
+export const catchError = async ({ res, req, err: initError }: CatchError) => {
   const { request = null, ...data } = res.req.body,
-    { sendError = false, status = 400, message = null, respond = true } = err || [];
+    { sendError = false, status = 400, message = null, respond = true, type = "json" } = initError || [];
 
   if (message !== "invalid endpoint") {
     // handle api calls rejected by requests middleware
-    await FAILED_REQUESTS.create({ error: err, data, request: request || "undefined", date: formatDate(new Date()) });
+    await FAILED_REQUESTS.create({ error: initError, data, request: request || "undefined", date: formatDate(new Date()) });
   }
 
   if (<string>process.env.NODE_ENV === "development") {
     console.warn(request ? `${request.endpoint} <<<>>> ${JSON.stringify(message).replaceAll('"', "")}` : `${res.req.url} <<<>>> Invalid route`);
   }
-  // console.log({ sendError });
 
-  if (respond) res.status(status).json({ success: false, message: sendError ? message : "Unable to process request", data: null });
+  if (respond) {
+    const resData = { success: false, message: sendError ? message : "Unable to process request", data: null };
+
+    if (type === "stream") {
+      res.write(`data: ${JSON.stringify(resData)}\n\n`);
+      res.end();
+    } else {
+      res.status(status).json(resData);
+    }
+  }
 };
 
 export const sleep = async (seconds: number) => {
@@ -294,3 +302,20 @@ export const formatDate = (date: string | Date) => {
 
   return `${year}-${month}-${day}`;
 };
+
+export function shuffleArray(tempArray: any[]) {
+  const array = [...tempArray];
+
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+
+  return array;
+}
+
+type ValueOf<T> = T[keyof T];
+type Entries<T> = [keyof T, ValueOf<T>][];
+export function ObjectEntries<T extends object>(obj: T): Entries<T> {
+  return Object.entries(obj) as Entries<T>;
+}

@@ -1,13 +1,8 @@
-import validate from "../../utils/validate";
-
 import { ObjectId } from "mongodb";
-import { isValidObjectId } from "mongoose";
 import { Request, Response } from "express";
-import { ENDPOINTS } from "../../models/apihub";
-import { catchError, requestHasBody } from "../../utils/handlers";
-import { PROFILE as ACCOUNTS_PROFILE } from "../../models/accounts";
-import { PROFILE as GAMES_PROFILE } from "../../models/games";
 import { getProfileHandler } from "../accounts";
+import { catchError } from "../../utils/handlers";
+import { GAMES_PROFILE } from "../../models/games";
 
 export default async (req: Request, res: Response) => {
   try {
@@ -20,7 +15,6 @@ export default async (req: Request, res: Response) => {
       gameProfile = await GAMES_PROFILE.findByIdAndUpdate(id);
 
     if (!gameProfile) throw { message: "Games Profile not found", sendError: true };
-
     const data = { success: true, message: `Profile details retrieved successfully`, data: gameProfile };
 
     return res.status(200).json(data);

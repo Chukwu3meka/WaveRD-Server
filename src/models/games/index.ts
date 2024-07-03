@@ -1,3 +1,4 @@
-import PROFILE from "./profile.game";
+import GAMES_PROFILE from "./profile.games";
+import GAMES_STATISTIC from "./statistic.games";
 
-export { PROFILE };
+export { GAMES_PROFILE, GAMES_STATISTIC };
