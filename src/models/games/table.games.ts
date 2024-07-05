@@ -1,17 +1,21 @@
 import { Schema } from "mongoose";
 import { gamesDatabase } from "../database";
 
-const CalendarSchema = new Schema({
-  week: Number,
-  date: String,
-  home: String,
-  hg: Number,
-  ag: Number,
-  away: String,
-  group: String,
+const TableSchema = new Schema({
+  club: String,
+  w: Number,
+  d: Number,
+  l: Number,
+  ga: Number,
+  gd: Number,
+  gf: Number,
+  pts: Number,
+  pld: Number,
+  group: Number,
+  world: String,
   competition: String,
 });
 
-const CalendarModel = gamesDatabase.model("Calendar", CalendarSchema);
+const TableModel = gamesDatabase.model("Table", TableSchema);
 
-export default CalendarModel;
+export default TableModel;

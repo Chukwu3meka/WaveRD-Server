@@ -1,5 +1,5 @@
+import { shuffleArray } from "../handlers";
 import { Fixtures } from "../../interface/games.interface";
-import { range, shuffleArray } from "../handlers";
 
 export default function initWorldTier1Fixtures(clubs: { club: string; league: string }[], competition: string) {
   if (clubs.length !== 32) throw { id: 4, sendError: true, message: competition + " total clubs must be 32" };
@@ -40,15 +40,51 @@ export default function initWorldTier1Fixtures(clubs: { club: string; league: st
 
   if (invalidGroup) throw { id: 4, sendError: true, message: competition + " has a group with multiple teams from same league" };
 
-  // ? Populate groups
+  const table = groups.flatMap((group, i) => group.map((club) => ({ club, w: 0, d: 0, l: 0, ga: 0, gd: 0, gf: 0, pts: 0, pld: 0, group: i + 1 })));
 
-  const table = groups.flatMap((group, i) => {
-    group.map((club) => ({ club, w: 0, d: 0, l: 0, ga: 0, gd: 0, gf: 0, pts: 0, pld: 0, group: i + 1 }));
-  });
+  // groups.forEach(
+  //   (x) => console.log(x)
+
+  //   //
+  // );
+
+  for (const groupClubs of [groups[0]]) {
+    // ? Populate groups
+    const clubsLength = groupClubs.length;
+    const homeFixtures = [];
+    const awayFixtures = [];
+
+    for (let i = 0; i < clubsLength - 1; i++) {
+      const homeRound = [];
+      const awayRound = [];
+      const tossCoin = (i + 1) % 2 === 0;
+
+      for (let j = 0; j < clubsLength / 2; j++) {
+        const [homeClub, awayClub] = [groupClubs[j].club, groupClubs[clubsLength - 1 - j].club];
+
+        if (tossCoin) {
+          homeRound.push({ home: homeClub, away: awayClub });
+          awayRound.push({ home: awayClub, away: homeClub });
+        } else {
+          homeRound.push({ home: awayClub, away: homeClub });
+          awayRound.push({ home: homeClub, away: awayClub });
+        }
+      }
+
+      awayFixtures.push(shuffleArray(awayRound));
+      homeFixtures.push(shuffleArray(homeRound));
+
+      const lastClub = groupClubs.pop(); // <= Rotate the array (keep the first club fixed)
+      if (lastClub !== undefined) groupClubs.splice(1, 0, lastClub);
+    }
+
+    homeFixtures.forEach((x) => console.log(x));
+  }
+
   // for
 
   // console.log(groups);
-  console.log(table);
+  // console.log(table);
 
   const fixtures: Fixtures[] = [];
 

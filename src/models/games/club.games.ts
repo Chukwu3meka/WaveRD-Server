@@ -2,8 +2,10 @@ import { Schema } from "mongoose";
 import { gamesDatabase } from "../database";
 
 const ClubSchema = new Schema({
+  club: { type: String, required: true },
+  world: { type: String, required: true },
+  league: { type: String, required: true },
   manager: { type: String, default: null },
-  ref: { type: String, unique: true, required: true },
   budget: { type: Number, default: 200, required: true },
   history: {
     match: {

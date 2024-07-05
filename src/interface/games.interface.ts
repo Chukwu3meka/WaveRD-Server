@@ -1,10 +1,26 @@
-export interface Fixtures {
-  hg: Number;
-  ag: Number;
+export interface Calendar {
   date: Date;
-  week: Number;
-  home: String;
-  away: String;
-  group: Number;
-  competition: String;
+  week: number;
+  home: string;
+  away: string;
+  world: string;
+  ag: number | null;
+  hg: number | null;
+  competition: string;
+  group: number | null;
+}
+
+export interface Table {
+  club: string;
+  w: number;
+  d: number;
+  l: number;
+  ga: number;
+  gd: number;
+  gf: number;
+  pts: number;
+  pld: number;
+  world: string;
+  competition: string;
+  group: number | null;
 }

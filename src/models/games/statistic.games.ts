@@ -1,11 +1,11 @@
 import { Schema } from "mongoose";
 import { gamesDatabase } from "../database";
-import { COUNTRIES, DIVISIONS } from "../../utils/constants";
 
 const StatisticSchema = new Schema({
   season: { type: Number, default: 1 },
   created: { type: Date, default: Date.now },
   title: { type: String, unique: true, required: true },
+  reference: { type: String, unique: true, required: true },
 
   unmanaged: {
     england_one: { type: Number, required: true, default: 20 },

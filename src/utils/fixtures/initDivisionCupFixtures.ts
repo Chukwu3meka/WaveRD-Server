@@ -81,8 +81,8 @@ export default function initDivisionCupFixtures(tempClubs: string[], competition
         competition,
         group: stage,
         date: selectedDate,
-        home: `round${stage}-club${index + 1}`,
-        away: `round${stage}-club${stage - index}`,
+        home: `round${stage}-winner${index + 1}`,
+        away: `round${stage}-winner${stage - index}`,
       });
     }
 
@@ -95,8 +95,8 @@ export default function initDivisionCupFixtures(tempClubs: string[], competition
       fixtures.push(
         ...stageFixtures[stage].map((fixture) => ({
           ...fixture,
-          home: clubs[Number(fixture.home.replace("round32-club", "")) - 1],
-          away: clubs[Number(fixture.away.replace("round32-club", "")) - 1],
+          home: clubs[Number(fixture.home.replace("round32-winner", "")) - 1],
+          away: clubs[Number(fixture.away.replace("round32-winner", "")) - 1],
         }))
       );
     } else {

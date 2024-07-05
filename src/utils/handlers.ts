@@ -319,3 +319,11 @@ type Entries<T> = [keyof T, ValueOf<T>][];
 export function ObjectEntries<T extends object>(obj: T): Entries<T> {
   return Object.entries(obj) as Entries<T>;
 }
+
+export function createSubarrays(arr: any[], subArraySize: number) {
+  const subarrays = [];
+  for (let i = 0; i < arr.length; i += subArraySize) {
+    subarrays.push(arr.slice(i, i + subArraySize));
+  }
+  return subarrays;
+}
