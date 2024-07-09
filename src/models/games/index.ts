@@ -1,3 +1,7 @@
-import PROFILE from "./profile.game";
+import GAMES_CLUB from "./club.games";
+import GAMES_TABLE from "./table.games";
+import GAMES_PROFILE from "./profile.games";
+import GAMES_CALENDAR from "./calendar.games";
+import GAMES_STATISTIC from "./statistic.games";
 
-export { PROFILE };
+export { GAMES_TABLE, GAMES_CALENDAR, GAMES_CLUB, GAMES_PROFILE, GAMES_STATISTIC };

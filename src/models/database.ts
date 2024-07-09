@@ -60,9 +60,9 @@ const modelGenerator = (DB_NAME: string) => {
 };
 
 const infoDatabase = modelGenerator("INFO"); // ? <= Client Database
+const gamesDatabase = modelGenerator("GAMES"); // ? <= Games Database
 const apihubDatabase = modelGenerator("APIHUB"); // ? <= API Hub Database
 const consoleDatabase = modelGenerator("CONSOLE"); // ? <= Moderators Database
-const managerDatabase = modelGenerator("MANAGER"); // ? <= Soccer Manager Database
-const accountsDatabase = modelGenerator("ACCOUNTS"); // ? <= Auth and Accounts  Database
+const accountsDatabase = modelGenerator("ACCOUNTS"); // ? <= Auth/Accounts  Database
 
-export { accountsDatabase, consoleDatabase, infoDatabase, apihubDatabase, managerDatabase };
+export { accountsDatabase, consoleDatabase, infoDatabase, apihubDatabase, gamesDatabase };

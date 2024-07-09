@@ -1,7 +1,8 @@
-import express from "express";
+import express, { Request, Response } from "express";
 
 // handlers
 import * as managerHandler from "../handlers/games";
+import { codes } from "../utils/codes";
 
 const router = express.Router({ caseSensitive: true, strict: true });
 
