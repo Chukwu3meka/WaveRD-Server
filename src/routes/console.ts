@@ -31,7 +31,10 @@ router.route("/logs/daily-statistics").get(handler.dailyStatistics);
 router.route("/logs/all-requests").get(handler.allRequests);
 router.route("/logs/failed-requests").get(handler.failedRequests);
 
-router.route("/games/create-game-world").post(handler.createGameWorld);
+router.route("/games/game-worlds").post(handler.createGameWorld);
+router.route("/games/game-worlds").get(handler.createGameWorld);
+router.route("/games/game-worlds/:id").get(handler.createGameWorld);
+router.route("/games/game-worlds/:id").patch(handler.createGameWorld);
 
 // ? fallback route
 router.route("*").all(fallbackRoute);
