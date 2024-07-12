@@ -3,15 +3,17 @@ import { Schema } from "mongoose";
 import { apihubDatabase } from "../database";
 
 const ClubSchema = new Schema({
+  ref: { type: String, required: true, unique: true },
   title: { type: String, required: true },
-  nickname: { type: String, required: true },
-  stadium: { type: String, required: true },
-  founded: { type: Number, required: true },
-  capacity: { type: Number, required: true },
-  location: { type: String, required: true },
-  manager: { type: String, required: true },
-  rivals: [{ type: String, required: true }],
-  squad: [{ type: String, required: true }],
+  division: { type: String, required: true },
+  nickname: { type: String, required: false },
+  stadium: { type: String, required: false },
+  founded: { type: Number, required: false },
+  capacity: { type: Number, required: false },
+  location: { type: String, required: false },
+  manager: { type: String, required: false },
+  rivals: [{ type: String, required: false }],
+  squad: [{ type: String, required: false }],
   managers: [
     {
       id: { type: String, required: true },

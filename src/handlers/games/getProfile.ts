@@ -8,6 +8,7 @@ export default async (req: Request, res: Response) => {
   try {
     const { id: tempId, session } = req.body.auth;
 
+
     const profile = getProfileHandler(tempId, session);
     if (!profile) throw { message: "Profile not found", sendError: true };
 

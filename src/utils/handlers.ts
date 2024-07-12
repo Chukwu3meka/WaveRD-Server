@@ -327,3 +327,37 @@ export function createSubarrays(arr: any[], subArraySize: number) {
   }
   return subarrays;
 }
+
+export async function apiHubfetcher(subPath: string) {
+  if (!subPath) return null;
+  const basePath = `${process.env.BASE_URL}${process.env.STABLE_VERSION}/public`;
+
+  return await fetch(basePath + subPath, {
+    /* credentials: "include", tells browser will include credentials in the request,
+The server must respond with the appropriate CORS headers, including:
+Access-Control-Allow-Origin and Access-Control-Allow-Credentials,
+to allow the response to be received by the client. */
+    // credentials: "include",
+    credentials: "same-origin",
+    /* mode: "cors", This involves sending a preflight OPTIONS request to the server to check whether the server allows the requested access,
+and then sending the actual request if the server responds with the appropriate CORS headers. */
+    mode: "same-origin",
+    method: "GET",
+    cache: "no-store",
+
+    headers: {
+      "Content-Type": "application/json",
+      "x-waverd-host": "Wave-Research-2018",
+      "x-waverd-key": "Wave-Research-APIHUB-2023",
+    },
+  })
+    .then(async (res) => {
+      if (!res.ok) return null;
+
+      return res
+        .json()
+        .then(async (res) => res.data)
+        .catch(async (err) => null);
+    })
+    .catch(() => null);
+}

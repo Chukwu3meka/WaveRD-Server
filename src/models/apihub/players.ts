@@ -3,6 +3,7 @@ import { Schema } from "mongoose";
 import { apihubDatabase } from "../database";
 
 const PlayerSchema = new Schema({
+  ref: { type: String, required: true, unique: true },
   club: { type: String, required: true },
   country: { type: String, required: true },
   name: { type: String, required: true },

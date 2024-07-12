@@ -1,3 +1,5 @@
-import getProfile from "./get-profile";
+import getProfile from "./getProfile";
+import getGameWorlds from "./getGameWorlds";
+import getWorldClubs from "./getWorldClubs";
 
-export { getProfile };
+export { getWorldClubs, getProfile, getGameWorlds };

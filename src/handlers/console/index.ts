@@ -11,6 +11,7 @@ import allRequests from "./logs/all-requests";
 import failedRequests from "./logs/failed-requests";
 
 import createGameWorld from "./games/createGameWorld";
+import getGameWorlds from "./games/getGameWorlds";
 
 export {
   endpoint,
@@ -30,4 +31,5 @@ export {
 
   // Games
   createGameWorld,
+  getGameWorlds,
 };

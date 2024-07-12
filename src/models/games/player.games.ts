@@ -21,7 +21,15 @@ const PlayerSchema = new Schema({
   // minutesNotPlayed: { type: Number, required: true, default: 0 },
   // minutesPlayedRight: { type: Number, required: true, default: 0 },
   // minutesPlayedWrong: { type: Number, required: true, default: 0 },
-  competition: { cup: matchData, league: matchData, division: matchData },
+  competition: {
+    cup: matchData,
+    division_one: matchData,
+    division_two: matchData,
+    worldTier1: matchData,
+    worldTier2: matchData,
+    divisionShield: matchData,
+    worldTierShield: matchData,
+  },
   history: {
     mp: { type: Number, default: 0, required: true },
     cs: { type: Number, default: 0, required: true },

@@ -4,9 +4,9 @@ import { gamesDatabase } from "../database";
 const ClubSchema = new Schema({
   club: { type: String, required: true },
   world: { type: String, required: true },
-  league: { type: String, required: true },
+  division: { type: String, required: true },
   manager: { type: String, default: null },
-  budget: { type: Number, default: 200, required: true },
+  budget: { type: Number, required: true },
   history: {
     match: {
       won: { type: Number, default: 0 },
@@ -45,8 +45,12 @@ const ClubSchema = new Schema({
     managers: [{ manager: String, arrival: { type: Date, default: Date.now }, departure: { type: Date } }],
     trophies: {
       cup: { type: Number, default: 0, required: true },
-      league: { type: Number, default: 0, required: true },
-      division: { type: Number, default: 0, required: true },
+      division_one: { type: Number, default: 0, required: true },
+      division_two: { type: Number, default: 0, required: true },
+      worldTier1: { type: Number, default: 0, required: true },
+      worldTier2: { type: Number, default: 0, required: true },
+      divisionShield: { type: Number, default: 0, required: true },
+      worldTierShield: { type: Number, default: 0, required: true },
     },
     events: [{ date: { type: Date, default: Date.now }, event: String }],
   },

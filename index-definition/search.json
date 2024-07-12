@@ -1,0 +1,52 @@
+{
+  "analyzer": "lucene.english",
+  "searchAnalyzer": "lucene.english",
+  "mappings": {
+    "dynamic": false,
+    "fields": {
+      "title": {
+        "type": "lucene.autocomplete",
+        "analyzer": "autocomplete"
+      },
+      "description": {
+        "type": "string",
+        "analyzer": "standard"
+      },
+      "category": {
+        "type": "string",
+        "analyzer": "standard"
+      }
+    }
+  },
+  "analyzers": [
+    {
+      "name": "autocomplete",
+      "tokenizer": {
+        "type": "standard"
+      },
+      "charFilters": [],
+      "tokenFilters": [
+        {
+          "type": "lowercase"
+        },
+        {
+          "type": "edgeGram",
+          "minGram": 2,
+          "maxGram": 15
+        }
+      ]
+    },
+    {
+      "name": "standard",
+      "tokenizer": {
+        "type": "standard"
+      },
+      "charFilters": [],
+      "tokenFilters": [
+        {
+          "type": "lowercase"
+        }
+      ]
+    }
+  ]
+}

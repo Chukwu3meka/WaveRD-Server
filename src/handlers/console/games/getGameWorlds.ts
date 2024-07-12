@@ -1,11 +1,9 @@
-import validator from "../../../utils/validate";
-
 import { Request, Response } from "express";
-import { GAMES_STATISTIC } from "../../../models/apihub";
 import { catchError, range, requestHasBody } from "../../../utils/handlers";
 import { SIZES } from "../../../utils/constants";
+import { GAMES_STATISTIC } from "../../../models/games";
 
-export default async (req: Request, res: Response) => {
+export default async function getGameWorlds(req: Request, res: Response) {
   try {
     const hasFilterParam = Object.hasOwn(req.query, "filter");
     if (!hasFilterParam) throw { message: "Filter not specified", sendError: true };
@@ -25,8 +23,8 @@ export default async (req: Request, res: Response) => {
     if (page < 0) throw { message: "Invalid Page Number specified", sendError: true };
     if (!SIZES.includes(size)) throw { message: "Invalid Size specified", sendError: true };
 
-    // ? Single fetch with skip and limit returns unexpected result
-    // ? https://www.mongodb.com/community/forums/t/cursor-pagination-using-objectid-timestamp-field-in-mongodb/122170/2
+    // // ? Single fetch with skip and limit returns unexpected result
+    // // ? https://www.mongodb.com/community/forums/t/cursor-pagination-using-objectid-timestamp-field-in-mongodb/122170/2
 
     let result, resultCount;
 
@@ -41,15 +39,10 @@ export default async (req: Request, res: Response) => {
           {
             $project: {
               _id: false,
-              id: "$_id",
-              path: true,
+              id: "$ref",
               title: true,
-              latency: true,
-              category: true,
-              bookmarks: true,
-              visibility: true,
-              description: true,
-              lastUpdated: true,
+              totalUnmanaged: true,
+              created: true,
             },
           },
         ]);
@@ -64,15 +57,10 @@ export default async (req: Request, res: Response) => {
           {
             $project: {
               _id: false,
-              id: "$_id",
-              path: true,
+              id: "$_ref",
               title: true,
-              latency: true,
-              category: true,
-              bookmarks: true,
-              visibility: true,
-              description: true,
-              lastUpdated: true,
+              totalUnmanaged: true,
+              created: true,
             },
           },
         ]);
@@ -86,7 +74,7 @@ export default async (req: Request, res: Response) => {
 
     const data = {
       success: true,
-      message: result.length ? "Endpoints retrieved successfully" : "Failed to retrieve any endpoint",
+      message: result.length ? "Worlds retrieved successfully" : "Failed to retrieve any Worlds",
       data: { size, page, totalElements: resultCount ? (resultCount[0] ? resultCount[0].totalElements : 0) : 0, content: result },
     };
 
@@ -99,4 +87,4 @@ export default async (req: Request, res: Response) => {
 
     return catchError({ res, err });
   }
-};
+}

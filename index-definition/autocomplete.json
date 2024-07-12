@@ -1,0 +1,56 @@
+{
+  "mappings": {
+    "dynamic": false,
+    "fields": {
+      "category": {
+        "analyzer": "standard",
+        "type": "string"
+      },
+      "description": {
+        "analyzer": "standard",
+        "type": "string"
+      },
+      "title": {
+        "foldDiacritics": true,
+        "maxGrams": 30,
+        "minGrams": 1,
+        "tokenization": "edgeGram",
+        "type": "autocomplete"
+      },
+      "lastUpdated": {
+        "type": "date"
+      }
+    }
+  },
+  "analyzers": [
+    {
+      "charFilters": [],
+      "name": "autocomplete",
+      "tokenFilters": [
+        {
+          "type": "lowercase"
+        },
+        {
+          "maxGram": 30,
+          "minGram": 1,
+          "type": "edgeGram"
+        }
+      ],
+      "tokenizer": {
+        "type": "standard"
+      }
+    },
+    {
+      "charFilters": [],
+      "name": "standard",
+      "tokenFilters": [
+        {
+          "type": "lowercase"
+        }
+      ],
+      "tokenizer": {
+        "type": "standard"
+      }
+    }
+  ]
+}

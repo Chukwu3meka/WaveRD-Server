@@ -3,7 +3,7 @@ import validate from "../../../utils/validate";
 import { Request, Response } from "express";
 import { ENDPOINTS } from "../../../models/apihub";
 import { HTTP_METHODS } from "../../../utils/constants";
-import { catchError, requestHasBody, sleep } from "../../../utils/handlers";
+import { apiHubfetcher, catchError, requestHasBody, sleep } from "../../../utils/handlers";
 
 export const endpointTitleExistsFn = async (title: string) => {
   validate({ type: "comment", value: title, sendError: true, label: "Title" });
@@ -15,34 +15,7 @@ export const endpointTitleExistsFn = async (title: string) => {
 const composeHandler = async ({ path, method }: { path: string; method: string }) => {
   if (path.startsWith(`${process.env.STABLE_VERSION}/public/`) && HTTP_METHODS.includes(method)) {
     const startTime = Date.now(),
-      endpointResponse = await fetch(process.env.BASE_URL + path, {
-        /* credentials: "include", tells browser will include credentials in the request,
-  The server must respond with the appropriate CORS headers, including:
-  Access-Control-Allow-Origin and Access-Control-Allow-Credentials,
-  to allow the response to be received by the client. */
-        // credentials: "include",
-        credentials: "same-origin",
-        /* mode: "cors", This involves sending a preflight OPTIONS request to the server to check whether the server allows the requested access,
-  and then sending the actual request if the server responds with the appropriate CORS headers. */
-        mode: "same-origin",
-        method,
-        cache: "no-store",
-
-        headers: {
-          "Content-Type": "application/json",
-          "x-waverd-host": "Wave-Research-2018",
-          "x-waverd-key": "Wave-Research-APIHUB-2023",
-        },
-      })
-        .then(async (res) => {
-          if (!res.ok) return null;
-
-          return res
-            .json()
-            .then(async (res) => res.data)
-            .catch(async (err) => null);
-        })
-        .catch(() => null);
+      endpointResponse = await apiHubfetcher(path.replace(`${process.env.STABLE_VERSION}/public`, ""));
 
     const data = {
       success: true,

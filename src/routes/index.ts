@@ -28,12 +28,12 @@ const fallbackRoute = async (req: Request, res: Response) => {
 };
 
 export default (app: Application) => {
-  app.use(`${process.env.STABLE_VERSION}/info/`, cors(corsOptions), infoRoute);
-  app.use(`${process.env.STABLE_VERSION}/apihub/`, cors(corsOptions), apihubRoute);
-  app.use(`${process.env.STABLE_VERSION}/accounts/`, cors(corsOptions), accountsRoute);
-  app.use(`${process.env.STABLE_VERSION}/games/`, cors(corsOptions), routeGuard, gamesRoute);
-  app.use(`${process.env.STABLE_VERSION}/public/`, cors(corsOptions), publicGuard, publicRoute);
-  app.use(`${process.env.STABLE_VERSION}/console/`, cors(corsOptions), consoleGuard, consoleRoute);
+  app.use(`${process.env.STABLE_VERSION}/info`, cors(corsOptions), infoRoute);
+  app.use(`${process.env.STABLE_VERSION}/apihub`, cors(corsOptions), apihubRoute);
+  app.use(`${process.env.STABLE_VERSION}/accounts`, cors(corsOptions), accountsRoute);
+  app.use(`${process.env.STABLE_VERSION}/games`, cors(corsOptions), routeGuard, gamesRoute);
+  app.use(`${process.env.STABLE_VERSION}/public`, cors(corsOptions), publicGuard, publicRoute);
+  app.use(`${process.env.STABLE_VERSION}/console`, cors(corsOptions), consoleGuard, consoleRoute);
 
   // ? fallback route
   app.use("*", cors(corsOptions), fallbackRoute);

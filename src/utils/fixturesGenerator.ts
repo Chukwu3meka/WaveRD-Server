@@ -1,10 +1,8 @@
 import { Response } from "express";
-import { DIVISIONS } from "./constants";
 import { Calendar, Table } from "../interface/games.interface";
+import { DIVISIONS, QUALIFICATION, SINGLE_DIVISION, TOTAL_CLUBS } from "./constants";
 import { createSubarrays, range, shuffleArray, sleep } from "./handlers";
 import { GAMES_CALENDAR, GAMES_CLUB, GAMES_TABLE } from "../models/games";
-
-const maxNoCupClubs = 32;
 
 interface GenComptTable {
   world: string;
@@ -13,7 +11,7 @@ interface GenComptTable {
   competition: string;
 }
 
-interface GenLeagueFixtures {
+interface GenDivisionFixtures {
   clubs: string[];
   competition: string;
   world: string;
@@ -51,11 +49,12 @@ interface GenWorldTierFixtures {
 
 interface GroupClub {
   club: string;
-  league: string;
+  division: string;
 }
 
 export class FixturesGenerator {
   private res?: Response;
+  private maxNoCupClubs = 32;
   private worldRef: string = "";
   private existingWorld: boolean = true;
 
@@ -68,7 +67,7 @@ export class FixturesGenerator {
   }
 
   readonly matchTimes = {
-    league: [
+    division: [
       ["12:30", "15:00", "17:30", "20:00"],
       ["12:00", "14:00", "16:30"],
     ],
@@ -81,7 +80,7 @@ export class FixturesGenerator {
     if (!this.res) throw { sendError: true, message: "Response is not defined" };
 
     this.res.write(`data: ${JSON.stringify({ success: true, data: status, message })}\n\n`);
-    if (status === "pending") await sleep(1); // ? <= delay next action
+    if (status === "pending") await sleep(0.1); // ? <= delay next action
   }
 
   async generateFixtures() {
@@ -90,68 +89,71 @@ export class FixturesGenerator {
     await this.streamResponse("pending", `Verify that Game World has been created and has clubs in it`);
     const gameWorldClubs = await GAMES_CLUB.find({ world: worldRef });
 
-    if (gameWorldClubs.length < 160) {
+    if (gameWorldClubs.length !== TOTAL_CLUBS) {
       await this.streamResponse("failed", `Verify that Game World has been created and has clubs in it`);
       throw { sendError: true, message: "Game world clubs not found" };
     }
 
     await this.streamResponse("success", `Verify that Game World has been created and has clubs in it`);
 
-    const leagues: string[] = [];
+    const divisions: string[] = [];
     const countries: string[] = [];
-    const leagueClubs: { [league: string]: string[] } = {};
+    const divisionClubs: { [division: string]: string[] } = {};
 
-    await this.streamResponse("pending", `Map through each clubs to extract Country, League and Club ref inorder to create League Clubs Array`);
+    await this.streamResponse("pending", `Map through each clubs to extract Country, Division and Club ref inorder to create Division Clubs Array`);
     for (const clubData of gameWorldClubs) {
-      const { league, club } = clubData;
+      const { division, club } = clubData;
 
-      const leagueSplit = league.split("_"),
-        country = leagueSplit.splice(0, leagueSplit.length - 1).join("_");
+      const divisionSplit = division.split("_"),
+        country = divisionSplit.splice(0, divisionSplit.length - 1).join("_");
 
-      // add current league to list of leagues
-      if (!leagues.includes(league)) leagues.push(league);
+      // add current division to list of divisions
+      if (!divisions.includes(division)) divisions.push(division);
 
-      // populate league clubs array
-      if (leagueClubs[league]) leagueClubs[league].push(club);
-      if (!leagueClubs[league]) leagueClubs[league] = [club];
+      // populate division clubs array
+      if (divisionClubs[division]) divisionClubs[division].push(club);
+      if (!divisionClubs[division]) divisionClubs[division] = [club];
 
       // add country to list of countries
       if (!countries.includes(country)) countries.push(country);
     }
-    await this.streamResponse("success", `Map through each clubs to extract Country, League and Club ref inorder to create League Clubs Array`);
+    await this.streamResponse("success", `Map through each clubs to extract Country, Division and Club ref inorder to create Division Clubs Array`);
 
     const calendar: Calendar[] = [],
       table: Table[] = [];
 
-    await this.streamResponse("pending", `Map through Leagues to ensure Clubs are even and in order to generate Calendar and Table`);
-    for (const competition of leagues) {
-      const clubs = leagueClubs[competition];
+    await this.streamResponse("pending", `Map through Divisions to ensure Clubs are even and in order to generate Calendar and Table`);
+    for (const competition of divisions) {
+      const clubs = divisionClubs[competition];
       if (!clubs) throw { sendError: true, message: "Clubs is indefined" };
       if (clubs.length % 2 !== 0) throw { sendError: true, message: "Clubs length is not even" };
 
-      // ? Generate League Calendar and Table
-      await this.streamResponse("pending", `Generating ${competition} League Table`);
-      const leagueTable = this.genComptTable({ clubs, group: null, competition: competition + "_league", world: worldRef });
-      await this.streamResponse("success", `Generating ${competition} League Table`);
+      // ? Generate Division Calendar and Table
+      await this.streamResponse("pending", `Generating ${competition} Division Table`);
+      const divisionTable = this.genComptTable({ clubs, group: null, competition: competition + "_division", world: worldRef });
+      await this.streamResponse("success", `Generating ${competition} Division Table`);
 
-      await this.streamResponse("pending", `Generating ${competition} League Calendar`);
-      const leagueCalendar = this.genLeagueFixtures({ clubs, group: null, competition: competition + "_league", world: worldRef });
-      await this.streamResponse("success", `Generating ${competition} League Calendar`);
+      await this.streamResponse("pending", `Generating ${competition} Division Calendar`);
 
-      table.push(...leagueTable);
-      calendar.push(...leagueCalendar);
+      const divisionCalendar = this.genDivisionFixtures({ clubs, group: null, competition: competition + "_division", world: worldRef });
+      await this.streamResponse("success", `Generating ${competition} Division Calendar`);
+
+      table.push(...divisionTable);
+      calendar.push(...divisionCalendar);
     }
-    await this.streamResponse("success", `Map through Leagues to ensure Clubs are even and in order to generate Calendar and Table`);
+    await this.streamResponse("success", `Map through Divisions to ensure Clubs are even and in order to generate Calendar and Table`);
 
     await this.streamResponse("pending", `Mapping through countries to generate Cup and Shield Calendar`);
-    for (const country of countries) {
-      await this.streamResponse("pending", `Generating ${country} Cup Calendar`);
-      const cupCalendar = await this.genCupFixtures({ country, world: worldRef, existingWorld, table }); // <= Generate Cup Calendar
-      await this.streamResponse("success", `Generating ${country} Cup Calendar`);
+    for (const tournament of countries) {
+      this.maxNoCupClubs = tournament === "tour010" ? 8 : SINGLE_DIVISION.includes(tournament) ? 16 : 32;
 
-      await this.streamResponse("pending", `Generating ${country} Shield Calendar`);
-      const shieldCalendar = await this.genShieldFixtures({ group: null, country, world: worldRef, existingWorld, table }); // <= Generate Shield Calendar
-      await this.streamResponse("success", `Generating ${country} Shield Calendar`);
+      await this.streamResponse("pending", `Generating ${tournament} Cup Calendar`);
+      const cupCalendar = await this.genCupFixtures({ country: tournament, world: worldRef, existingWorld, table }); // <= Generate Cup Calendar
+      await this.streamResponse("success", `Generating ${tournament} Cup Calendar`);
+
+      await this.streamResponse("pending", `Generating ${tournament} Shield Calendar`);
+      const shieldCalendar = await this.genShieldFixtures({ group: null, country: tournament, world: worldRef, existingWorld, table }); // <= Generate Shield Calendar
+      await this.streamResponse("success", `Generating ${tournament} Shield Calendar`);
 
       calendar.push(...cupCalendar, ...shieldCalendar);
     }
@@ -182,24 +184,18 @@ export class FixturesGenerator {
 
     await GAMES_TABLE.insertMany(table);
     await GAMES_CALENDAR.insertMany(calendar);
-
-    await this.streamResponse("success", " ");
-    await this.streamResponse("success", " ");
-    await this.streamResponse("success", " ");
-    await this.streamResponse("success", " ");
-    await this.streamResponse("success", " ");
-    await this.streamResponse("success", " ");
-    await this.streamResponse("success", " ");
   }
 
   private getMatchDates(competition: string): string[] {
     const datesArray = [];
 
+    // console.log({ competition });
+
     const currentYear = new Date().getFullYear(),
-      [startYear, startMonth, startDay, endYear, endMonth, endDay, firstMatchDay, subsequentMatchDays] = competition.endsWith("_league")
+      [startYear, startMonth, startDay, endYear, endMonth, endDay, firstMatchDay, subsequentMatchDays] = competition.endsWith("_division")
         ? [currentYear, 7, 15, currentYear + 1, 5, 30, 6, [1, 6]]
         : competition.endsWith("_cup")
-        ? [currentYear, maxNoCupClubs > 32 ? 9 : 11, 8, currentYear + 1, 5, 30, 4, [7]]
+        ? [currentYear, this.maxNoCupClubs > 32 ? 9 : 11, 8, currentYear + 1, 5, 30, 4, [7]]
         : competition.endsWith("_shield")
         ? [currentYear, 0, 1, currentYear, 0, 21, 4, [7]]
         : competition.endsWith("world_tier_1_group")
@@ -270,7 +266,7 @@ export class FixturesGenerator {
     });
   }
 
-  private genLeagueFixtures({ clubs, competition, world, group }: GenLeagueFixtures): Calendar[] {
+  private genDivisionFixtures({ clubs, competition, world, group }: GenDivisionFixtures): Calendar[] {
     const totalClubs = clubs.length,
       fixtures: Calendar[] = [],
       datesArray = this.getMatchDates(competition),
@@ -279,7 +275,7 @@ export class FixturesGenerator {
     matchWeeks.forEach((round, tempWeek) => {
       const week = tempWeek + 1,
         initMatchDate = datesArray.shift(),
-        [firstMatchDate, lastMatchDate] = [initMatchDate, competition.endsWith("_league") ? datesArray.shift() : initMatchDate];
+        [firstMatchDate, lastMatchDate] = [initMatchDate, competition.endsWith("_division") ? datesArray.shift() : initMatchDate];
 
       if (firstMatchDate === undefined || lastMatchDate === undefined) {
         throw { sendError: true, message: "Out of Fixture date range for " + competition };
@@ -298,7 +294,7 @@ export class FixturesGenerator {
             return { home, away, week, date: matchDate, hg: 0, ag: 0, group, world, competition };
           } else {
             const matchDay = totalClubs / 2 / 2,
-              [sunMatchTime, satMatchTime] = this.matchTimes.league,
+              [sunMatchTime, satMatchTime] = this.matchTimes.division,
               matchDate = new Date(matchDay > i ? firstMatchDate : lastMatchDate),
               selectedMatchTime = matchDate.getDay() === 0 ? sunMatchTime : satMatchTime,
               selectedTime = selectedMatchTime[range(0, selectedMatchTime.length - 1)].split(":");
@@ -322,7 +318,7 @@ export class FixturesGenerator {
 
     if (existingWorld) {
       const topLaegueClubs = (
-        await GAMES_TABLE.find({ world, competition: country + "_one_league" })
+        await GAMES_TABLE.find({ world, competition: country + "_one_division" })
           .sort({ pts: -1, w: -1, gf: -1, gd: -1, ga: 1, d: 1, l: 1 })
           .limit(4)
       ).map((data) => data?.club);
@@ -375,32 +371,32 @@ export class FixturesGenerator {
 
     for (const division of DIVISIONS) {
       const currNoCupClubs: number = countryCupClubs.length;
-      if (currNoCupClubs >= maxNoCupClubs) break; // Break out of the loop
+      if (currNoCupClubs >= this.maxNoCupClubs) break; // Break out of the loop
 
       if (existingWorld) {
-        const competition = `${country}_${division}_league`,
+        const competition = `${country}_${division}_division`,
           comptTable = await GAMES_TABLE.find({ world, competition }).sort({ pts: -1, w: -1, gf: -1, gd: -1, ga: 1, d: 1, l: 1 });
 
         if (!comptTable) throw { sendError: true, message: "Competition table not found" };
 
         const clubs = comptTable.map((data) => data.club);
-        countryCupClubs.push(...shuffleArray(clubs.splice(0, maxNoCupClubs - currNoCupClubs)));
+        countryCupClubs.push(...shuffleArray(clubs.splice(0, this.maxNoCupClubs - currNoCupClubs)));
       } else {
-        const competition = `${country}_${division}_league`,
+        const competition = `${country}_${division}_division`,
           comptTable = table.filter((data) => data.competition === competition);
 
         if (!comptTable) throw { sendError: true, message: "Competition table not found" };
 
         const clubs = comptTable.map((data) => data.club);
-        countryCupClubs.push(...shuffleArray(clubs.splice(0, maxNoCupClubs - currNoCupClubs)));
+        countryCupClubs.push(...shuffleArray(clubs.splice(0, this.maxNoCupClubs - currNoCupClubs)));
       }
     }
 
-    if (countryCupClubs.length !== maxNoCupClubs) {
-      throw { sendError: true, message: "Competitions Cup not equal to " + maxNoCupClubs };
+    if (countryCupClubs.length !== this.maxNoCupClubs) {
+      throw { sendError: true, message: "Competitions Cup not equal to " + this.maxNoCupClubs };
     }
 
-    let round = maxNoCupClubs;
+    let round = this.maxNoCupClubs;
     const datesArray = this.getMatchDates(country + "_cup"),
       roundFixtures: { [key: string]: Calendar[] } = {};
 
@@ -475,7 +471,7 @@ export class FixturesGenerator {
     const fixtures: Calendar[] = [];
 
     for (const round in roundFixtures) {
-      if (Number(round) === maxNoCupClubs) {
+      if (Number(round) === this.maxNoCupClubs) {
         fixtures.push(
           ...roundFixtures[round].map((fixture) => ({
             ...fixture,
@@ -499,81 +495,93 @@ export class FixturesGenerator {
     countries,
   }: GenWorldTierFixtures): Promise<{ calendar: Calendar[]; table: Table[] }> {
     const eligibleClubs: GroupClub[] = [];
-    await this.streamResponse("pending", `Getting previous season League table for Game world: ${world}`);
+    await this.streamResponse("pending", `Getting previous season Division table for Game world: ${world}`);
 
     for (const country of countries) {
-      const competition = country + "_one_league";
+      const tier1Qual = QUALIFICATION["tier1"][country as keyof (typeof QUALIFICATION)["tier1"]],
+        tier2Qual = QUALIFICATION["tier2"][country as keyof (typeof QUALIFICATION)["tier2"]];
+
+      const competition = country + "_one_division";
+      const startClubIndex = tier === 1 ? tier1Qual : tier2Qual;
+
       if (existingWorld) {
         const gameWorldTables = await GAMES_TABLE.find({ world, competition });
-        if (!gameWorldTables.length) throw { sendError: true, message: "Game world league one table not found" };
+        if (!gameWorldTables.length) throw { sendError: true, message: "Game world division one table not found" };
 
-        const startClubIndex = tier === 1 ? 4 : 8;
-        const clubs: GroupClub[] = [...gameWorldTables]
-          .splice(startClubIndex - 4, 4)
-          .map((data) => ({ club: data.club as string, league: competition }));
-
-        eligibleClubs.push(...clubs);
+        eligibleClubs.push(
+          ...[...gameWorldTables]
+            .splice(startClubIndex - startClubIndex, startClubIndex)
+            .map((data) => ({ club: data.club as string, division: competition }))
+        );
       } else {
         const gameWorldTables = table.filter((data) => data.competition === competition);
-        if (!gameWorldTables.length) throw { sendError: true, message: "Game world league one table not found" };
+        if (!gameWorldTables.length) throw { sendError: true, message: "Game world division one table not found" };
 
-        const startClubIndex = tier === 1 ? 4 : 8;
-        eligibleClubs.push(...[...gameWorldTables].splice(startClubIndex - 4, 4).map((data) => ({ club: data.club, league: competition })));
+        eligibleClubs.push(
+          ...[...gameWorldTables].splice(startClubIndex - startClubIndex, startClubIndex).map((data) => ({ club: data.club, division: competition }))
+        );
       }
     }
-    await this.streamResponse("success", `Getting previous season League table for Game world: ${world}`);
+    await this.streamResponse("success", `Getting previous season Division table for Game world: ${world}`);
 
     function generateGroups(eligibleClubs: GroupClub[]) {
-      const shuffledClubs = shuffleArray([...eligibleClubs]),
-        groups: GroupClub[][] = Array.from({ length: Math.ceil(shuffledClubs.length / 4) }, () => []);
+      const shuffleClubs = shuffleArray(eligibleClubs);
+      if (shuffleClubs.length !== 32) throw { sendError: true, message: "Club list is expected to be 32" };
 
-      // Distribute clubs into groups
-      shuffledClubs.forEach((club: GroupClub) => {
-        // Try to find a group where this club can be added without causing a league conflict
-        let groupAdded = false;
-        for (let group of groups) {
-          if (!group.some((c) => c.league === club.league) && group.length < 4) {
-            group.push(club);
-            groupAdded = true;
-            break;
-          }
+      const groups: { club: string; division: string }[][] = Array.from({ length: Math.ceil(shuffleClubs.length / 4) }, () => []);
+
+      for (const { club, division } of shuffleClubs) {
+        for (let i = 0; i < groups.length; i++) {
+          const group = groups[i];
+          if (group.length === 4) continue;
+
+          const divisionExists = group.find((data) => data.division === division);
+          if (divisionExists) continue;
+
+          group.push({ club, division });
+          break;
         }
-        // If no suitable group was found, add the club to the first group with space
-        if (!groupAdded) {
-          for (let group of groups) {
-            if (group.length < 4) {
-              group.push(club);
-              break;
-            }
-          }
-        }
-      });
+      }
 
       return groups;
     }
 
-    let groupsAreValid = false;
-    const tierGroups = [];
-
     await this.streamResponse("pending", "Assign clubs to groups in World Tier " + tier);
+    let [groupsAreValid, groupingAttempts] = [false, 0];
+
+    const tierGroups = [],
+      maxGroupingAttempts = 7;
+
     while (!groupsAreValid) {
+      if (groupingAttempts === maxGroupingAttempts) {
+        throw { sendError: true, message: `Failed to create a valid after mutliple attempts (${maxGroupingAttempts})` };
+      }
+
+      if (eligibleClubs.length !== 32) {
+        throw { sendError: true, message: `Adequate number of clubs not selected for qualification` };
+      }
+
       const groups: GroupClub[][] = generateGroups(eligibleClubs);
 
       // Check if all groups are valid
       const invalidGroup = groups.find((group) => {
-        const leagues = group.map((c) => c.league);
-        return new Set(leagues).size !== leagues.length;
+        if (group.length !== 4) return true;
+
+        const divisions = group.map((c) => c.division);
+        return new Set(divisions).size !== divisions.length;
       });
 
       // If any invalid group is found, retry the generation
       if (invalidGroup) {
-        await this.streamResponse("failed", `Retrying in Groups regeneration Seconds`);
-        await this.streamResponse("pending", "World Tier" + tier + " has a group with multiple teams from same league");
+        await this.streamResponse("failed", `Retrying Groups generation`);
+        await this.streamResponse("pending", "World Tier" + tier + " has a group with multiple teams from same division");
       } else {
         groupsAreValid = true;
         tierGroups.push(...groups);
-        await this.streamResponse("success", "World Tier" + tier + " has a group with multiple teams from same league");
+        await this.streamResponse("success", "World Tier" + tier + " has a group with multiple teams from same division");
       }
+
+      groupingAttempts++;
     }
     await this.streamResponse("success", "Assign clubs to groups in World Tier " + tier);
 
@@ -592,7 +600,7 @@ export class FixturesGenerator {
       if (i === 0) {
         const [group, clubs] = [i + 1, groups.map((data) => data.club)];
 
-        const groupCalendar = this.genLeagueFixtures({ clubs, group, competition: `world_tier_${tier}_group`, world });
+        const groupCalendar = this.genDivisionFixtures({ clubs, group, competition: `world_tier_${tier}_group`, world });
         groupStageFixtures.push(...groupCalendar);
       }
     });
@@ -615,10 +623,9 @@ export class FixturesGenerator {
 
         // Group matches in two batches
         for (const batch of [1, round / 2 + 1]) {
-          const clubsIndex = Array.from({ length: round / 2 }, (_, i) => i + batch);
-          const currRoundMatch = createSubarrays(clubsIndex, 2);
-
-          const batchMatchDay = (batch + 1) % 2 === 0;
+          const clubsIndex = Array.from({ length: round / 2 }, (_, i) => i + batch),
+            currRoundMatch = createSubarrays(clubsIndex, 2),
+            batchMatchDay = (batch + 1) % 2 === 0;
 
           for (const leg of [1, 2]) {
             if (roundFixtures[round]) {
@@ -661,7 +668,7 @@ export class FixturesGenerator {
             [firstMatchDate, lastMatchDate] = [initDate, tier === 1 ? datesArray.shift() : initDate];
 
           if (firstMatchDate === undefined || lastMatchDate === undefined) {
-            throw { message: "Out of Fixture date range for " + competition + " in multi date" };
+            throw { sendError: true, message: "Out of Fixture date range for " + competition + " in multi date" };
           }
 
           if (roundFixtures[round]) {
@@ -694,7 +701,7 @@ export class FixturesGenerator {
         const matchDate = datesArray.shift();
 
         if (matchDate === undefined) {
-          throw { message: "Out of Fixture date range for " + competition + " in multi date" };
+          throw { sendError: true, message: "Out of Fixture date range for " + competition + " in multi date" };
         }
 
         const selectedDate = new Date(matchDate),
@@ -710,7 +717,6 @@ export class FixturesGenerator {
     }
 
     const knockoutFixtures: Calendar[] = [];
-
     for (const round in roundFixtures) knockoutFixtures.push(...roundFixtures[round]);
 
     await this.streamResponse("success", "Generating World Tier " + tier + " knockout fixtures");
