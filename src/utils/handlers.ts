@@ -6,6 +6,7 @@ import { PROFILE } from "../models/accounts";
 import { FAILED_REQUESTS } from "../models/info";
 import { CatchError } from "../interface/utils-handlers-interface";
 import { CalcFutureDate, MitigateProfileBruteForce, RequestHasBody } from "../interface/utils/handlers.interface";
+import { styleText } from "util";
 
 export const catchError = async ({ res, req, err: initError }: CatchError) => {
   const { request = null, ...data } = res.req.body,
@@ -329,6 +330,8 @@ export function createSubarrays(arr: any[], subArraySize: number) {
 }
 
 export async function apiHubfetcher(subPath: string) {
+  console.log(styleText("bgGrey", "API Hub internal access"));
+
   if (!subPath) return null;
   const basePath = `${process.env.BASE_URL}${process.env.STABLE_VERSION}/public`;
 
@@ -359,5 +362,8 @@ and then sending the actual request if the server responds with the appropriate 
         .then(async (res) => res.data)
         .catch(async (err) => null);
     })
-    .catch(() => null);
+    .catch((err) => {
+      if (process.env.NODE_ENV === "development") console.log(styleText("red", err));
+      return null;
+    });
 }

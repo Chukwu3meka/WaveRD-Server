@@ -18,13 +18,13 @@ export default async (req: Request, res: Response) => {
     await streamResponse("pending", "Verifying requirements to create a new Game world");
     requestHasBody({ body: req.body, required: ["title"], sendError: true });
 
-    const title = req.body.title,
-      worldHours = new Date().getHours(),
-      worldYear = new Date().getFullYear(),
-      worldMinutes = new Date().getMinutes(),
-      worldDay = `${new Date().getDate() + 1}`.padStart(2, "0"),
-      worldMonth = `${new Date().getMonth() + 1}`.padStart(2, "0"),
-      worldRef = `GW-${worldYear}${worldMonth}${worldDay}-${worldHours}${worldMinutes}`;
+    const [title, todayDate] = [req.body.title, new Date()],
+      gwHrs = `${todayDate.getHours()}`.padStart(2, "0"),
+      gwDay = `${todayDate.getDate() + 1}`.padStart(2, "0"),
+      gwMins = `${todayDate.getMinutes()}`.padStart(2, "0"),
+      gwYear = `${todayDate.getFullYear()}`.padStart(4, "0"),
+      gwMonth = `${todayDate.getMonth() + 1}`.padStart(2, "0"),
+      worldRef = `GW-${gwYear}${gwMonth}${gwDay}-${gwHrs}${gwMins}`;
 
     validate({ value: title, type: "comment", sendError: true, label: "Title" });
     await streamResponse("success", "Verifying requirements to create a new Game world");

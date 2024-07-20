@@ -14,4 +14,6 @@ router.route("/players/random").get(handlers.randomPlayers);
 
 router.route("/tournament").get(handlers.getTournament);
 
+router.route("/others/reference-resolver").get(handlers.referenceResolver);
+
 export default router;
