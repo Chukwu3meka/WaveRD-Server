@@ -2,7 +2,7 @@ import { Response } from "express";
 import { Calendar, Table } from "../interface/games.interface";
 import { DIVISIONS, QUALIFICATION, SINGLE_DIVISION, TOTAL_CLUBS } from "./constants";
 import { createSubarrays, range, shuffleArray, sleep } from "./handlers";
-import { GAMES_CALENDAR, GAMES_CLUB, GAMES_TABLE } from "../models/games";
+import { GAMES_CALENDAR, GAMES_CLUB, GAMES_TABLE } from "../models/games.model";
 
 interface GenComptTable {
   world: string;

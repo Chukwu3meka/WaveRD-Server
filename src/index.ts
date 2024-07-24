@@ -1,7 +1,7 @@
 import "dotenv/config";
 
 import { styleText } from "util";
-import { FAILED_REQUESTS } from "./models/info";
+import { INFO_ALL_FAILED_REQUESTS } from "./models/info.model";
 import { capitalize, formatDate } from "./utils/handlers";
 
 import express from "express";
@@ -27,7 +27,7 @@ const init_server = async () => {
 
     const APP = express();
     APP.use(cookieParser(SECRET_KEY));
-    APP.use(bodyParser.json({ limit: "7mb" }));
+    APP.use(bodyParser.json({ limit: "1mb" }));
     APP.use(bodyParser.urlencoded({ extended: true }));
     APP.use(cookieSession({ secret: SECRET_KEY }));
     APP.use(twitterPassport); // <= fix error with twitter passport
@@ -50,7 +50,7 @@ const init_server = async () => {
     if (process.env.NODE_ENV === "Development") {
       console.log(`Wave Research`, (error.message as string) || error);
     } else {
-      await FAILED_REQUESTS.create({
+      await INFO_ALL_FAILED_REQUESTS.create({
         error: error || null,
         date: formatDate(new Date()),
         request: process.env.NODE_ENV || "undefined",

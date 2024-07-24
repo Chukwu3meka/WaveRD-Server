@@ -2,8 +2,8 @@ import pushMail from "./pushMail";
 
 import { v4 as uuid } from "uuid";
 import { ObjectId } from "mongoose";
-import { PROFILE } from "../models/accounts";
-import { FAILED_REQUESTS } from "../models/info";
+import { ACCOUNTS_PROFILE } from "../models/accounts.model";
+import { INFO_ALL_FAILED_REQUESTS } from "../models/info.model";
 import { CatchError } from "../interface/utils-handlers-interface";
 import { CalcFutureDate, MitigateProfileBruteForce, RequestHasBody } from "../interface/utils/handlers.interface";
 import { styleText } from "util";
@@ -14,7 +14,7 @@ export const catchError = async ({ res, req, err: initError }: CatchError) => {
 
   if (message !== "invalid endpoint") {
     // handle api calls rejected by requests middleware
-    await FAILED_REQUESTS.create({ error: initError, data, request: request || "undefined", date: formatDate(new Date()) });
+    await INFO_ALL_FAILED_REQUESTS.create({ error: initError, data, request: request || "undefined", date: formatDate(new Date()) });
   }
 
   if (<string>process.env.NODE_ENV === "development") {
@@ -174,7 +174,7 @@ export const mitigateProfileBruteForce = async ({ profile, password: authPasswor
   }
 
   if (authPassword !== false) {
-    const matchPassword = await PROFILE.comparePassword(authPassword, password);
+    const matchPassword = await ACCOUNTS_PROFILE.comparePassword(authPassword, password);
 
     if (!matchPassword) {
       const failedAttempts = counter + 1,
@@ -201,12 +201,12 @@ export const mitigateProfileBruteForce = async ({ profile, password: authPasswor
 
       // Increment record on Database
       if (failedAttempts >= 7 && hoursElapsed < 1) {
-        await PROFILE.findByIdAndUpdate(id, {
+        await ACCOUNTS_PROFILE.findByIdAndUpdate(id, {
           $inc: { ["auth.failedAttempts.counter"]: 1 },
           $set: { ["auth.locked"]: new Date(), ["auth.failedAttempts.lastAttempt"]: new Date() },
         });
       } else {
-        await PROFILE.findByIdAndUpdate(id, {
+        await ACCOUNTS_PROFILE.findByIdAndUpdate(id, {
           $inc: { ["auth.failedAttempts.counter"]: 1 },
           $set: { ["auth.failedAttempts.lastAttempt"]: new Date() },
         });
@@ -221,7 +221,7 @@ export const mitigateProfileBruteForce = async ({ profile, password: authPasswor
     const accLocked = hourDiff(locked) <= 1; // ? <= check if account has been locked for 1 hours
     if (accLocked) throw { message: "Account is temporarily locked, Please try again later", sendError: true };
 
-    await PROFILE.findByIdAndUpdate(id, {
+    await ACCOUNTS_PROFILE.findByIdAndUpdate(id, {
       $inc: { ["auth.lastLogin.counter"]: 1 },
       $set: {
         ["auth.locked"]: null,
@@ -330,40 +330,84 @@ export function createSubarrays(arr: any[], subArraySize: number) {
 }
 
 export async function apiHubfetcher(subPath: string) {
-  console.log(styleText("bgGrey", "API Hub internal access"));
+  try {
+    console.log(styleText("bgGrey", "API Hub internal access"));
 
-  if (!subPath) return null;
-  const basePath = `${process.env.BASE_URL}${process.env.STABLE_VERSION}/public`;
+    if (!subPath) return null;
+    const basePath = `${process.env.BASE_URL}${process.env.STABLE_VERSION}/public`;
 
-  return await fetch(basePath + subPath, {
-    /* credentials: "include", tells browser will include credentials in the request,
+    return await fetch(basePath + subPath, {
+      /* credentials: "include", tells browser will include credentials in the request,
 The server must respond with the appropriate CORS headers, including:
 Access-Control-Allow-Origin and Access-Control-Allow-Credentials,
 to allow the response to be received by the client. */
-    // credentials: "include",
-    credentials: "same-origin",
-    /* mode: "cors", This involves sending a preflight OPTIONS request to the server to check whether the server allows the requested access,
+      // credentials: "include",
+      credentials: "same-origin",
+      /* mode: "cors", This involves sending a preflight OPTIONS request to the server to check whether the server allows the requested access,
 and then sending the actual request if the server responds with the appropriate CORS headers. */
-    mode: "same-origin",
-    method: "GET",
-    cache: "no-store",
+      mode: "same-origin",
+      method: "GET",
+      cache: "no-store",
 
-    headers: {
-      "Content-Type": "application/json",
-      "x-waverd-host": "Wave-Research-2018",
-      "x-waverd-key": "Wave-Research-APIHUB-2023",
-    },
-  })
-    .then(async (res) => {
-      if (!res.ok) return null;
+      headers: {
+        "Content-Type": "application/json",
+        "x-waverd-host": "Wave-Research-2018",
+        "x-waverd-key": "Wave-Research-APIHUB-2023",
+      },
+    }).then(async (res) => {
+      if (!res.ok) throw { base: "!res.ok", message: res };
 
       return res
         .json()
-        .then(async (res) => res.data)
-        .catch(async (err) => null);
-    })
-    .catch((err) => {
-      if (process.env.NODE_ENV === "development") console.log(styleText("red", err));
-      return null;
+        .then(async (res) => {
+          return res.data;
+        })
+        .catch(async (err) => {
+          throw { base: ".catch", message: err };
+        });
     });
+  } catch (err: any) {
+    if (process.env.NODE_ENV === "development") console.log(styleText("red", "API Hub internal access failed"));
+
+    return null;
+  }
+}
+
+export function preciseRound(value: string | number, exp: number) {
+  value = Number(value);
+
+  /**
+   * Decimal adjustment of a number.
+   *
+   * @param   {String}    type    The type of adjustment.
+   * @param   {Number}    value   The number.
+   * @param   {Integer}   exp     The exponent (the 10 logarithm of the adjustment base).
+   * @returns {Number}            The adjusted value.
+   */
+  function decimalAdjust(type: "round", value: number, exp: number) {
+    // If the exp is undefined or zero...
+    if (typeof exp === "undefined" || +exp === 0) {
+      return Math[type](value);
+    }
+    value = +value;
+    exp = +exp;
+    // If the value is not a number or the exp is not an integer...
+    if (isNaN(value) || !(typeof exp === "number" && exp % 1 === 0)) {
+      return NaN;
+    }
+
+    // Shift forward
+    let stringValue = value.toString().split("e"); // convert to string
+    let valueNumber: number = Math[type](+(stringValue[0] + "e" + (stringValue[1] ? +stringValue[1] - exp : -exp)));
+
+    // Shift backward
+    stringValue = valueNumber.toString().split("e");
+    return +(stringValue[0] + "e" + (stringValue[1] ? +stringValue[1] + exp : exp));
+  }
+
+  // reverse positive to negative or negative to positive
+  const revExp = exp - exp * 2;
+
+  // You can use floor, ceil or round
+  return decimalAdjust("round", value, revExp);
 }

@@ -2,14 +2,14 @@ import jwt from "jsonwebtoken";
 
 import { BSON } from "mongodb";
 import { codes } from "../utils/codes";
-import { PROFILE } from "../models/accounts";
-import { FAILED_REQUESTS } from "../models/info";
+import { ACCOUNTS_PROFILE } from "../models/accounts.model";
+import { INFO_ALL_FAILED_REQUESTS } from "../models/info.model";
 import { Request, Response, NextFunction } from "express";
 import { catchError, formatDate, getIdFromSession } from "../utils/handlers";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   const guardResponse = async (message: string) => {
-    await FAILED_REQUESTS.create({
+    await INFO_ALL_FAILED_REQUESTS.create({
       data: message,
       date: formatDate(new Date()),
       error: codes["Console Guard error"],
@@ -36,7 +36,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
         req.body = { ...req.body, auth: { id, session } };
 
-        const profile = await PROFILE.findOne(new BSON.ObjectId(id));
+        const profile = await ACCOUNTS_PROFILE.findOne(new BSON.ObjectId(id));
 
         if (!profile) return guardResponse("Profile not found");
         if (profile?.auth?.session !== session) return guardResponse("Invalid session ID");
